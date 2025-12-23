@@ -208,16 +208,27 @@ const VirtualizedResults = ({ results }) => {
                 <Accordion
                   expanded={expandedPanels.has(item.file.path)}
                   onChange={handlePanelChange(item.file.path)}
+                  disableGutters // [修复1] 禁用展开时的外边距
                   sx={{ boxShadow: 'none', height: '100%' }}
                 >
                   <AccordionSummary
                     expandIcon={<ExpandMore />}
                     sx={{
+                      minHeight: HEADER_HEIGHT, // [修复2] 设定固定最小高度
+                      padding: '0 16px',       // 显式设定 padding
+                      '&.Mui-expanded': {
+                        minHeight: HEADER_HEIGHT, // [修复3] 展开时保持高度不变
+                      },
                       '& .MuiAccordionSummary-content': {
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        height: HEADER_HEIGHT - 16, // 减去padding
+                        // height: HEADER_HEIGHT - 16, // 减去padding
+                        height: '100%', // 让内容填满高度
+                        margin: 0, // [修复4] 移除默认 margin
+                        '&.Mui-expanded': {
+                          margin: 0, // [修复5] 展开时也不要增加 margin
+                        },
                       },
                     }}
                   >
