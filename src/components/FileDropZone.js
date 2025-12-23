@@ -6,6 +6,8 @@ import {
   Button,
   useTheme,
   alpha,
+  Alert,
+  Snackbar,
 } from '@mui/material';
 import {
   CloudUpload,
@@ -16,6 +18,23 @@ import {
 const FileDropZone = ({ onFilesAdded }) => {
   const theme = useTheme();
   const [isDragOver, setIsDragOver] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+
+  // 支持的文件格式
+  const supportedExtensions = ['.sp', '.cfg', '.ini', '.txt', '.vmt', '.qc', '.inc', '.lua', '.log', '.vdf', '.scr'];
+
+  // 校验文件格式
+  const validateFileFormat = (fileName) => {
+    const ext = '.' + fileName.split('.').pop().toLowerCase();
+    return supportedExtensions.includes(ext);
+  };
+
+  // 显示错误提示
+  const showErrorAlert = (message) => {
+    setAlertMessage(message);
+    setShowAlert(true);
+  };
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -33,6 +52,7 @@ const FileDropZone = ({ onFilesAdded }) => {
 
     const items = Array.from(e.dataTransfer.items);
     const files = [];
+    const invalidFiles = [];
 
     for (const item of items) {
       if (item.kind === 'file') {
@@ -40,23 +60,41 @@ const FileDropZone = ({ onFilesAdded }) => {
         if (entry) {
           if (entry.isFile) {
             const file = item.getAsFile();
-            files.push({
-              name: file.name,
-              path: file.path,
-              size: file.size,
-              isFile: true,
-            });
+            if (validateFileFormat(file.name)) {
+              files.push({
+                name: file.name,
+                path: file.path,
+                size: file.size,
+                isFile: true,
+              });
+            } else {
+              invalidFiles.push(file.name);
+            }
           } else if (entry.isDirectory) {
             // 处理文件夹拖拽
             const dirPath = entry.fullPath;
             try {
               const scannedFiles = await window.electronAPI.scanDirectory(dirPath);
-              const fileObjects = scannedFiles.map(filePath => ({
-                path: filePath,
-                name: filePath.split(/[\/]/).pop(),
-                isFile: true,
-              }));
-              files.push(...fileObjects);
+              const validFiles = [];
+              const invalidFilesInDir = [];
+              
+              scannedFiles.forEach(filePath => {
+                const fileName = filePath.split(/[\\/]/).pop(); // 使用正则表达式匹配两种路径分隔符
+                if (validateFileFormat(fileName)) {
+                  validFiles.push({
+                    path: filePath,
+                    name: fileName,
+                    isFile: true,
+                  });
+                } else {
+                  invalidFilesInDir.push(fileName);
+                }
+              });
+              
+              files.push(...validFiles);
+              if (invalidFilesInDir.length > 0) {
+                invalidFiles.push(...invalidFilesInDir.slice(0, 3)); // 只显示前3个无效文件名
+              }
             } catch (error) {
               console.error('Failed to scan directory:', error);
             }
@@ -65,8 +103,18 @@ const FileDropZone = ({ onFilesAdded }) => {
       }
     }
 
+    if (invalidFiles.length > 0) {
+      const message = `以下文件因格式不受支持被拒绝导入：
+${invalidFiles.join(', ')}${invalidFiles.length >= 3 ? '...' : ''}
+
+支持的文件类型：${supportedExtensions.join(', ')}`;
+      showErrorAlert(message);
+    }
+
     if (files.length > 0) {
       onFilesAdded(files);
+    } else if (invalidFiles.length === 0) {
+      showErrorAlert('未找到有效的文件。请确保拖拽的是支持的文件类型。');
     }
   }, [onFilesAdded]);
 
@@ -74,12 +122,33 @@ const FileDropZone = ({ onFilesAdded }) => {
     try {
       const filePaths = await window.electronAPI.selectFiles();
       if (filePaths.length > 0) {
-        const files = filePaths.map(path => ({
-          path,
-          name: path.split(/[\/]/).pop(),
-          isFile: true,
-        }));
-        onFilesAdded(files);
+        const validFiles = [];
+        const invalidFiles = [];
+        
+        filePaths.forEach(path => {
+          const fileName = path.split(/[\\/]/).pop(); // 使用正则表达式匹配两种路径分隔符
+          if (validateFileFormat(fileName)) {
+            validFiles.push({
+              path,
+              name: fileName,
+              isFile: true,
+            });
+          } else {
+            invalidFiles.push(fileName);
+          }
+        });
+        
+        if (invalidFiles.length > 0) {
+          const message = `以下文件因格式不受支持被拒绝导入：
+${invalidFiles.join(', ')}
+
+支持的文件类型：${supportedExtensions.join(', ')}`;
+          showErrorAlert(message);
+        }
+        
+        if (validFiles.length > 0) {
+          onFilesAdded(validFiles);
+        }
       }
     } catch (error) {
       console.error('Failed to select files:', error);
@@ -91,12 +160,35 @@ const FileDropZone = ({ onFilesAdded }) => {
       const folderPath = await window.electronAPI.selectFolder();
       if (folderPath) {
         const scannedFiles = await window.electronAPI.scanDirectory(folderPath);
-        const files = scannedFiles.map(path => ({
-          path,
-          name: path.split(/[\/]/).pop(),
-          isFile: true,
-        }));
-        onFilesAdded(files);
+        const validFiles = [];
+        const invalidFiles = [];
+        
+        scannedFiles.forEach(path => {
+          const fileName = path.split(/[\\/]/).pop(); // 使用正则表达式匹配两种路径分隔符
+          if (validateFileFormat(fileName)) {
+            validFiles.push({
+              path,
+              name: fileName,
+              isFile: true,
+            });
+          } else {
+            invalidFiles.push(fileName);
+          }
+        });
+        
+        if (invalidFiles.length > 0) {
+          const message = `文件夹中以下文件因格式不受支持被拒绝导入：
+${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
+
+支持的文件类型：${supportedExtensions.join(', ')}`;
+          showErrorAlert(message);
+        }
+        
+        if (validFiles.length > 0) {
+          onFilesAdded(validFiles);
+        } else {
+          showErrorAlert('所选文件夹中没有找到支持的文件类型。');
+        }
       }
     } catch (error) {
       console.error('Failed to select folder:', error);
@@ -168,6 +260,25 @@ const FileDropZone = ({ onFilesAdded }) => {
           </Button>
         </Box>
       </Box>
+    
+    {/* 错误提示 */}
+    <Snackbar
+      open={showAlert}
+      autoHideDuration={6000}
+      onClose={() => setShowAlert(false)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+      <Alert 
+        onClose={() => setShowAlert(false)} 
+        severity="warning" 
+        sx={{ 
+          whiteSpace: 'pre-line',
+          maxWidth: '500px',
+        }}
+      >
+        {alertMessage}
+      </Alert>
+    </Snackbar>
     </Paper>
   );
 };

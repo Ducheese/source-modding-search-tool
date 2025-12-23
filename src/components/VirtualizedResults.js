@@ -104,6 +104,12 @@ const VirtualizedResults = ({ results }) => {
       console.error('Failed to copy file content:', error);
     }
   };
+  
+  const copyLineContent = (line) => {
+    // 剔除换行符和其他空白字符
+    const cleanLine = line.replace(/[\r\n]+/g, '').trim();
+    navigator.clipboard.writeText(cleanLine);
+  };
 
   const openFileExternally = (path) => {
     window.electronAPI.openFileExternally(path);
@@ -222,16 +228,44 @@ const VirtualizedResults = ({ results }) => {
                       <Chip size="small" label={`${item.file.matches.length} 匹配`} color="primary" />
                     </Box>
                     
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        copyFilePath(item.file.path);
-                      }}
-                      title="复制路径"
-                    >
-                      <ContentCopy fontSize="small" />
-                    </IconButton>
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      <IconButton
+                        size="small"
+                        // ⭐️ 传入 event 对象并调用 e.stopPropagation()
+                        onClick={(e) => {
+                          e.stopPropagation(); // 阻止事件冒泡到 AccordionSummary
+                          copyFilePath(item.file.path);
+                        }}
+                        title="复制路径"
+                      >
+                        <ContentCopy fontSize="small" />
+                      </IconButton>
+
+                      <IconButton
+                        size="small"
+                        // ⭐️ 传入 event 对象并调用 e.stopPropagation()
+                        onClick={(e) => {
+                          e.stopPropagation(); // 阻止事件冒泡到 AccordionSummary
+                          copyFileContent(item.file.path);
+                        }}
+                        title="复制文件内容"
+                      >
+                        <ContentCopy fontSize="small" />
+                      </IconButton>
+
+                      <IconButton
+                        size="small"
+                        // ⭐️ 传入 event 对象并调用 e.stopPropagation()
+                        onClick={(e) => {
+                          e.stopPropagation(); // 阻止事件冒泡到 AccordionSummary
+                          openFileExternally(item.file.path);
+                        }}
+                        title="用默认程序打开"
+                      >
+                        <Launch fontSize="small" />
+                      </IconButton>
+                    </Box>
+
                   </AccordionSummary>
                 </Accordion>
               </Box>
@@ -257,29 +291,13 @@ const VirtualizedResults = ({ results }) => {
                   <Typography variant="body2" color="primary" fontWeight="bold">
                     行 {item.match.lineNumber}
                   </Typography>
-                  <Box>
-                    <IconButton
-                      size="small"
-                      onClick={() => copyFilePath(item.file.path)}
-                      title="复制路径"
-                    >
-                      <ContentCopy fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => copyFileContent(item.file.path)}
-                      title="复制文件内容"
-                    >
-                      <ContentCopy fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => openFileExternally(item.file.path)}
-                      title="用默认程序打开"
-                    >
-                      <Launch fontSize="small" />
-                    </IconButton>
-                  </Box>
+                  <IconButton
+                    size="small"
+                    onClick={() => copyLineContent(item.match.line)}
+                    title="复制这一行"
+                  >
+                    <ContentCopy fontSize="small" />
+                  </IconButton>
                 </Box>
 
                 <Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>

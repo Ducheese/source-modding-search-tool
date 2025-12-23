@@ -60,14 +60,15 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
     const parts = path.split(/[\\/]/);
     if (parts.length <= 2) return path;
     
+    // 至少保留文件名和上级文件夹
     const filename = parts[parts.length - 1];
-    const remainingLength = maxLength - filename.length - 10; // 留出 "..." 和分隔符的空间
+    const parentFolder = parts[parts.length - 2];
     
-    if (remainingLength < 5) {
-      return '.../' + filename;
-    }
+    // 计算省略后的路径
+    const remainingParts = parts.slice(0, -2); // 移除最后两部分（文件夹和文件名）
+    const ellipsis = remainingParts.length > 0 ? '...\\' : '';
     
-    return parts[0] + '/.../' + filename;
+    return ellipsis + parentFolder + '\\' + filename;
   };
 
   const getEncodingColor = (encoding) => {
@@ -180,9 +181,28 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
                     }
                     secondary={
                       <Box sx={{ mt: 0.5 }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
-                          {truncatePath(file.path)}
-                        </Typography>
+                        <Tooltip 
+                          title={file.path} 
+                          placement="top"
+                          arrow
+                          enterDelay={500}
+                          leaveDelay={100}
+                        >
+                          <Typography 
+                            variant="caption" 
+                            color="text.secondary" 
+                            sx={{ 
+                              fontFamily: 'monospace',
+                              display: 'block',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {truncatePath(file.path)}
+                          </Typography>
+                        </Tooltip>
                         <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
                           <Typography variant="caption" color="text.secondary">
                             {formatFileSize(stats.size || 0)}

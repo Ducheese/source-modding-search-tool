@@ -96,24 +96,27 @@ ipcMain.handle('open-file-externally', async (event, filePath) => {
 });
 
 ipcMain.handle('scan-directory', async (event, dirPath) => {
-  const supportedExtensions = ['.sp', '.cfg', '.ini', '.txt', '.vmt', '.qc', '.inc', '.lua', '.log', '.vdf', '.scr'];
+  // 注意：这里不再过滤文件格式，让前端处理格式校验
+  // 这样可以提供更好的用户体验和错误反馈
   const files = [];
 
   function scanDirectory(dir) {
-    const items = fs.readdirSync(dir);
-    
-    for (const item of items) {
-      const fullPath = path.join(dir, item);
-      const stat = fs.statSync(fullPath);
+    try {
+      const items = fs.readdirSync(dir);
       
-      if (stat.isDirectory()) {
-        scanDirectory(fullPath);
-      } else {
-        const ext = path.extname(item).toLowerCase();
-        if (supportedExtensions.includes(ext)) {
+      for (const item of items) {
+        const fullPath = path.join(dir, item);
+        const stat = fs.statSync(fullPath);
+        
+        if (stat.isDirectory()) {
+          scanDirectory(fullPath);
+        } else {
+          // 返回所有文件，让前端进行格式校验
           files.push(fullPath);
         }
       }
+    } catch (error) {
+      console.warn(`Failed to read directory ${dir}:`, error.message);
     }
   }
 
@@ -133,7 +136,7 @@ ipcMain.handle('get-file-stats', async (event, filePath) => {
     
     // Count lines
     const content = iconv.decode(buffer, encoding);
-    const lines = content.split('\n').length;    // glm4.6写错的地方
+    const lines = content.split('\n').length;
     
     return {
       size: stat.size,
