@@ -78,6 +78,49 @@ const SearchResults = ({ results, isSearching }) => {
     window.electronAPI.openFileExternally(path);
   };
 
+  const highlightMatch = (text, query, options) => {
+    if (!query) return text;
+
+    try {
+      let searchRegex;
+      if (options.useRegex) {
+        searchRegex = new RegExp(query, options.caseSensitive ? 'g' : 'gi');
+      } else {
+        const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const pattern = options.wholeWord ? `\\b${escapedQuery}\\b` : escapedQuery;
+        searchRegex = new RegExp(pattern, options.caseSensitive ? 'g' : 'gi');
+      }
+
+      const parts = [];
+      let lastIndex = 0;
+      let match;
+
+      while ((match = searchRegex.exec(text)) !== null) {
+        parts.push(text.slice(lastIndex, match.index));
+        parts.push(
+          <span
+            key={match.index}
+            style={{
+              backgroundColor: alpha(theme.palette.primary.main, 0.3),
+              color: theme.palette.primary.dark,
+              fontWeight: 'bold',
+              padding: '2px 4px',
+              borderRadius: '3px',
+            }}
+          >
+            {match[0]}
+          </span>
+        );
+        lastIndex = searchRegex.lastIndex;
+      }
+
+      parts.push(text.slice(lastIndex));
+      return parts;
+    } catch (error) {
+      return text;
+    }
+  };
+
   // 判断是否使用虚拟化列表（当结果数量超过阈值时）
   const shouldUseVirtualization = results && results.files && (
     results.files.length > 5 || 
@@ -289,7 +332,7 @@ const SearchResults = ({ results, isSearching }) => {
                       </IconButton>
                     </Box>
 
-                    <Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                    <Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem', overflowX: 'auto', whiteSpace: 'pre' }}>
                       {match.context.before && (
                         <Typography
                           variant="body2"
@@ -300,7 +343,7 @@ const SearchResults = ({ results, isSearching }) => {
                         </Typography>
                       )}
                       <Typography variant="body2">
-                        {match.lineNumber}: {match.line}
+                        {match.lineNumber}: {highlightMatch(match.line, results.query, results.options)}
                       </Typography>
                       {match.context.after && (
                         <Typography

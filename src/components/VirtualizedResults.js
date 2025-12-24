@@ -311,7 +311,7 @@ const VirtualizedResults = ({ results }) => {
                   </IconButton>
                 </Box>
 
-                <Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                <Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem', overflowX: 'auto', whiteSpace: 'pre' }}>
                   {item.match.context.before && (
                     <Typography
                       variant="body2"
