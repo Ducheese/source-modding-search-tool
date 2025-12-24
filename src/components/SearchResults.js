@@ -134,9 +134,10 @@ const SearchResults = ({ results, isSearching }) => {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           alignItems: 'center',
           color: 'text.secondary',
+          p: 20,
         }}
       >
         <CircularProgress size={48} sx={{ mb: 2 }} />
@@ -157,10 +158,10 @@ const SearchResults = ({ results, isSearching }) => {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           alignItems: 'center',
           color: 'text.secondary',
-          p: 3,
+          p: 20,
         }}
       >
         <Typography variant="h6" gutterBottom>
@@ -188,10 +189,10 @@ const SearchResults = ({ results, isSearching }) => {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           alignItems: 'center',
           color: 'text.secondary',
-          p: 3,
+          p: 20,
         }}
       >
         <Typography variant="h6" gutterBottom>
