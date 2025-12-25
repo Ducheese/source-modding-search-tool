@@ -19,8 +19,10 @@ import {
   Folder,
   InsertDriveFile,
 } from '@mui/icons-material';
+import { useSnackbar } from '../App';
 
 const FileList = ({ files, onFileRemoved, onClearFiles }) => {
+  const showSnackbar = useSnackbar();
   const theme = useTheme();
   const [fileStats, setFileStats] = useState({});
 
@@ -104,7 +106,10 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
               size="small"
               variant="outlined"
               startIcon={<ClearAll />}
-              onClick={onClearFiles}
+              onClick={() => {
+                onClearFiles();
+                showSnackbar('已清空所有文件', 'info');
+              }}
               sx={{ minWidth: 'auto', px: 1 }}
             >
               清空
@@ -241,7 +246,10 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
                       <IconButton
                         edge="end"
                         size="small"
-                        onClick={() => onFileRemoved(file.path)}
+                        onClick={() => {
+                          onFileRemoved(file.path);
+                          showSnackbar(`已删除文件: ${file.name}`, 'warning');
+                        }}
                         sx={{ 
                           color: 'text.secondary',
                           '&:hover': { color: 'error.main' }

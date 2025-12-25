@@ -20,8 +20,10 @@ import {
 } from '@mui/icons-material';
 import { exportResults } from '../utils/searchEngine';
 import VirtualizedResults from './VirtualizedResults';
+import { useSnackbar } from '../App';
 
 const SearchResults = ({ results, isSearching }) => {
+  const showSnackbar = useSnackbar();
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const [expandedPanels, setExpandedPanels] = useState(new Set());
@@ -57,14 +59,17 @@ const SearchResults = ({ results, isSearching }) => {
 
   const copyFilePath = (path) => {
     navigator.clipboard.writeText(path);
+    showSnackbar('已复制文件路径', 'success');
   };
 
   const copyFileContent = async (path) => {
     try {
       const { content } = await window.electronAPI.readFile(path);
       navigator.clipboard.writeText(content);
+      showSnackbar('已复制文件内容', 'success');
     } catch (error) {
       console.error('Failed to copy file content:', error);
+      showSnackbar('复制文件内容失败', 'error');
     }
   };
 
@@ -72,6 +77,7 @@ const SearchResults = ({ results, isSearching }) => {
     // 剔除换行符和其他空白字符
     const cleanLine = line.replace(/[\r\n]+/g, '').trim();
     navigator.clipboard.writeText(cleanLine);
+    showSnackbar('已复制行内容', 'success');
   };
 
   const openFileExternally = (path) => {

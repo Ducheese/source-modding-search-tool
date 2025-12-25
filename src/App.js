@@ -1,16 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { IconButton } from '@mui/material';
+import { IconButton, Snackbar, Alert } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import MainLayout from './components/MainLayout';
+
+// Snackbar Context
+const SnackbarContext = createContext();
+
+export const useSnackbar = () => useContext(SnackbarContext);
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     // 跟随系统主题
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
+
+  // Snackbar 消息队列
+  const [snackbarQueue, setSnackbarQueue] = useState([]);
+
+  // 显示 Snackbar 消息
+  const showSnackbar = (message, severity = 'info') => {
+    const id = Date.now();
+    setSnackbarQueue(prev => [...prev, { id, message, severity }]);
+  };
+
+  // 关闭 Snackbar 消息
+  const closeSnackbar = (id) => {
+    setSnackbarQueue(prev => prev.filter(item => item.id !== id));
+  };
 
   // 监听系统主题变化
   useEffect(() => {
@@ -112,25 +131,55 @@ function App() {
   const theme = darkMode ? darkTheme : lightTheme;
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
-        <IconButton
-          color="inherit"
-          onClick={() => setDarkMode(!darkMode)}
-          sx={{
-            bgcolor: 'background.paper',
-            boxShadow: 2,
-            '&:hover': {
+    <SnackbarContext.Provider value={showSnackbar}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
+          <IconButton
+            color="inherit"
+            onClick={() => {
+              const newMode = !darkMode;
+              setDarkMode(newMode);
+              showSnackbar(`已切换到${newMode ? '深色' : '浅色'}模式`, 'info');
+            }}
+            sx={{
               bgcolor: 'background.paper',
-            },
-          }}
-        >
-          {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-        </IconButton>
-      </div>
-      <MainLayout />
-    </ThemeProvider>
+              boxShadow: 2,
+              '&:hover': {
+                bgcolor: 'background.paper',
+              },
+            }}
+          >
+            {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
+        </div>
+        <MainLayout />
+        
+        {/* Snackbar 消息堆叠 */}
+        {snackbarQueue.map((item, index) => (
+          <Snackbar
+            key={item.id}
+            open={true}
+            autoHideDuration={3000}
+            onClose={() => closeSnackbar(item.id)}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            sx={{
+              position: 'fixed',
+              top: `${60 + index * 60}px`,
+              zIndex: 999 - index,
+            }}
+          >
+            <Alert
+              onClose={() => closeSnackbar(item.id)}
+              severity={item.severity}
+              sx={{ minWidth: '300px' }}
+            >
+              {item.message}
+            </Alert>
+          </Snackbar>
+        ))}
+      </ThemeProvider>
+    </SnackbarContext.Provider>
   );
 }
 
