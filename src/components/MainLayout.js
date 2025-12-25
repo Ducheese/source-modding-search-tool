@@ -107,6 +107,7 @@ const MainLayout = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
+                  maxHeight: 'calc(100vh)',
                   border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                 }}
                 elevation={2}

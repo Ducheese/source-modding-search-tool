@@ -121,7 +121,27 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
       </Box>
 
       {/* 文件列表 */}
-      <Box sx={{ flex: 1, overflow: 'auto' }}>
+      <Box sx={{ flex: 1, overflowX: 'hidden', overflowY: 'auto', maxHeight: 'calc(100vh)',
+        '&::-webkit-scrollbar': {
+          width: '6px', // 水平滚动条的高度
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: 
+          theme.palette.mode === 'dark'   // 滚动条滑块的颜色
+          ? 'rgba(255, 255, 255, 0.2)'  // 暗色模式
+          : 'rgba(0, 0, 0, 0.2)',       // 浅色模式
+          borderRadius: '10px', // 滑块圆角
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: 
+          theme.palette.mode === 'dark'   // 鼠标悬停时颜色加深
+          ? 'rgba(255, 255, 255, 0.3)'  // 暗色模式
+          : 'rgba(0, 0, 0, 0.3)',       // 浅色模式
+        },
+        '&::-webkit-scrollbar-track': {
+          backgroundColor: 'transparent', // 滚动条轨道的颜色（通常设为透明）
+        },
+      }}>
         {files.length === 0 ? (
           <Box
             sx={{
