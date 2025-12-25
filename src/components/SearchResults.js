@@ -102,7 +102,9 @@ const SearchResults = ({ results, isSearching }) => {
             key={match.index}
             style={{
               backgroundColor: alpha(theme.palette.primary.main, 0.3),
-              color: theme.palette.primary.dark,
+              color: theme.palette.mode === 'dark'
+                      ? '#BB86FC'        // 暗色模式
+                      : '#6200EE',       // 浅色模式
               fontWeight: 'bold',
               padding: '2px 4px',
               borderRadius: '3px',

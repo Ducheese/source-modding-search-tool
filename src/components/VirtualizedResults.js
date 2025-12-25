@@ -25,7 +25,7 @@ const VirtualizedResults = ({ results }) => {
   const [expandedPanels, setExpandedPanels] = useState(new Set());
 
   // 每个结果项的预估高度
-  const ITEM_HEIGHT = 120; // 预估每个匹配项的高度
+  const ITEM_HEIGHT = 140; // 预估每个匹配项的高度
   const HEADER_HEIGHT = 80; // 文件头的高度
 
   // 计算可视区域内的项目
@@ -146,7 +146,9 @@ const VirtualizedResults = ({ results }) => {
             key={match.index}
             style={{
               backgroundColor: alpha(theme.palette.primary.main, 0.3),
-              color: theme.palette.primary.dark,
+              color: theme.palette.mode === 'dark'
+                      ? '#BB86FC'        // 暗色模式
+                      : '#6200EE',       // 浅色模式
               fontWeight: 'bold',
               padding: '2px 4px',
               borderRadius: '3px',
