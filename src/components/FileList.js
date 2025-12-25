@@ -108,7 +108,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
               startIcon={<ClearAll />}
               onClick={() => {
                 onClearFiles();
-                showSnackbar('已清空所有文件', 'info');
+                showSnackbar('已清空所有文件', 'warning');
               }}
               sx={{ minWidth: 'auto', px: 1 }}
             >

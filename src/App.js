@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { IconButton, Snackbar, Alert } from '@mui/material';
+import { IconButton, Snackbar, Alert, Slide } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import MainLayout from './components/MainLayout';
@@ -20,10 +20,10 @@ function App() {
   // Snackbar 消息队列
   const [snackbarQueue, setSnackbarQueue] = useState([]);
 
-  // 显示 Snackbar 消息
+// 显示 Snackbar 消息
   const showSnackbar = (message, severity = 'info') => {
     const id = Date.now();
-    setSnackbarQueue(prev => [...prev, { id, message, severity }]);
+    setSnackbarQueue([{ id, message, severity }]);
   };
 
   // 关闭 Snackbar 消息
@@ -155,19 +155,16 @@ function App() {
         </div>
         <MainLayout />
         
-        {/* Snackbar 消息堆叠 */}
-        {snackbarQueue.map((item, index) => (
+        {/* Snackbar 消息 */}
+        {snackbarQueue.map((item) => (
           <Snackbar
             key={item.id}
             open={true}
             autoHideDuration={3000}
             onClose={() => closeSnackbar(item.id)}
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            sx={{
-              position: 'fixed',
-              top: `${60 + index * 60}px`,
-              zIndex: 999 - index,
-            }}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            TransitionComponent={Slide}
+            TransitionProps={{ direction: 'up' }}
           >
             <Alert
               onClose={() => closeSnackbar(item.id)}
