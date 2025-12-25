@@ -8,10 +8,14 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1400,
-    height: 900,
-    minWidth: 1000,
-    minHeight: 700,
+    width: 1200,
+    height: 800,
+    minWidth: 600,
+    // minHeight: 600,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    fullscreenable: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
