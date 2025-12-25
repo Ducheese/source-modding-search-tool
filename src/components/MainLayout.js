@@ -103,10 +103,11 @@ const MainLayout = () => {
               {/* 文件列表 */}
               <Paper
                 sx={{
-                  flex: 1,
+                  // flex: 1,
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
+                  minHeight: 'calc(100vh - 344px)',
                   maxHeight: 'calc(100vh)',
                   border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                 }}
