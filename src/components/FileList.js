@@ -128,7 +128,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
       {/* 文件列表 */}
       <Box sx={{ flex: 1, overflowX: 'hidden', overflowY: 'auto', maxHeight: 'calc(100vh)',
         '&::-webkit-scrollbar': {
-          width: '6px', // 水平滚动条的高度
+          width: '6px',
         },
         '&::-webkit-scrollbar-thumb': {
           backgroundColor: 

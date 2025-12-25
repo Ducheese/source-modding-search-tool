@@ -99,6 +99,34 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           onClose={() => setHistoryOpen(false)}
           inputValue={searchQuery}
           onInputChange={(e, value) => setSearchQuery(value)}
+          componentsProps={{
+            paper: {
+              sx: {
+                // 当前组件是 Autocomplete 的 Paper 容器 (MuiPaper-root)
+                '& ul': {
+                  '&::-webkit-scrollbar': {
+                    width: '6px',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: 
+                    theme.palette.mode === 'dark'   // 滚动条滑块的颜色
+                    ? 'rgba(255, 255, 255, 0.2)'  // 暗色模式
+                    : 'rgba(0, 0, 0, 0.2)',       // 浅色模式
+                    borderRadius: '10px', // 滑块圆角
+                  },
+                  '&::-webkit-scrollbar-thumb:hover': {
+                    backgroundColor: 
+                    theme.palette.mode === 'dark'   // 鼠标悬停时颜色加深
+                    ? 'rgba(255, 255, 255, 0.3)'  // 暗色模式
+                    : 'rgba(0, 0, 0, 0.3)',       // 浅色模式
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: 'transparent', // 滚动条轨道的颜色（通常设为透明）
+                  },
+                },
+              },
+            },
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
