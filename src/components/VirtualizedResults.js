@@ -30,7 +30,7 @@ const VirtualizedResults = ({ results }) => {
 
   // 计算可视区域内的项目
   const visibleItems = useMemo(() => {
-    if (!results || !results.files) return [];
+    if (!results || !results.files) return { items: [], totalHeight: 0, startIndex: 0 };
 
     const items = [];
     let currentOffset = 0;
@@ -62,10 +62,17 @@ const VirtualizedResults = ({ results }) => {
       }
     });
 
-    const startIndex = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - 2);
+    // [修正重点]：使用最小高度来计算索引，确保覆盖范围足够大
+    const MIN_HEIGHT = Math.min(ITEM_HEIGHT, HEADER_HEIGHT);
+    
+    // [修正重点]：增加缓冲区 (从 2 改为 5 或更大)
+    const OVERSCAN_COUNT = 5;
+
+    const startIndex = Math.max(0, Math.floor(scrollTop / MIN_HEIGHT) - OVERSCAN_COUNT);
+    
     const endIndex = Math.min(
       items.length - 1,
-      Math.ceil((scrollTop + containerHeight) / ITEM_HEIGHT) + 2
+      Math.ceil((scrollTop + containerHeight) / MIN_HEIGHT) + OVERSCAN_COUNT
     );
 
     return {
@@ -159,15 +166,20 @@ const VirtualizedResults = ({ results }) => {
   };
 
   useEffect(() => {
-    const updateHeight = () => {
-      if (containerRef.current) {
-        setContainerHeight(containerRef.current.clientHeight);
-      }
-    };
+    if (!containerRef.current) return;
 
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        // 直接获取容器的内容高度
+        setContainerHeight(entry.contentRect.height);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, []);
 
   if (!results || !results.files || results.files.length === 0) {
@@ -201,7 +213,7 @@ const VirtualizedResults = ({ results }) => {
                   left: 0,
                   right: 0,
                   height: item.height,
-                  bgcolor: 'background.paper',
+                  // bgcolor: alpha(theme.palette.primary.main, 0.05),
                   borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                 }}
               >
@@ -293,7 +305,7 @@ const VirtualizedResults = ({ results }) => {
                   left: 0,
                   right: 0,
                   height: item.height,
-                  bgcolor: 'background.paper',
+                  // bgcolor: alpha(theme.palette.primary.main, 0.05),
                   borderBottom: `1px solid ${alpha(theme.palette.divider, 0.05)}`,
                   p: 2,
                 }}
@@ -311,7 +323,27 @@ const VirtualizedResults = ({ results }) => {
                   </IconButton>
                 </Box>
 
-                <Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem', overflowX: 'auto', whiteSpace: 'pre' }}>
+                <Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem', overflowX: 'auto', whiteSpace: 'pre',
+                    '&::-webkit-scrollbar': {
+                      height: '3px', // 水平滚动条的高度
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: 
+                      theme.palette.mode === 'dark'   // 滚动条滑块的颜色
+                      ? 'rgba(255, 255, 255, 0.2)'  // 暗色模式
+                      : 'rgba(0, 0, 0, 0.2)',       // 浅色模式
+                      borderRadius: '10px', // 滑块圆角
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: 
+                      theme.palette.mode === 'dark'   // 鼠标悬停时颜色加深
+                      ? 'rgba(255, 255, 255, 0.3)'  // 暗色模式
+                      : 'rgba(0, 0, 0, 0.3)',       // 浅色模式
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: 'transparent', // 滚动条轨道的颜色（通常设为透明）
+                    },
+                 }}>
                   {item.match.context.before && (
                     <Typography
                       variant="body2"
