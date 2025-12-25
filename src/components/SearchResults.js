@@ -362,11 +362,11 @@ const SearchResults = ({ results, isSearching }) => {
                           color="text.secondary"
                           sx={{ opacity: 0.7 }}
                         >
-                          {match.lineNumber - 1}: {match.context.before}
+                          {String(match.lineNumber - 1).padStart(5, '\u2007')}  {match.context.before}
                         </Typography>
                       )}
                       <Typography variant="body2">
-                        {match.lineNumber}: {highlightMatch(match.line, results.query, results.options)}
+                        {String(match.lineNumber).padStart(5, '\u2007')}  {highlightMatch(match.line, results.query, results.options)}
                       </Typography>
                       {match.context.after && (
                         <Typography
@@ -374,7 +374,7 @@ const SearchResults = ({ results, isSearching }) => {
                           color="text.secondary"
                           sx={{ opacity: 0.7 }}
                         >
-                          {match.lineNumber + 1}: {match.context.after}
+                          {String(match.lineNumber + 1).padStart(5, '\u2007')}  {match.context.after}
                         </Typography>
                       )}
                     </Box>

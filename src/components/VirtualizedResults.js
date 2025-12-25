@@ -352,11 +352,11 @@ const VirtualizedResults = ({ results }) => {
                       color="text.secondary"
                       sx={{ opacity: 0.7 }}
                     >
-                      {item.match.lineNumber - 1}: {item.match.context.before}
+                      {String(item.match.lineNumber - 1).padStart(5, '\u2007')}  {item.match.context.before}
                     </Typography>
                   )}
                   <Typography variant="body2">
-                    {item.match.lineNumber}: {highlightMatch(item.match.line, results.query, results.options)}
+                    {String(item.match.lineNumber).padStart(5, '\u2007')}  {highlightMatch(item.match.line, results.query, results.options)}
                   </Typography>
                   {item.match.context.after && (
                     <Typography
@@ -364,7 +364,7 @@ const VirtualizedResults = ({ results }) => {
                       color="text.secondary"
                       sx={{ opacity: 0.7 }}
                     >
-                      {item.match.lineNumber + 1}: {item.match.context.after}
+                      {String(item.match.lineNumber + 1).padStart(5, '\u2007')}  {item.match.context.after}
                     </Typography>
                   )}
                 </Box>
