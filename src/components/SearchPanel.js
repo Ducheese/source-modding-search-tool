@@ -45,7 +45,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
   const saveSearchHistory = (query) => {
     if (!query.trim()) return;
     
-    const newHistory = [query, ...searchHistory.filter(h => h !== query)].slice(0, 10);
+    const newHistory = [query, ...searchHistory.filter(h => h !== query)].slice(0, 30);
     setSearchHistory(newHistory);
     localStorage.setItem('searchHistory', JSON.stringify(newHistory));
   };
