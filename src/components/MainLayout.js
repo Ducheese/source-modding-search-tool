@@ -140,7 +140,7 @@ const MainLayout = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
-                  minHeight: 'calc(100vh - 344px)',
+                  minHeight: 'calc(100vh - 344px - 24px)',
                   border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                 }}
                 elevation={2}

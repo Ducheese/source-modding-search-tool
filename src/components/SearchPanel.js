@@ -85,7 +85,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
   };
 
   return (
-    <Box sx={{ p: 2, minHeight: 'calc(344px - 78px)'}}>
+    <Box sx={{ p: 2 }}>
       <Typography variant="h6" gutterBottom fontWeight="bold">
         搜索配置
       </Typography>
@@ -202,7 +202,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       </Box>
 
       {/* 搜索选项标签 */}
-      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap', minHeight: '24px' }}>
+      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
         {caseSensitive && (
           <Chip size="small" label="Aa" color="primary" variant="outlined" />
         )}
