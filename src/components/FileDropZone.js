@@ -209,6 +209,7 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
           bgcolor: alpha(theme.palette.primary.main, 0.02),
           borderColor: theme.palette.primary.main,
         },
+        minHeight: 'calc(344px - 78px)',
       }}
       elevation={1}
     >
