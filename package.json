@@ -19,7 +19,9 @@
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.0",
-    "@tauri-apps/api": "^1.5.0"
+    "@tauri-apps/api": "^1.5.0",
+    "react-virtualized-auto-sizer": "1.0.24",
+    "react-window": "1.8.9"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.0"
