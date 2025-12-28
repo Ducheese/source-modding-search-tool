@@ -1,0 +1,33 @@
+[package]
+name = "source-modding-search-tool"
+version = "1.0.0"
+description = "Source Modding Local Search Tool"
+authors = ["Ducheese"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "1", features = [] }
+
+[dependencies]
+# 核心依赖，开启所有必要功能
+tauri = { version = "1.5", features = [ "dialog-all", "fs-read-dir", "fs-read-file", "shell-open", "path-all", "dialog", "window-all", "protocol-all"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+# "永远"的并行处理能力
+rayon = "1.8"
+# 须臾间的正则匹配
+regex = "1.10"
+# 自动识别凡人的各种编码
+encoding_rs = "0.8"
+chardetng = "0.1"
+# 快速遍历目录
+walkdir = "2.4"
+# 错误处理
+anyhow = "1.0"
+# 忽略二进制文件
+content_inspector = "0.2"
+
+[features]
+# 默认开启自定义协议
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

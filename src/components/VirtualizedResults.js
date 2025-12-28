@@ -4,7 +4,6 @@ import {
   Typography,
   Accordion,
   AccordionSummary,
-  AccordionDetails,
   Chip,
   IconButton,
   useTheme,
@@ -16,6 +15,7 @@ import {
   Launch,
 } from '@mui/icons-material';
 import { useSnackbar } from '../App';
+import { tauriAPI } from '../utils/tauriBridge'; // 引入 Tauri API
 
 // 虚拟化列表组件
 const VirtualizedResults = ({ results }) => {
@@ -66,12 +66,12 @@ const VirtualizedResults = ({ results }) => {
 
     // [修正重点]：使用最小高度来计算索引，确保覆盖范围足够大
     const MIN_HEIGHT = Math.min(ITEM_HEIGHT, HEADER_HEIGHT);
-    
+
     // [修正重点]：增加缓冲区 (从 2 改为 5 或更大)
     const OVERSCAN_COUNT = 5;
 
     const startIndex = Math.max(0, Math.floor(scrollTop / MIN_HEIGHT) - OVERSCAN_COUNT);
-    
+
     const endIndex = Math.min(
       items.length - 1,
       Math.ceil((scrollTop + containerHeight) / MIN_HEIGHT) + OVERSCAN_COUNT
@@ -108,7 +108,8 @@ const VirtualizedResults = ({ results }) => {
 
   const copyFileContent = async (path) => {
     try {
-      const { content } = await window.electronAPI.readFile(path);
+      // 修改：使用 tauriAPI
+      const { content } = await tauriAPI.readFile(path);
       navigator.clipboard.writeText(content);
       showSnackbar('已复制文件内容', 'success');
     } catch (error) {
@@ -116,7 +117,7 @@ const VirtualizedResults = ({ results }) => {
       showSnackbar('复制文件内容失败', 'error');
     }
   };
-  
+
   const copyLineContent = (line) => {
     // 剔除换行符和其他空白字符
     const cleanLine = line.replace(/[\r\n]+/g, '').trim();
@@ -125,7 +126,8 @@ const VirtualizedResults = ({ results }) => {
   };
 
   const openFileExternally = (path) => {
-    window.electronAPI.openFileExternally(path);
+    // 修改：使用 tauriAPI
+    tauriAPI.openFileExternally(path);
   };
 
   const highlightMatch = (text, query, options) => {
@@ -153,8 +155,8 @@ const VirtualizedResults = ({ results }) => {
             style={{
               backgroundColor: alpha(theme.palette.primary.main, 0.3),
               color: theme.palette.mode === 'dark'
-                      ? '#BB86FC'        // 暗色模式
-                      : '#6200EE',       // 浅色模式
+                ? '#BB86FC'        // 暗色模式
+                : '#6200EE',       // 浅色模式
               fontWeight: 'bold',
               padding: '2px 4px',
               borderRadius: '3px',
@@ -209,8 +211,7 @@ const VirtualizedResults = ({ results }) => {
       {/* 虚拟化容器 */}
       <Box sx={{ height: totalHeight, position: 'relative' }}>
         {items.map((item, index) => {
-          const globalIndex = startIndex + index;
-          
+
           if (item.type === 'header') {
             return (
               <Box
@@ -258,7 +259,7 @@ const VirtualizedResults = ({ results }) => {
                       </Typography>
                       <Chip size="small" label={`${item.file.matches.length} 匹配`} color="primary" />
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', gap: 0.5 }}>
                       <IconButton
                         size="small"
@@ -304,9 +305,11 @@ const VirtualizedResults = ({ results }) => {
           }
 
           if (item.type === 'match') {
+            // 注意：这里使用了 Rust 返回的 snake_case 字段 line_number
+            const lineNum = item.match.line_number;
             return (
               <Box
-                key={`match-${item.file.path}-${item.match.lineNumber}`}
+                key={`match-${item.file.path}-${lineNum}`}
                 sx={{
                   position: 'absolute',
                   top: item.offset,
@@ -320,7 +323,7 @@ const VirtualizedResults = ({ results }) => {
               >
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                   <Typography variant="body2" color="primary" fontWeight="bold">
-                    行 {item.match.lineNumber}
+                    行 {lineNum}
                   </Typography>
                   <IconButton
                     size="small"
@@ -331,38 +334,39 @@ const VirtualizedResults = ({ results }) => {
                   </IconButton>
                 </Box>
 
-                <Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem', overflowX: 'auto', whiteSpace: 'pre',
-                    '&::-webkit-scrollbar': {
-                      height: '3px', // 水平滚动条的高度
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: 
+                <Box sx={{
+                  fontFamily: 'monospace', fontSize: '0.875rem', overflowX: 'auto', whiteSpace: 'pre',
+                  '&::-webkit-scrollbar': {
+                    height: '3px', // 水平滚动条的高度
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor:
                       theme.palette.mode === 'dark'   // 滚动条滑块的颜色
-                      ? 'rgba(255, 255, 255, 0.2)'  // 暗色模式
-                      : 'rgba(0, 0, 0, 0.2)',       // 浅色模式
-                      borderRadius: '10px', // 滑块圆角
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      backgroundColor: 
+                        ? 'rgba(255, 255, 255, 0.2)'  // 暗色模式
+                        : 'rgba(0, 0, 0, 0.2)',       // 浅色模式
+                    borderRadius: '10px', // 滑块圆角
+                  },
+                  '&::-webkit-scrollbar-thumb:hover': {
+                    backgroundColor:
                       theme.palette.mode === 'dark'   // 鼠标悬停时颜色加深
-                      ? 'rgba(255, 255, 255, 0.3)'  // 暗色模式
-                      : 'rgba(0, 0, 0, 0.3)',       // 浅色模式
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: 'transparent', // 滚动条轨道的颜色（通常设为透明）
-                    },
-                 }}>
+                        ? 'rgba(255, 255, 255, 0.3)'  // 暗色模式
+                        : 'rgba(0, 0, 0, 0.3)',       // 浅色模式
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: 'transparent', // 滚动条轨道的颜色（通常设为透明）
+                  },
+                }}>
                   {item.match.context.before && (
                     <Typography
                       variant="body2"
                       color="text.secondary"
                       sx={{ opacity: 0.7 }}
                     >
-                      {String(item.match.lineNumber - 1).padStart(5, '\u2007')}  {item.match.context.before}
+                      {String(lineNum - 1).padStart(5, '\u2007')}  {item.match.context.before}
                     </Typography>
                   )}
                   <Typography variant="body2">
-                    {String(item.match.lineNumber).padStart(5, '\u2007')}  {highlightMatch(item.match.line, results.query, results.options)}
+                    {String(lineNum).padStart(5, '\u2007')}  {highlightMatch(item.match.line, results.query, results.options)}
                   </Typography>
                   {item.match.context.after && (
                     <Typography
@@ -370,7 +374,7 @@ const VirtualizedResults = ({ results }) => {
                       color="text.secondary"
                       sx={{ opacity: 0.7 }}
                     >
-                      {String(item.match.lineNumber + 1).padStart(5, '\u2007')}  {item.match.context.after}
+                      {String(lineNum + 1).padStart(5, '\u2007')}  {item.match.context.after}
                     </Typography>
                   )}
                 </Box>

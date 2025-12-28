@@ -14,19 +14,18 @@ import {
 } from '@mui/material';
 import {
   Download,
-  MoreVert,
   ContentCopy,
   Launch,
 } from '@mui/icons-material';
 import { exportResults } from '../utils/searchEngine';
 import VirtualizedResults from './VirtualizedResults';
 import { useSnackbar } from '../App';
+import { tauriAPI } from '../utils/tauriBridge'; // 引入 Tauri API
 
 const SearchResults = ({ results, isSearching }) => {
   const showSnackbar = useSnackbar();
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
-  const [expandedPanels, setExpandedPanels] = useState(new Set());
 
   const handleExportClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -45,18 +44,6 @@ const SearchResults = ({ results, isSearching }) => {
     handleExportClose();
   };
 
-  const handlePanelChange = (panelPath) => (event, isExpanded) => {
-    setExpandedPanels(prev => {
-      const newSet = new Set(prev);
-      if (isExpanded) {
-        newSet.add(panelPath);
-      } else {
-        newSet.delete(panelPath);
-      }
-      return newSet;
-    });
-  };
-
   const copyFilePath = (path) => {
     navigator.clipboard.writeText(path);
     showSnackbar('已复制文件路径', 'success');
@@ -64,7 +51,8 @@ const SearchResults = ({ results, isSearching }) => {
 
   const copyFileContent = async (path) => {
     try {
-      const { content } = await window.electronAPI.readFile(path);
+      // 修改：使用 tauriAPI
+      const { content } = await tauriAPI.readFile(path);
       navigator.clipboard.writeText(content);
       showSnackbar('已复制文件内容', 'success');
     } catch (error) {
@@ -81,7 +69,8 @@ const SearchResults = ({ results, isSearching }) => {
   };
 
   const openFileExternally = (path) => {
-    window.electronAPI.openFileExternally(path);
+    // 修改：使用 tauriAPI
+    tauriAPI.openFileExternally(path);
   };
 
   const highlightMatch = (text, query, options) => {
@@ -109,8 +98,8 @@ const SearchResults = ({ results, isSearching }) => {
             style={{
               backgroundColor: alpha(theme.palette.primary.main, 0.3),
               color: theme.palette.mode === 'dark'
-                      ? '#BB86FC'        // 暗色模式
-                      : '#6200EE',       // 浅色模式
+                ? '#BB86FC'        // 暗色模式
+                : '#6200EE',       // 浅色模式
               fontWeight: 'bold',
               padding: '2px 4px',
               borderRadius: '3px',
@@ -131,7 +120,7 @@ const SearchResults = ({ results, isSearching }) => {
 
   // 判断是否使用虚拟化列表（当结果数量超过阈值时）
   const shouldUseVirtualization = results && results.files && (
-    results.files.length > 5 || 
+    results.files.length > 5 ||
     results.totalMatches > 10
   );
 
@@ -290,7 +279,7 @@ const SearchResults = ({ results, isSearching }) => {
                     </Typography>
                     <Chip size="small" label={`${file.matches.length} 匹配`} color="primary" />
                   </Box>
-                  
+
                   <Box sx={{ display: 'flex', gap: 0.5 }}>
                     <IconButton
                       size="small"
@@ -316,73 +305,77 @@ const SearchResults = ({ results, isSearching }) => {
                   </Box>
                 </Box>
 
-                {file.matches.map((match, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      p: 2,
-                      borderBottom: `1px solid ${alpha(theme.palette.divider, 0.05)}`,
-                      '&:last-child': { borderBottom: 'none' },
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                      <Typography variant="body2" color="primary" fontWeight="bold">
-                        行 {match.lineNumber}
-                      </Typography>
-                      <IconButton
-                        size="small"
-                        onClick={() => copyLineContent(match.line)}
-                        title="复制这一行"
-                      >
-                        <ContentCopy fontSize="small" />
-                      </IconButton>
-                    </Box>
+                {file.matches.map((match, index) => {
+                  // 这里也要适配 snake_case
+                  const lineNum = match.line_number;
+                  return (
+                    <Box
+                      key={index}
+                      sx={{
+                        p: 2,
+                        borderBottom: `1px solid ${alpha(theme.palette.divider, 0.05)}`,
+                        '&:last-child': { borderBottom: 'none' },
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <Typography variant="body2" color="primary" fontWeight="bold">
+                          行 {lineNum}
+                        </Typography>
+                        <IconButton
+                          size="small"
+                          onClick={() => copyLineContent(match.line)}
+                          title="复制这一行"
+                        >
+                          <ContentCopy fontSize="small" />
+                        </IconButton>
+                      </Box>
 
-                    <Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem', overflowX: 'auto', whiteSpace: 'pre',
+                      <Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem', overflowX: 'auto', whiteSpace: 'pre',
                         '&::-webkit-scrollbar': {
                           height: '3px', // 水平滚动条的高度
                         },
                         '&::-webkit-scrollbar-thumb': {
-                          backgroundColor: 
-                          theme.palette.mode === 'dark'   // 滚动条滑块的颜色
-                          ? 'rgba(255, 255, 255, 0.2)'  // 暗色模式
-                          : 'rgba(0, 0, 0, 0.2)',       // 浅色模式
+                          backgroundColor:
+                            theme.palette.mode === 'dark'   // 滚动条滑块的颜色
+                              ? 'rgba(255, 255, 255, 0.2)'  // 暗色模式
+                              : 'rgba(0, 0, 0, 0.2)',       // 浅色模式
                           borderRadius: '10px', // 滑块圆角
                         },
                         '&::-webkit-scrollbar-thumb:hover': {
-                          backgroundColor: 
-                          theme.palette.mode === 'dark'   // 鼠标悬停时颜色加深
-                          ? 'rgba(255, 255, 255, 0.3)'  // 暗色模式
-                          : 'rgba(0, 0, 0, 0.3)',       // 浅色模式
+                          backgroundColor:
+                            theme.palette.mode === 'dark'   // 鼠标悬停时颜色加深
+                              ? 'rgba(255, 255, 255, 0.3)'  // 暗色模式
+                              : 'rgba(0, 0, 0, 0.3)',       // 浅色模式
                         },
                         '&::-webkit-scrollbar-track': {
                           backgroundColor: 'transparent', // 滚动条轨道的颜色（通常设为透明）
                         },
-                     }}>
-                      {match.context.before && (
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ opacity: 0.7 }}
-                        >
-                          {String(match.lineNumber - 1).padStart(5, '\u2007')}  {match.context.before}
+                      }}>
+                        {match.context.before && (
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ opacity: 0.7 }}
+                          >
+                            {String(lineNum - 1).padStart(5, '\u2007')}  {match.context.before}
+                          </Typography>
+                        )}
+                        <Typography variant="body2">
+                          {String(lineNum).padStart(5, '\u2007')}  {highlightMatch(match.line, results.query, results.options)}
                         </Typography>
-                      )}
-                      <Typography variant="body2">
-                        {String(match.lineNumber).padStart(5, '\u2007')}  {highlightMatch(match.line, results.query, results.options)}
-                      </Typography>
-                      {match.context.after && (
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ opacity: 0.7 }}
-                        >
-                          {String(match.lineNumber + 1).padStart(5, '\u2007')}  {match.context.after}
-                        </Typography>
-                      )}
+                        {match.context.after && (
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ opacity: 0.7 }}
+                          >
+                            {String(lineNum + 1).padStart(5, '\u2007')}  {match.context.after}
+                          </Typography>
+                        )}
+                      </Box>
                     </Box>
-                  </Box>
-                ))}
+                  );
+                })}
               </Box>
             ))}
           </Box>

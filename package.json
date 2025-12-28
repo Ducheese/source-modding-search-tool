@@ -2,17 +2,14 @@
   "name": "source-modding-search-tool",
   "version": "1.0.0",
   "description": "Source Modding Local Search Tool",
-  "main": "public/electron.js",
+  "private": true,
   "homepage": "./",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron": "electron .",
-    "electron-dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-pack": "electron-builder",
-    "preelectron-pack": "npm run build"
+    "tauri": "tauri"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -22,30 +19,10 @@
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.0",
-    "chardet": "^0.7.0",
-    "iconv-lite": "^0.6.3"
+    "@tauri-apps/api": "^1.5.0"
   },
   "devDependencies": {
-    "electron": "^25.0.0",
-    "electron-builder": "^24.0.0",
-    "concurrently": "^8.0.0",
-    "wait-on": "^7.0.0"
-  },
-  "build": {
-    "appId": "com.sourcemodding.searchtool",
-    "productName": "Source Modding Search Tool",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "build/**/*",
-      "public/electron.js",
-      "node_modules/**/*"
-    ],
-    "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
-    }
+    "@tauri-apps/cli": "^1.5.0"
   },
   "browserslist": {
     "production": [

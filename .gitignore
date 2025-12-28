@@ -36,10 +36,8 @@ release/
 Thumbs.db
 
 # 自定义
-(备份) source-modding-search-tool.zip
-package-lock.json
-build/
-dist/
-node_modules/
-null
 assets/
+package-lock.json
+src-tauri/target/
+src-tauri/Cargo.lock
+null
