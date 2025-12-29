@@ -87,14 +87,14 @@ export const exportResults = (results, format = 'txt') => {
       content += `**路径:** \`${file.path}\`\n\n`;
 
       file.matches.forEach(match => {
-        content += `### 行 ${match.lineNumber}\n\n`;
+        content += `### 行 ${match.line_number}\n\n`;
         content += '```text\n';
         if (match.context.before) {
-          content += `${match.lineNumber - 1}: ${match.context.before}\n`;
+          content += `${match.line_number - 1}: ${match.context.before}\n`;
         }
-        content += `${match.lineNumber}: ${match.line}\n`;
+        content += `${match.line_number}: ${match.line}\n`;
         if (match.context.after) {
-          content += `${match.lineNumber + 1}: ${match.context.after}\n`;
+          content += `${match.line_number + 1}: ${match.context.after}\n`;
         }
         content += '```\n\n';
       });
