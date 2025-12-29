@@ -12,7 +12,6 @@ import {
   Chip,
   Tooltip,
   TextField,
-  Autocomplete,
   useTheme,
   alpha,
   CircularProgress, // 加上加载指示器
@@ -23,6 +22,7 @@ import {
   Folder,
   InsertDriveFile,
   Search,
+  Clear,
 } from '@mui/icons-material';
 import { useSnackbar } from '../App';
 import { tauriAPI } from '../utils/tauriBridge'; // 使用新的 Bridge
@@ -33,14 +33,13 @@ const FileRow = memo(({ data, index, style }) => {
 
   const showSnackbar = useSnackbar();
 
-  const { files, fileStats, highlightedFile, onFileRemoved, truncatePath, getEncodingColor, formatFileSize, theme } = data;
+  const { files, fileStats, onFileRemoved, truncatePath, getEncodingColor, formatFileSize, theme } = data;
   const file = files[index];
 
   // 防御性编程：防止索引越界
   if (!file) return null;
 
   const stats = (fileStats && fileStats[file.path]) || {};
-  const isHighlighted = highlightedFile === file.path;
 
   // React-window 的 style 必须传给最外层容器，包含 position, top, height, width
   return (
@@ -55,11 +54,6 @@ const FileRow = memo(({ data, index, style }) => {
           '&:hover': {
             bgcolor: alpha(theme.palette.action.hover, 0.04),
           },
-          ...(isHighlighted && {
-            bgcolor: alpha(theme.palette.primary.main, 0.15),
-            borderLeft: `3px solid ${theme.palette.primary.main}`,
-            transition: 'all 0.3s ease',
-          }),
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
@@ -153,9 +147,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
   // 从而让 UI（输入框）保持响应，而列表过滤在后台进行。
   const deferredQuery = useDeferredValue(searchQuery);
 
-  const [highlightedFile, setHighlightedFile] = useState(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [isAutocompleteOpen, setIsAutocompleteOpen] = useState(false);
 
   const listRef = useRef(null);
   const searchInputRef = useRef(null);
@@ -215,38 +207,38 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
     return '...\\' + parts[parts.length - 2] + '\\' + parts[parts.length - 1];
   };
 
-const getEncodingColor = (encoding) => {
-  // 1. 预处理：确保是小写，并移除可能干扰精确匹配的常见后缀（如 ' with BOM'）
-  const cleanEncoding = encoding?.toLowerCase().replace(/ with bom/i, '');
-  
-  switch (cleanEncoding) {
-    // 通用/推荐编码 (Success)
-    case 'utf-8':
-    case 'utf8': // 兼容 utf8 (无连字符)
-    case 'ascii':
-      return 'success';
-      
-    // 区域/遗留编码 (Warning)
-    case 'gbk':
-    case 'gb2312':
-    case 'gb18030': // 增加对更现代的国标支持
-      return 'warning';
-      
-    // 特殊/复杂编码 (Info)
-    case 'utf-16':
-    case 'utf-16le':
-    case 'utf-16be':
-      return 'info';
-      
-    default:
-      // 如果后端能返回更广泛的编码，且想将它们都标记为 Warning (潜在乱码风险)
-      // 可以增加一个兜底的包含判断，例如将所有 'windows-' 或 'shift-jis' 归为 warning
-      if (cleanEncoding && (cleanEncoding.includes('windows-') || cleanEncoding.includes('shift-jis'))) {
+  const getEncodingColor = (encoding) => {
+    // 1. 预处理：确保是小写，并移除可能干扰精确匹配的常见后缀（如 ' with BOM'）
+    const cleanEncoding = encoding?.toLowerCase().replace(/ with bom/i, '');
+
+    switch (cleanEncoding) {
+      // 通用/推荐编码 (Success)
+      case 'utf-8':
+      case 'utf8': // 兼容 utf8 (无连字符)
+      case 'ascii':
+        return 'success';
+
+      // 区域/遗留编码 (Warning)
+      case 'gbk':
+      case 'gb2312':
+      case 'gb18030': // 增加对更现代的国标支持
+        return 'warning';
+
+      // 特殊/复杂编码 (Info)
+      case 'utf-16':
+      case 'utf-16le':
+      case 'utf-16be':
+        return 'info';
+
+      default:
+        // 如果后端能返回更广泛的编码，且想将它们都标记为 Warning (潜在乱码风险)
+        // 可以增加一个兜底的包含判断，例如将所有 'windows-' 或 'shift-jis' 归为 warning
+        if (cleanEncoding && (cleanEncoding.includes('windows-') || cleanEncoding.includes('shift-jis'))) {
           return 'warning';
-      }
-      return 'default';
-  }
-};
+        }
+        return 'default';
+    }
+  };
 
   // 过滤逻辑：使用 deferredQuery 而不是直接的 searchQuery
   const filteredFiles = useMemo(() => {
@@ -254,17 +246,6 @@ const getEncodingColor = (encoding) => {
     const lowerQuery = deferredQuery.toLowerCase();
     return files.filter(file => file.name.toLowerCase().includes(lowerQuery));
   }, [files, deferredQuery]);
-
-  // 虚拟列表定位
-  const scrollToFile = (filePath) => {
-    // 在过滤后的列表中查找索引
-    const index = filteredFiles.findIndex(f => f.path === filePath);
-    if (index !== -1 && listRef.current) {
-      listRef.current.scrollToItem(index, 'center');
-      setHighlightedFile(filePath);
-      setTimeout(() => setHighlightedFile(null), 3000);
-    }
-  };
 
   const totalSize = files.reduce((sum, file) => sum + (fileStats[file.path]?.size || 0), 0);
   const totalLines = files.reduce((sum, file) => sum + (fileStats[file.path]?.lines || 0), 0);
@@ -300,21 +281,21 @@ const getEncodingColor = (encoding) => {
 
         {files.length > 0 && (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {/* 第一行：统计信息 */}
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {/* 统计信息 */}
               <Chip size="small" label={`总大小: ${formatFileSize(totalSize)}`} />
               <Chip size="small" label={`总行数: ${totalLines.toLocaleString()}`} />
+
               {/* 未聚焦时显示的搜索框 */}
               {!isSearchFocused && (
                 <Chip
                   size="small"
                   icon={<Search sx={{ fontSize: 16 }} />}
-                  label={searchQuery || '搜索文件...'}
+                  label={searchQuery || '搜索文件'}
                   onClick={() => {
                     setIsSearchFocused(true);
-                    setIsAutocompleteOpen(true);
                     // 延迟聚焦，等待 UI 渲染
-                    setTimeout(() => searchInputRef.current?.focus(), 50);
+                    setTimeout(() => searchInputRef.current?.focus(), 150);
                   }}
                   variant="outlined"
                   sx={{
@@ -325,72 +306,48 @@ const getEncodingColor = (encoding) => {
                 />
               )}
             </Box>
+
             {/* 聚焦时显示的搜索框 */}
             {isSearchFocused && (
-              <Autocomplete
-                autoFocus
-                open={isAutocompleteOpen}
-                onOpen={() => setIsAutocompleteOpen(true)}
-                onClose={(event, reason) => {
-                  // 检查关闭原因。'escape' 或 'blur'（外部点击）通常是关闭的原因。
-                  // 如果我们想要保留过滤状态，可以只处理下拉列表的关闭。
-                  // 但是，为了防止点击输入框本身时关闭搜索模式，我们保持 Autocomplete 组件的聚焦状态（isSearchFocused=true）。
-                  
-                  // 只有在用户明确通过 ESC 或点击外部来退出时，才完全关闭搜索模式。
-                  // 对于一般的失去焦点（如点击输入框），我们只关闭下拉列表。
-                  if (reason === 'escape' || reason === 'blur') {
-                      // 仅当 reason 为 'blur' 或 'escape' 时，才将 isSearchFocused 设为 false，
-                      // 否则，保持它为 true，这样即使下拉框关闭了，搜索框本身还在。
-                      setIsAutocompleteOpen(false); // 关闭下拉列表
-                      setIsSearchFocused(false); // 完全退出搜索模式
-                  } else {
-                      // 对于其他原因（如选择选项或手动点击输入框），我们只关闭下拉列表
-                      setIsAutocompleteOpen(false);
-                  }
-                }}
+              <TextField
+                inputRef={searchInputRef}
+                placeholder="输入文件名..."
+                variant="outlined"
                 size="small"
-                // 关键优化：如果文件太多，Autocomplete 的下拉渲染会卡死
-                // 限制下拉显示的选项数量，或者干脆当文件 > 2000 时不显示下拉建议，只做过滤
-                options={filteredFiles.length > 2000 ? [] : filteredFiles}
-                getOptionLabel={(option) => option.name || option}
-                inputValue={searchQuery}
-                onInputChange={(e, value) => setSearchQuery(value)}
-                onChange={(e, value) => {
-                  if (value) scrollToFile(value.path);
+                fullWidth
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onBlur={() => {
+                    // 延迟设置状态，给其他点击事件（如清除按钮）一个处理时间
+                    setTimeout(() => {
+                        // 检查搜索框是否确实应该失焦
+                        // 可以在这里加一个 ref 判断，但为了简洁，只用 setTimeout
+                        setIsSearchFocused(false);
+                    }, 150); // 150ms 是一个常用且体验较好的值
                 }}
-                // 优化：自定义 Listbox，防止一次性渲染过多 DOM (MUI Autocomplete 默认也是虚拟化的，但数据量大时仍有开销)
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    inputRef={searchInputRef}
-                    placeholder="搜索文件..."
-                    variant="outlined"
-                    size="small"
-                    fullWidth
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                        <>
-                          <Search sx={{ color: 'text.secondary', mr: 1 }} />
-                          {params.InputProps.startAdornment}
-                        </>
-                      ),
-                      endAdornment: null,
-                    }}
-                  />
-                )}
-                renderOption={(props, option) => (
-                  <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {option.isFile ? (
-                      <InsertDriveFile sx={{ fontSize: 16, color: 'text.secondary' }} />
-                    ) : (
-                      <Folder sx={{ fontSize: 16, color: 'text.secondary' }} />
-                    )}
-                    <Typography variant="body2" noWrap>{option.name}</Typography>
-                  </Box>
-                )}
-                noOptionsText={filteredFiles.length > 0 ? "请输入更精确的关键词" : "没有匹配的文件"}
+                InputProps={{
+                  startAdornment: (
+                    <Search sx={{ color: 'text.secondary', mr: 1 }} />
+                  ),
+                  // 如果需要清除按钮，可以在这里添加一个 IconButton
+                  endAdornment: searchQuery && (
+                    <IconButton
+                      size="small"
+                      onClick={() => setSearchQuery('')}
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      <Clear fontSize="small" />
+                    </IconButton>
+                  )
+                }}
               />
+            )}
+
+            {/* 显示过滤结果数量，作为反馈 */}
+            {searchQuery && (
+              <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
+                已过滤出 {filteredFiles.length} 个文件
+              </Typography>
             )}
           </Box>
         )}
@@ -433,11 +390,10 @@ const getEncodingColor = (encoding) => {
                   height={height}
                   width={width}
                   itemCount={filteredFiles.length}
-                  itemSize={72} // ListItem 的高度，需要和 CSS 一致
+                  itemSize={84} // ListItem 的高度，需要和 CSS 一致
                   itemData={{
                     files: filteredFiles, // 传入过滤后的文件
                     fileStats,
-                    highlightedFile,
                     onFileRemoved,
                     truncatePath,
                     getEncodingColor,
