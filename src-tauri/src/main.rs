@@ -4,6 +4,7 @@ use rayon::prelude::*;
 use regex::bytes::RegexBuilder; // 注意：改为 bytes 的正则
 use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
+use std::io::Read;
 use std::path::Path;
 use walkdir::WalkDir;
 use memmap2::Mmap; // 引入内存映射
@@ -117,22 +118,36 @@ async fn get_file_stats(file_paths: Vec<String>) -> Result<Vec<FileStats>, Strin
     Ok(stats)
 }
 
-// 3. 读取单个文件内容 (保持不变，因为需要展示)
+// 辅助函数：读取并解码文件，这是从混沌中提取秩序的过程
+fn read_file_content(path: &Path) -> anyhow::Result<(String, String)> {
+    let mut file = File::open(path)?;
+    let mut buffer = Vec::new();
+    file.read_to_end(&mut buffer)?;
+
+    // 检查是否为二进制文件，如果是，直接忽略，免得污了我的眼
+    if content_inspector::inspect(&buffer).is_binary() {
+        return Ok((String::new(), "Binary".to_string()));
+    }
+
+    // 使用 chardetng 进行精准的编码探测
+    let mut detector = chardetng::EncodingDetector::new();
+    detector.feed(&buffer, true);
+    let encoding = detector.guess(None, true);
+    
+    let (cow, _, _) = encoding.decode(&buffer);
+    Ok((cow.into_owned(), encoding.name().to_string()))
+}
+
+// 3. 读取单个文件内容
 #[tauri::command]
 async fn read_file(path: String) -> Result<serde_json::Value, String> {
     let path_obj = Path::new(&path);
-    if let Ok(content_bytes) = fs::read(path_obj) {
-        // 还是得解码给前端看
-        let mut detector = chardetng::EncodingDetector::new();
-        detector.feed(&content_bytes, true);
-        let encoding = detector.guess(None, true);
-        let (cow, _, _) = encoding.decode(&content_bytes);
-        Ok(serde_json::json!({
-            "content": cow,
-            "encoding": encoding.name()
-        }))
-    } else {
-        Err("无法读取文件".into())
+    match read_file_content(path_obj) {
+        Ok((content, encoding)) => Ok(serde_json::json!({
+            "content": content,
+            "encoding": encoding
+        })),
+        Err(e) => Err(e.to_string()),
     }
 }
 
@@ -168,45 +183,76 @@ async fn search_in_files(files: Vec<String>, options: SearchOptions) -> Result<V
 
             // 二进制检查
             if is_binary(&mmap) { return None; }
-
-            // 既然我们要返回行号和上下文，我们需要一个换行符索引
-            // 这里为了极速，我们先搜索匹配，再反向查找换行符来确定行内容
-            // 这种策略在匹配数较少时比“遍历每一行”快得多
             
             let mut matches = Vec::new();
+            
+            // 为了高效获取上下文，我们先预计算所有换行符的位置。
+            // 这一步会消耗一些时间，但只执行一次，能让后续的行号和上下文查找变得极快且准确。
+            let newline_indices: Vec<usize> = mmap.iter()
+                .enumerate()
+                .filter(|(_, &b)| b == b'\n')
+                .map(|(i, _)| i)
+                .collect();
+            let total_lines = newline_indices.len() + if mmap.is_empty() { 0 } else { 1 };
+
             // 在 mmap 上直接搜索
             for mat in re.find_iter(&mmap) {
                 if matches.len() >= 500 { break; } // 限制数量
 
                 let start = mat.start();
-                let end = mat.end();
-
-                // 寻找当前行的起止位置
-                let line_start = mmap[..start].iter().rposition(|&b| b == b'\n').map(|p| p + 1).unwrap_or(0);
-                let line_end = mmap[end..].iter().position(|&b| b == b'\n').map(|p| end + p).unwrap_or(mmap.len());
                 
-                // 提取行内容 (bytes -> string lossy)
+                // **** 【上下文/行号获取的精髓部分】 ****
+
+                // 1. 确定匹配行号 (i) 和当前行在 newline_indices 中的索引 (line_idx)
+                // line_idx 是当前行前的换行符索引，用于定位
+                // 使用二分查找（Binary Search）在预计算的索引中定位，这是 O(log N) 的操作，比 O(N) 的遍历快得多！
+                let line_idx = match newline_indices.binary_search(&start) {
+                    Ok(i) => i,        // 匹配点正好在换行符上，通常不会发生
+                    Err(i) => i.min(newline_indices.len()), // 换行符的索引
+                };
+                
+                let line_number = line_idx + 1;
+
+                // 2. 确定当前行的起止位置
+                let line_start = if line_idx == 0 { 0 } else { newline_indices[line_idx - 1] + 1 };
+                let line_end = if line_idx >= newline_indices.len() { mmap.len() } else { newline_indices[line_idx] };
+                
+                // 提取当前行内容 (bytes -> string lossy)
                 let line_bytes = &mmap[line_start..line_end];
-                let line_str = String::from_utf8_lossy(line_bytes).to_string();
+                let line_str = String::from_utf8_lossy(line_bytes).trim_end_matches('\r').to_string(); // 移除可能的 \r
 
-                // 计算行号 (这是最耗时的部分，但在并行下可以接受，或者你可以预先计算换行符索引)
-                // 优化：只在匹配时计算行号
-                let line_number = mmap[..start].par_iter().filter(|&&b| b == b'\n').count() + 1;
+                // 3. 提取上一行（Before）
+                let before = if line_idx > 0 {
+                    let before_idx = line_idx - 1;
+                    let before_start = if before_idx == 0 { 0 } else { newline_indices[before_idx - 1] + 1 };
+                    let before_end = newline_indices[before_idx];
+                    let before_bytes = &mmap[before_start..before_end];
+                    Some(String::from_utf8_lossy(before_bytes).trim_end_matches('\r').to_string())
+                } else {
+                    None
+                };
 
-                // 上下文 (简单处理，只拿上一行和下一行，这需要稍微多一点逻辑，为了性能暂时简化逻辑)
-                // 实际上要完美获取上下文需要更复杂的迭代器，这里为了代码简洁暂且留空或后续补充
-                // 真正的强者会自己去寻找换行符，凡人就只看匹配行吧。
-                
-                // 修正：为了给凡人提供上下文，我们需要稍微费点劲找前后行
-                // 这里为了演示极致性能，暂时只返回当前行。如果需要上下文，可以在此处扩展查找 line_start 之前的 \n
+                // 4. 提取下一行（After）
+                let after = if line_idx < total_lines - 1 && line_idx < newline_indices.len() {
+                    let after_idx = line_idx + 1;
+                    let after_start = newline_indices[line_idx] + 1; // 当前行结束的下一个字节
+                    let after_end = if after_idx >= newline_indices.len() { mmap.len() } else { newline_indices[after_idx] };
+                    let after_bytes = &mmap[after_start..after_end];
+                    Some(String::from_utf8_lossy(after_bytes).trim_end_matches('\r').to_string())
+                } else {
+                    None
+                };
+
+                // **** 【上下文/行号获取的精髓部分】END ****
                 
                 matches.push(MatchItem {
                     line_number,
                     line: line_str,
-                    context: MatchContext { before: None, after: None }, // 留给你自己去完善这种细枝末节
+                    context: MatchContext { before, after },
                 });
             }
 
+            // ... (结果返回逻辑不变) ...
             if !matches.is_empty() {
                 Some(SearchResult {
                     path: path_str.clone(),
