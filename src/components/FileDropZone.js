@@ -48,46 +48,44 @@ const FileDropZone = ({ onFilesAdded }) => {
     setIsDragOver(false);
   }, []);
 
-  // 监听 Tauri 的全局拖拽事件（需要在 tauri.conf.json 中配置 windows.fileDropEnabled: true）
+  // 监听 Tauri 的全局拖拽事件
   useEffect(() => {
     const unlisten = listen('tauri://file-drop', async (event) => {
       setIsDragOver(false);
-      const paths = event.payload; // 这是一个路径数组
+      const paths = event.payload;
       if (!paths || paths.length === 0) return;
 
-      // 这里需要判断路径是文件还是文件夹，我们可以调用 Rust 来扫描
-      // 简单起见，我们假设用户可能拖入混合内容
-      // 策略：让 Rust 统一处理，传入路径列表，Rust 负责递归扫描文件夹并返回所有有效文件
-      // 由于没有直接的 "scanMixedPaths" 接口，我们在 JS 侧简单处理一下
+      let finalFiles = [];
 
-      let allFiles = [];
-      // 这里简化处理：因为无法直接在前端判断路径是文件还是文件夹（除非调用 Rust fs.metadata）
-      // 建议：直接将路径传给 onFilesAdded，让 MainLayout 或 FileList 统一去获取 Stats 和过滤
-      // 但为了保持接口一致，我们这里做一个简单的推断：
+      // 直接把这堆路径扔给 Rust，让 Rust 去判断是文件还是文件夹并递归
+      // 你需要在 Rust 端稍微修改 scan_directory 让他接受 Vec<String> 或者前端循环调
+      // 这里为了最快改动，我们假设前端简单判断
 
       for (const path of paths) {
-        const name = path.split(/[\\/]/).pop();
-        // 如果有后缀且在支持列表里，大概率是文件
-        if (validateFileFormat(name)) {
-          allFiles.push({ name, path, isFile: true });
-        } else {
-          // 假设是文件夹，尝试扫描
-          try {
-            const scanned = await tauriAPI.scanDirectory(path);
-            scanned.forEach(subPath => {
-              const subName = subPath.split(/[\\/]/).pop();
-              if (validateFileFormat(subName)) {
-                allFiles.push({ name: subName, path: subPath, isFile: true });
-              }
-            });
-          } catch (e) {
-            // 忽略扫描错误（可能它就是个不支持的文件）
-          }
+        // 让 Rust 来决定它是文件还是文件夹并返回所有子文件
+        // 这一步是关键：不要在 JS 里做 fs 操作
+        // 即使是单个文件，也可以传给 scan_directory (Rust端改为处理单个文件的情况即可)
+        // 或者你调用 Rust 的 fs.metadata (如果有暴露)
+
+        // 既然你之前已经写了 scanDirectory 接口，那就利用它：
+        // 哪怕它是个文件，传给 walkdir 也是能工作的（通常）
+        try {
+          const scanned = await tauriAPI.scanDirectory(path);
+          // 这里过滤后缀名最好也在 Rust 做，但 JS 做也行，因为量级变小了
+          scanned.forEach(subPath => {
+            const subName = subPath.split(/[\\/]/).pop();
+            if (validateFileFormat(subName)) {
+              finalFiles.push({ name: subName, path: subPath, isFile: true });
+            }
+          });
+        } catch (e) {
+          console.error(e);
         }
       }
 
-      if (allFiles.length > 0) {
-        onFilesAdded(allFiles);
+      if (finalFiles.length > 0) {
+        onFilesAdded(finalFiles); // 这次添加的是没有 stats 的
+        // FileList 组件会负责去获取 stats，所以这里不需要管
       }
     });
 

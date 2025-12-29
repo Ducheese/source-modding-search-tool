@@ -37,6 +37,8 @@ Thumbs.db
 
 # 自定义
 assets/
+test/stress_test_data/
+test/huge_stress_test_data/
 package-lock.json
 src-tauri/target/
 src-tauri/Cargo.lock

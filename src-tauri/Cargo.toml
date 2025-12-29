@@ -26,6 +26,8 @@ walkdir = "2.4"
 anyhow = "1.0"
 # 忽略二进制文件
 content_inspector = "0.2"
+# 内存映射
+memmap2 = "0.7"
 
 [features]
 # 默认开启自定义协议
