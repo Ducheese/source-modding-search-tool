@@ -3,7 +3,7 @@
 use rayon::prelude::*;
 use regex::bytes::RegexBuilder; // 注意：改为 bytes 的正则
 use serde::{Deserialize, Serialize};
-use std::fs::{self, File};
+use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use walkdir::WalkDir;
@@ -103,7 +103,7 @@ async fn get_file_stats(file_paths: Vec<String>) -> Result<Vec<FileStats>, Strin
                 let lines = mmap.par_iter().filter(|&&b| b == b'\n').count() + 1;
 
                 // 探测编码（只取头部一部分，不要全量探测）
-                let head_len = mmap.len().min(4096);
+                let head_len = mmap.len().min(8192); // 8KB
                 let mut detector = chardetng::EncodingDetector::new();
                 detector.feed(&mmap[..head_len], true);
                 let encoding = detector.guess(None, true).name().to_string();
