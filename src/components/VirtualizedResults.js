@@ -1,390 +1,264 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
-import {
-  Box,
-  Typography,
-  Accordion,
-  AccordionSummary,
-  Chip,
-  IconButton,
-  useTheme,
-  alpha,
-} from '@mui/material';
-import {
-  ExpandMore,
-  ContentCopy,
-  Launch,
-} from '@mui/icons-material';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
+import { Box, Typography, IconButton, Chip, useTheme, alpha } from '@mui/material';
+import { ExpandMore, ExpandLess, ContentCopy, Launch } from '@mui/icons-material';
+import { VariableSizeList as List } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import { useSnackbar } from '../App';
-import { tauriAPI } from '../utils/tauriBridge'; // 引入 Tauri API
+import { tauriAPI } from '../utils/tauriBridge';
+import ResultLine from './ResultLine';   // 引入原子组件
 
-// 虚拟化列表组件
+// 注入跑马灯动画样式
+// 技巧：移动 -50% 距离，前提是内容也是双倍的
+const marqueeStyles = `
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-container:hover .marquee-content {
+  animation: marquee 10s linear infinite;
+}
+`;
+
 const VirtualizedResults = ({ results }) => {
-  const showSnackbar = useSnackbar();
   const theme = useTheme();
-  const containerRef = useRef(null);
-  const [scrollTop, setScrollTop] = useState(0);
-  const [containerHeight, setContainerHeight] = useState(400);
-  const [expandedPanels, setExpandedPanels] = useState(new Set());
+  const showSnackbar = useSnackbar();
+  const listRef = useRef(null);
 
-  // 每个结果项的预估高度
-  const ITEM_HEIGHT = 140; // 预估每个匹配项的高度
-  const HEADER_HEIGHT = 80; // 文件头的高度
+  // 常量定义
+  const HEADER_HEIGHT = 48;   // 文件头的高度，稍微调小一点，更精致
+  const ROW_HEIGHT = 32;   // 和 ResultLine 里的保持一致
+  const SEPARATOR_HEIGHT = 16;   // 分隔区域的高度
 
-  // 计算可视区域内的项目
-  const visibleItems = useMemo(() => {
-    if (!results || !results.files) return { items: [], totalHeight: 0, startIndex: 0 };
+  // 折叠展开状态
+  const [expandedFiles, setExpandedFiles] = useState(new Set());
 
-    const items = [];
-    let currentOffset = 0;
+  // --- 关键修复：当数据变化时，强制重置列表缓存 ---
+  // 没有这段就会出现 "渲染错位"
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(0);
+    }
+  }, [results, expandedFiles]);   // 监听 expandedFiles 变化也很重要
 
-    results.files.forEach((file) => {
-      // 文件头
-      const fileHeaderItem = {
-        type: 'header',
-        file,
-        offset: currentOffset,
-        height: HEADER_HEIGHT,
-      };
-      items.push(fileHeaderItem);
-      currentOffset += HEADER_HEIGHT;
+  // 初始化时默认展开所有文件（或者你可以改成默认折叠）
+  useEffect(() => {
+    if (results && results.files) {
+      // const allPaths = new Set(results.files.map(f => f.path));
+      // setExpandedFiles(allPaths);
+      setExpandedFiles(new Set());   // 默认折叠
+    }
+  }, [results]);
 
-      // 文件匹配项
-      if (expandedPanels.has(file.path)) {
-        file.matches.forEach((match) => {
-          const matchItem = {
-            type: 'match',
-            file,
-            match,
-            offset: currentOffset,
-            height: ITEM_HEIGHT,
-          };
-          items.push(matchItem);
-          currentOffset += ITEM_HEIGHT;
+  const toggleFile = (path) => {
+    setExpandedFiles(prev => {
+      const next = new Set(prev);
+      if (next.has(path)) next.delete(path);
+      else next.add(path);
+      return next;
+    });
+
+    // 这里重复写，是为了能更快的响应
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(0);
+    }
+  };
+
+  // --- 数据展平 (Flattening) ---
+  // 将层级结构 (Files -> Matches) 展平成一维数组 (Rows) 以供 React-window 使用
+  const flatRows = useMemo(() => {
+    const rows = [];
+    if (!results || !results.files) return rows;
+
+    results.files.forEach((file, index) => {
+
+      // 2. 文件头
+      rows.push({ type: 'header', file, isExpanded: expandedFiles.has(file.path), isLast: index === results.files.length - 1 });
+
+      // 3. 匹配内容
+      if (expandedFiles.has(file.path)) {
+        file.matches.forEach(match => {
+          // 上下文 (Before)
+          if (match.context.before !== null) {
+            rows.push({ type: 'context', content: match.context.before, lineNumber: match.line_number - 1 });
+          }
+
+          // 匹配本身 (Match)
+          rows.push({ type: 'match', content: match.segments, lineNumber: match.line_number });
+
+          // 上下文 (After)
+          if (match.context.after !== null) {
+            rows.push({ type: 'context', content: match.context.after, lineNumber: match.line_number + 1 });
+          }
+
+          // ⭐️ 注入分隔区域 (Separator) ，姑且是每组都加
+          rows.push({ type: 'separator' });
         });
       }
     });
+    return rows;
+  }, [results, expandedFiles]);
 
-    // [修正重点]：使用最小高度来计算索引，确保覆盖范围足够大
-    const MIN_HEIGHT = Math.min(ITEM_HEIGHT, HEADER_HEIGHT);
-
-    // [修正重点]：增加缓冲区 (从 2 改为 5 或更大)
-    const OVERSCAN_COUNT = 5;
-
-    const startIndex = Math.max(0, Math.floor(scrollTop / MIN_HEIGHT) - OVERSCAN_COUNT);
-
-    const endIndex = Math.min(
-      items.length - 1,
-      Math.ceil((scrollTop + containerHeight) / MIN_HEIGHT) + OVERSCAN_COUNT
-    );
-
-    return {
-      items: items.slice(startIndex, endIndex + 1),
-      totalHeight: currentOffset,
-      startIndex,
-      endIndex,
-    };
-  }, [results, expandedPanels, scrollTop, containerHeight]);
-
-  const handleScroll = (e) => {
-    setScrollTop(e.target.scrollTop);
+  // --- 根据type决定行高 ---
+  const getItemSize = (index) => {
+    const row = flatRows[index];
+    if (row.type === 'header') return HEADER_HEIGHT;
+    if (row.type === 'separator') return SEPARATOR_HEIGHT;   // 返回分隔线高度
+    return ROW_HEIGHT;
   };
 
-  const handlePanelChange = (panelPath) => (event, isExpanded) => {
-    setExpandedPanels(prev => {
-      const newSet = new Set(prev);
-      if (isExpanded) {
-        newSet.add(panelPath);
-      } else {
-        newSet.delete(panelPath);
-      }
-      return newSet;
-    });
-  };
-
-  const copyFilePath = (path) => {
-    navigator.clipboard.writeText(path);
-    showSnackbar('已复制文件路径', 'success');
-  };
-
+  // 复制文件内容
   const copyFileContent = async (path) => {
     try {
       // 修改：使用 tauriAPI
       const { content } = await tauriAPI.readFile(path);
       navigator.clipboard.writeText(content);
-      showSnackbar('已复制文件内容', 'success');
+      showSnackbar('文件内容已复制', 'success');
     } catch (error) {
       console.error('Failed to copy file content:', error);
-      showSnackbar('复制文件内容失败', 'error');
+      showSnackbar('文件内容复制失败', 'error');
     }
   };
 
-  const copyLineContent = (line) => {
-    // 剔除换行符和其他空白字符
-    const cleanLine = line.replace(/[\r\n]+/g, '').trim();
-    navigator.clipboard.writeText(cleanLine);
-    showSnackbar('已复制行内容', 'success');
-  };
+  // --- 行渲染器 ---
+  const Row = ({ index, style }) => {
+    const row = flatRows[index];
 
-  const openFileExternally = (path) => {
-    // 修改：使用 tauriAPI
-    tauriAPI.openFileExternally(path);
-  };
+    // 1. 分隔区域渲染
+    if (row.type === 'separator') {
+      // 获取下一行数据（注意边界检查）
+      const nextRow = flatRows[index + 1];
+      // 判断下一行是否存在且是否为 header
+      const isNextHeader = nextRow && nextRow.type === 'header';
 
-  const highlightMatch = (text, query, options) => {
-    if (!query) return text;
-
-    try {
-      let searchRegex;
-      if (options.useRegex) {
-        searchRegex = new RegExp(query, options.caseSensitive ? 'g' : 'gi');
-      } else {
-        const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const pattern = options.wholeWord ? `\\b${escapedQuery}\\b` : escapedQuery;
-        searchRegex = new RegExp(pattern, options.caseSensitive ? 'g' : 'gi');
-      }
-
-      const parts = [];
-      let lastIndex = 0;
-      let match;
-
-      while ((match = searchRegex.exec(text)) !== null) {
-        parts.push(text.slice(lastIndex, match.index));
-        parts.push(
-          <span
-            key={match.index}
-            style={{
-              backgroundColor: alpha(theme.palette.primary.main, 0.3),
-              color: theme.palette.mode === 'dark'
-                ? '#BB86FC'        // 暗色模式
-                : '#6200EE',       // 浅色模式
-              fontWeight: 'bold',
-              padding: '2px 4px',
-              borderRadius: '3px',
-            }}
-          >
-            {match[0]}
-          </span>
-        );
-        lastIndex = searchRegex.lastIndex;
-      }
-
-      parts.push(text.slice(lastIndex));
-      return parts;
-    } catch (error) {
-      return text;
+      return (
+        <Box
+          style={style}
+          sx={{
+            // 这里可以加一条虚线，或者只是留白
+            borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+            borderBottom: isNextHeader ? 'none' : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+            width: '100%',
+            height: '100%',
+          }}
+        />
+      );
     }
-  };
 
-  useEffect(() => {
-    if (!containerRef.current) return;
+    // 2. 文件头渲染
+    if (row.type === 'header') {
+      const { file, isExpanded, isLast } = row;
+      return (
+        <Box
+          style={style}
+          sx={{
+            px: 2,
+            display: 'flex',
+            alignItems: 'center',
+            boxSizing: 'border-box',
+            borderTop: `1px solid ${theme.palette.divider}`,   // 顶部边框常驻
+            borderBottom: isExpanded || isLast ? `1px solid ${theme.palette.divider}` : 'none',   // 底部边框条件渲染
+          }}
+        >
+          <IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleFile(file.path); }} sx={{ mr: 1 }}>
+            {isExpanded ? <ExpandLess /> : <ExpandMore />}
+          </IconButton>
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        // 直接获取容器的内容高度
-        setContainerHeight(entry.contentRect.height);
-      }
-    });
+          <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, overflow: 'hidden', mr: 2 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+              {file.name}
+            </Typography>
 
-    resizeObserver.observe(containerRef.current);
+            {/* ⭐️ 无缝跑马灯容器 */}
+            <Box
+              className="marquee-container"
+              sx={{
+                ml: 1,
+                flex: 1,
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                maskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',   // 稍微加个渐变遮罩
+                cursor: 'pointer',
+                opacity: 0.7,
+                '&:hover': { opacity: 1 },
+              }}
+              title="复制路径"
+              onClick={() => { navigator.clipboard.writeText(file.path); showSnackbar('文件路径已复制', 'success'); }}
+            >
+              {/* ⭐️ 跑马灯 Wrapper：包含两份内容，宽度 fit-content */}
+              <Box
+                className="marquee-content"
+                sx={{
+                  display: 'flex',
+                  width: 'fit-content'   // 关键：让宽度适应内容
+                }}
+              >
+                {/* 第一份内容 */}
+                <Typography variant="caption" color="text.secondary" sx={{ pr: 32 /* 间距 */ }}>
+                  {file.path}
+                </Typography>
+                {/* 第二份内容 (克隆体) */}
+                <Typography variant="caption" color="text.secondary" sx={{ pr: 32 /* 间距必须一致 */ }}>
+                  {file.path}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
 
-    return () => {
-      resizeObserver.disconnect();
+          <Chip size="small" label={`${file.matches.length}`} color="primary" sx={{ height: 20, mr: 2, userSelect: 'none' }} />
+
+          {/* 工具栏 */}
+          <IconButton size="small" title="复制完整内容" onClick={() => copyFileContent(file.path)}>
+            <ContentCopy fontSize="small" />
+          </IconButton>
+          <IconButton size="small" title="用默认应用打开" onClick={() => tauriAPI.openFileExternally(file.path)}>
+            <Launch fontSize="small" />
+          </IconButton>
+        </Box>
+      );
+    }
+
+    // 3. 代码行渲染 (Match or Context)
+    const isMatch = row.type === 'match';
+
+    // 辅助函数：将片段或字符串转为纯文本以供复制
+    const getRawText = () => {
+      if (typeof row.content === 'string') return row.content;
+      if (Array.isArray(row.content)) return row.content.map(s => s.text).join('');
+      return '';
     };
-  }, []);
 
-  if (!results || !results.files || results.files.length === 0) {
-    return null;
-  }
-
-  const { items, totalHeight, startIndex } = visibleItems;
+    return (
+      <div style={style}>
+        <ResultLine
+          lineNumber={row.lineNumber}
+          content={row.content}
+          isMatch={isMatch}
+          onCopy={() => {
+            navigator.clipboard.writeText(getRawText());
+            showSnackbar('行内容已复制', 'success');
+          }}
+        />
+      </div>
+    );
+  };
 
   return (
-    <Box
-      ref={containerRef}
-      sx={{
-        height: '100%',
-        overflow: 'auto',
-        position: 'relative',
-      }}
-      onScroll={handleScroll}
-    >
-      {/* 虚拟化容器 */}
-      <Box sx={{ height: totalHeight, position: 'relative' }}>
-        {items.map((item, index) => {
-
-          if (item.type === 'header') {
-            return (
-              <Box
-                key={`header-${item.file.path}`}
-                sx={{
-                  position: 'absolute',
-                  top: item.offset,
-                  left: 0,
-                  right: 0,
-                  height: item.height,
-                  // bgcolor: alpha(theme.palette.primary.main, 0.05),
-                  borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                }}
-              >
-                <Accordion
-                  expanded={expandedPanels.has(item.file.path)}
-                  onChange={handlePanelChange(item.file.path)}
-                  disableGutters // [修复1] 禁用展开时的外边距
-                  sx={{ boxShadow: 'none', height: '100%' }}
-                >
-                  <AccordionSummary
-                    expandIcon={<ExpandMore />}
-                    sx={{
-                      minHeight: HEADER_HEIGHT, // [修复2] 设定固定最小高度
-                      padding: '0 16px',       // 显式设定 padding
-                      '&.Mui-expanded': {
-                        minHeight: HEADER_HEIGHT, // [修复3] 展开时保持高度不变
-                      },
-                      '& .MuiAccordionSummary-content': {
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        // height: HEADER_HEIGHT - 16, // 减去padding
-                        height: '100%', // 让内容填满高度
-                        margin: 0, // [修复4] 移除默认 margin
-                        '&.Mui-expanded': {
-                          margin: 0, // [修复5] 展开时也不要增加 margin
-                        },
-                      },
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="subtitle2" fontWeight="bold">
-                        {item.file.name}
-                      </Typography>
-                      <Chip size="small" label={`${item.file.matches.length} 匹配`} color="primary" />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', gap: 0.5 }}>
-                      <IconButton
-                        size="small"
-                        // ⭐️ 传入 event 对象并调用 e.stopPropagation()
-                        onClick={(e) => {
-                          e.stopPropagation(); // 阻止事件冒泡到 AccordionSummary
-                          copyFilePath(item.file.path);
-                        }}
-                        title="复制路径"
-                      >
-                        <ContentCopy fontSize="small" />
-                      </IconButton>
-
-                      <IconButton
-                        size="small"
-                        // ⭐️ 传入 event 对象并调用 e.stopPropagation()
-                        onClick={(e) => {
-                          e.stopPropagation(); // 阻止事件冒泡到 AccordionSummary
-                          copyFileContent(item.file.path);
-                        }}
-                        title="复制文件内容"
-                      >
-                        <ContentCopy fontSize="small" />
-                      </IconButton>
-
-                      <IconButton
-                        size="small"
-                        // ⭐️ 传入 event 对象并调用 e.stopPropagation()
-                        onClick={(e) => {
-                          e.stopPropagation(); // 阻止事件冒泡到 AccordionSummary
-                          openFileExternally(item.file.path);
-                        }}
-                        title="用默认程序打开"
-                      >
-                        <Launch fontSize="small" />
-                      </IconButton>
-                    </Box>
-
-                  </AccordionSummary>
-                </Accordion>
-              </Box>
-            );
-          }
-
-          if (item.type === 'match') {
-            // 注意：这里使用了 Rust 返回的 snake_case 字段 line_number
-            const lineNum = item.match.line_number;
-            return (
-              <Box
-                key={`match-${item.file.path}-${lineNum}`}
-                sx={{
-                  position: 'absolute',
-                  top: item.offset,
-                  left: 0,
-                  right: 0,
-                  height: item.height,
-                  // bgcolor: alpha(theme.palette.primary.main, 0.05),
-                  borderBottom: `1px solid ${alpha(theme.palette.divider, 0.05)}`,
-                  p: 2,
-                }}
-              >
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="body2" color="primary" fontWeight="bold">
-                    行 {lineNum}
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => copyLineContent(item.match.line)}
-                    title="复制这一行"
-                  >
-                    <ContentCopy fontSize="small" />
-                  </IconButton>
-                </Box>
-
-                <Box sx={{
-                  fontFamily: 'monospace', fontSize: '0.875rem', overflowX: 'auto', whiteSpace: 'pre',
-                  '&::-webkit-scrollbar': {
-                    height: '3px', // 水平滚动条的高度
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    backgroundColor:
-                      theme.palette.mode === 'dark'   // 滚动条滑块的颜色
-                        ? 'rgba(255, 255, 255, 0.2)'  // 暗色模式
-                        : 'rgba(0, 0, 0, 0.2)',       // 浅色模式
-                    borderRadius: '10px', // 滑块圆角
-                  },
-                  '&::-webkit-scrollbar-thumb:hover': {
-                    backgroundColor:
-                      theme.palette.mode === 'dark'   // 鼠标悬停时颜色加深
-                        ? 'rgba(255, 255, 255, 0.3)'  // 暗色模式
-                        : 'rgba(0, 0, 0, 0.3)',       // 浅色模式
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    backgroundColor: 'transparent', // 滚动条轨道的颜色（通常设为透明）
-                  },
-                }}>
-                  {item.match.context.before && (
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ opacity: 0.7 }}
-                    >
-                      {String(lineNum - 1).padStart(5, '\u2007')}  {item.match.context.before}
-                    </Typography>
-                  )}
-                  <Typography variant="body2">
-                    {String(lineNum).padStart(5, '\u2007')}  {highlightMatch(item.match.line, results.query, results.options)}
-                  </Typography>
-                  {item.match.context.after && (
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ opacity: 0.7 }}
-                    >
-                      {String(lineNum + 1).padStart(5, '\u2007')}  {item.match.context.after}
-                    </Typography>
-                  )}
-                </Box>
-              </Box>
-            );
-          }
-
-          return null;
-        })}
-      </Box>
+    <Box sx={{ flex: 1, height: '100%' }}>
+      <style>{marqueeStyles}</style>
+      <AutoSizer>
+        {({ height, width }) => (
+          <List
+            ref={listRef}
+            height={height}
+            width={width}
+            itemCount={flatRows.length}
+            itemSize={getItemSize}
+            overscanCount={20} // 多渲染一点防止白屏
+          >
+            {Row}
+          </List>
+        )}
+      </AutoSizer>
     </Box>
   );
 };
