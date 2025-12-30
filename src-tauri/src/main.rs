@@ -30,7 +30,7 @@ struct SearchResult {
 #[derive(Serialize, Clone)]
 struct MatchItem {
     line_number: usize,
-    line: String, // 这里必须转成 String 发给前端
+    segments: Vec<Segment>, // 核心变动：不再只是 line: String，而是直接切好的片段
     context: MatchContext,
 }
 
@@ -38,6 +38,13 @@ struct MatchItem {
 struct MatchContext {
     before: Option<String>,
     after: Option<String>,
+}
+
+// 新增片段结构体
+#[derive(Serialize, Clone)]
+struct Segment {
+    text: String,
+    is_match: bool,
 }
 
 #[derive(Deserialize)]
@@ -184,7 +191,7 @@ async fn search_in_files(files: Vec<String>, options: SearchOptions) -> Result<V
             // 二进制检查
             if is_binary(&mmap) { return None; }
             
-            let mut matches = Vec::new();
+            let mut matches: Vec<MatchItem> = Vec::new();
             
             // 为了高效获取上下文，我们先预计算所有换行符的位置。
             // 这一步会消耗一些时间，但只执行一次，能让后续的行号和上下文查找变得极快且准确。
@@ -200,7 +207,7 @@ async fn search_in_files(files: Vec<String>, options: SearchOptions) -> Result<V
                 if matches.len() >= 500 { break; } // 限制数量
 
                 let start = mat.start();
-                
+
                 // **** 【上下文/行号获取的精髓部分】 ****
 
                 // 1. 确定匹配行号 (i) 和当前行在 newline_indices 中的索引 (line_idx)
@@ -217,9 +224,49 @@ async fn search_in_files(files: Vec<String>, options: SearchOptions) -> Result<V
                 let line_start = if line_idx == 0 { 0 } else { newline_indices[line_idx - 1] + 1 };
                 let line_end = if line_idx >= newline_indices.len() { mmap.len() } else { newline_indices[line_idx] };
                 
-                // 提取当前行内容 (bytes -> string lossy)
+                // 3. 避免重复添加同一行的多个匹配
+                // 检查 matches 中最后一个元素的行号，如果相同，说明这一行已经被添加过了（包含了所有高亮），直接跳过
+                if let Some(last) = matches.last() {
+                    if last.line_number == line_number {
+                        continue;
+                    }
+                }
+
+                // 4. 生成高亮片段 (Segments) - 这就是你要的“后端处理正则切分”
+                // 我们需要对 *这一行* 再次运行正则，找出 *所有* 匹配项，然后切分
                 let line_bytes = &mmap[line_start..line_end];
-                let line_str = String::from_utf8_lossy(line_bytes).trim_end_matches('\r').to_string(); // 移除可能的 \r
+                let mut segments = Vec::new();
+                let mut last_idx = 0;
+
+                // 注意：re.find_iter 是基于整个 mmap 的。
+                // 为了只处理当前行，我们可以截取 line_bytes 并对其运行正则？
+                // 不，这样性能不好。我们已经有了 pattern，直接在 line_bytes 上跑一个新的 find_iter 即可。
+                // 这里的开销极小，因为 line_bytes 通常很短。
+                
+                for m in re.find_iter(line_bytes) {
+                    let m_start = m.start();
+                    let m_end = m.end();
+
+                    // 添加匹配前的普通文本
+                    if m_start > last_idx {
+                        let text = String::from_utf8_lossy(&line_bytes[last_idx..m_start]).to_string();
+                        segments.push(Segment { text, is_match: false });
+                    }
+                    
+                    // 添加匹配文本
+                    let text = String::from_utf8_lossy(&line_bytes[m_start..m_end]).to_string();
+                    segments.push(Segment { text, is_match: true });
+
+                    last_idx = m_end;
+                }
+
+                // 添加剩余文本
+                if last_idx < line_bytes.len() {
+                    let mut text = String::from_utf8_lossy(&line_bytes[last_idx..]).to_string();
+                    // 移除末尾可能的 \r
+                    if text.ends_with('\r') { text.pop(); }
+                    segments.push(Segment { text, is_match: false });
+                }
 
                 // 3. 提取上一行（Before）
                 let before = if line_idx > 0 {
@@ -247,7 +294,7 @@ async fn search_in_files(files: Vec<String>, options: SearchOptions) -> Result<V
                 
                 matches.push(MatchItem {
                     line_number,
-                    line: line_str,
+                    segments, // 这里直接给前端片段
                     context: MatchContext { before, after },
                 });
             }
