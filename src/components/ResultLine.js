@@ -24,7 +24,7 @@ const ResultLine = memo(({
         height: ROW_HEIGHT,   // 强制固定高度，防止被横向滚动条撑开
         width: '100%',
         boxSizing: 'border-box',   // 内边距和边框不再增加元素的总尺寸。 它们会被“挤入”你设定的 width 和 height 内部。
-        bgcolor: isMatch ? alpha(theme.palette.primary.main, 0.08) : 'transparent',
+        bgcolor: isMatch ? alpha(theme.palette.text.secondary, 0.05) : 'transparent',
         '&:hover .action-btn': { opacity: 1 },   // 鼠标悬停整行时显示按钮
       }}
     >
