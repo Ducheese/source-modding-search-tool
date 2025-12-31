@@ -49,8 +49,10 @@ const FileRow = memo(({ data, index, style }) => {
         disablePadding
         sx={{
           height: '100%',
-          borderBottom: `1px solid ${alpha(theme.palette.divider, 0.05)}`,
+          borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
           px: 2,
+          // 悬停效果更明显一点
+          transition: 'background-color 0.2s',
           '&:hover': {
             bgcolor: alpha(theme.palette.action.hover, 0.04),
           },
@@ -58,9 +60,9 @@ const FileRow = memo(({ data, index, style }) => {
       >
         <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
           {file.isFile ? (
-            <InsertDriveFile sx={{ color: 'text.secondary', fontSize: 20 }} />
+            <InsertDriveFile sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
           ) : (
-            <Folder sx={{ color: 'text.secondary', fontSize: 20 }} />
+            <Folder sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
           )}
         </Box>
 
@@ -75,33 +77,35 @@ const FileRow = memo(({ data, index, style }) => {
                 label={stats.encoding || '...'}
                 color={getEncodingColor(stats.encoding)}
                 variant="outlined"
-                sx={{ height: 16, fontSize: '0.6rem' }}
+                sx={{ height: 16, fontSize: '0.6rem', userSelect: 'none' }}   // 编码类型无法选中
               />
             </Box>
           }
           secondary={
             <Box sx={{ mt: 0.5 }}>
-              <Tooltip title={file.path} placement="top" enterDelay={500}>
+              <Tooltip title={file.path} enterDelay={500}>
                 <Typography
                   variant="caption"
-                  color="text.secondary"
+                  color={theme.palette.text.secondary}
                   sx={{
-                    fontFamily: 'monospace',
+                    // 不使用衬线字体
                     display: 'block',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    cursor: 'default', // 既然不能点，就别显示手型
+                    cursor: 'default',   // 既然不能点，就别显示手型
+                    userSelect: 'none',  // 无法选中
+                    maxWidth: '90%',     // 防止过宽
                   }}
                 >
                   {truncatePath(file.path)}
                 </Typography>
               </Tooltip>
               <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" color={theme.palette.text.secondary}>
                   {formatFileSize(stats.size || 0)}
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" color={theme.palette.text.secondary}>
                   {stats.lines || 0} 行
                 </Typography>
               </Box>
@@ -110,16 +114,17 @@ const FileRow = memo(({ data, index, style }) => {
         />
 
         <ListItemSecondaryAction sx={{ right: 16 }}>
-          <Tooltip title="删除">
+          <Tooltip title="移除此文件">
             <IconButton
               edge="end"
               size="small"
               onClick={() => {
                 onFileRemoved(file.path);
-                showSnackbar(`已删除文件: ${file.name}`, 'warning');
+                showSnackbar(`已移除 ${file.name}`, 'warning');
               }}
               sx={{
-                color: 'text.secondary',
+                color: theme.palette.text.secondary,
+                transition: 'all 0.2s',
                 '&:hover': { color: 'error.main' }
               }}
             >
@@ -204,7 +209,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
     if (!path || path.length <= maxLength) return path;
     const parts = path.split(/[\\/]/);
     if (parts.length <= 2) return path;
-    return '...\\' + parts[parts.length - 2] + '\\' + parts[parts.length - 1];
+    return '…\\' + parts[parts.length - 2] + '\\' + parts[parts.length - 1];
   };
 
   const getEncodingColor = (encoding) => {
@@ -318,23 +323,23 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onBlur={() => {
-                    // 延迟设置状态，给其他点击事件（如清除按钮）一个处理时间
-                    setTimeout(() => {
-                        // 检查搜索框是否确实应该失焦
-                        // 可以在这里加一个 ref 判断，但为了简洁，只用 setTimeout
-                        setIsSearchFocused(false);
-                    }, 150); // 150ms 是一个常用且体验较好的值
+                  // 延迟设置状态，给其他点击事件（如清除按钮）一个处理时间
+                  setTimeout(() => {
+                    // 检查搜索框是否确实应该失焦
+                    // 可以在这里加一个 ref 判断，但为了简洁，只用 setTimeout
+                    setIsSearchFocused(false);
+                  }, 150); // 150ms 是一个常用且体验较好的值
                 }}
                 InputProps={{
                   startAdornment: (
-                    <Search sx={{ color: 'text.secondary', mr: 1 }} />
+                    <Search sx={{ color: theme.palette.text.secondary, mr: 1 }} />
                   ),
                   // 如果需要清除按钮，可以在这里添加一个 IconButton
                   endAdornment: searchQuery && (
                     <IconButton
                       size="small"
                       onClick={() => setSearchQuery('')}
-                      sx={{ color: 'text.secondary' }}
+                      sx={{ color: theme.palette.text.secondary }}
                     >
                       <Clear fontSize="small" />
                     </IconButton>
@@ -345,8 +350,8 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
 
             {/* 显示过滤结果数量，作为反馈 */}
             {searchQuery && (
-              <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
-                已过滤出 {filteredFiles.length} 个文件
+              <Typography fontSize="small" variant="caption" color={theme.palette.text.secondary} sx={{ ml: 0.5 }}>
+                筛选出 {filteredFiles.length} 个文件
               </Typography>
             )}
           </Box>
@@ -363,19 +368,20 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              color: 'text.secondary',
+              color: theme.palette.text.secondary,
               p: 3,
             }}
           >
-            <InsertDriveFile sx={{ fontSize: 48, mb: 2, opacity: 0.5 }} />
-            <Typography>
-              {files.length === 0 ? "暂无文件" : "没有找到匹配的文件"}
+            <Typography variant="h6">
+              {files.length === 0 ? "这里什么都没有" : "你的筛选条件过于苛刻"}
             </Typography>
-            {files.length === 0 && (
-              <Typography variant="body2" align="center">
-                拖拽文件或使用上方按钮添加文件
-              </Typography>
-            )}
+
+            <Typography variant="body2">
+              {files.length === 0
+                ? "试着添加一些文件吧。"
+                : null
+              }
+            </Typography>
           </Box>
         ) : (
           <AutoSizer>
@@ -390,7 +396,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
                   height={height}
                   width={width}
                   itemCount={filteredFiles.length}
-                  itemSize={84} // ListItem 的高度，需要和 CSS 一致
+                  itemSize={80} // ListItem 的高度，需要和 CSS 一致
                   itemData={{
                     files: filteredFiles, // 传入过滤后的文件
                     fileStats,

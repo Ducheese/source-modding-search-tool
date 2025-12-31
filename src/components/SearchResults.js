@@ -3,7 +3,6 @@ import { Box, Typography, Chip, Button, Menu, MenuItem, useTheme, alpha, Circula
 import { Download } from '@mui/icons-material';
 import { exportResults } from '../utils/searchEngine';
 import VirtualizedResults from './VirtualizedResults';   // 这是现在唯一的神
-import { useSnackbar } from '../App';
 
 const SearchResults = ({ results, isSearching }) => {
   const theme = useTheme();
