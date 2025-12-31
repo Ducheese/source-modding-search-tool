@@ -1,41 +1,52 @@
 # Source Modding Search Tool
 
-为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, Gmod等）的 Mod 开发者提供一个~~轻量、高性能的~~本地文本检索工具。
+为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, Gmod等）的 Mod 开发者提供一个轻量、高性能的本地文本检索工具。
 
-**代码基于iFlow CLI + GLM-4.6开发**。
-
-## 功能特性
-
-- **零依赖绿色软件**：解压即用，无需安装运行环境
-- **本地化处理**：所有运算在客户端本地完成，不上传文件（**没有服务端的意思**）
-~~- **高性能**：能够处理大文件（500MB+ 日志）和海量小文件（5000+ 源码文件）~~
-- **多编码支持**：自动检测 UTF-8, GBK, GB2312, Big5, ISO-8859-1, UTF-16 等编码
-- **拖拽支持**：支持文件和文件夹拖拽
-- **高级搜索**：支持区分大小写、全词匹配、正则表达式
-- **搜索历史**：自动保存最近 10 条搜索记录
-- **虚拟化列表**：大量搜索结果时自动启用虚拟化渲染（**说白了就是折叠显示**）
-- **主题切换**：支持浅色/深色主题，默认跟随系统
-- **导出功能**：支持导出搜索结果为 TXT 或 Markdown 格式
+**代码基于iFlow CLI + GLM-4.6/4.7 + Gemini 3 Flash/Pro开发**。
 
 ## 开发环境设置
 
-### 安装依赖
+### 前置环境
+
+1.   安装Node.js
+2.   安装Rustup
+3.   （Windows）下载Microsoft Visual Studio Build Tools，安装“使用C++的桌面开发”
+
+### 设置镜像源
+
+```toml
+# 安装好Rust后，找到或新建此文件（C:\Users\用户名\.cargo\config.toml），写入如下内容：
+[source.crates-io]
+replace-with = 'rsproxy-sparse'
+
+[source.rsproxy]
+registry = "https://rsproxy.cn/crates.io-index"
+
+[source.rsproxy-sparse]
+registry = "sparse+https://rsproxy.cn/index/"
+
+[registries.rsproxy]
+index = "https://rsproxy.cn/crates.io-index"
+
+[net]
+git-fetch-with-cli = true
+```
+
+### 安装依赖包
 
 ```bash
+# 依照package.json，进行依赖的下载和编译
 npm install --verbose
 ```
 
 ### 预览和构建应用
 
 ```bash
-# 确保代码能通过编译
-npm run build
+# 启动 Tauri 应用的开发模式
+npm run tauri dev
 
-# 启动 Electron 进行预览
-npm run electron-dev
-
-# 打包为 Windows 可执行文件
-npm run electron-pack
+# 构建为 Windows 可执行文件
+npm run tauri build
 ```
 
 ## 支持的文件格式
@@ -52,59 +63,40 @@ npm run electron-pack
 - `.vdf` - Valve Data Format 文件
 - `.scr` - 脚本文件
 
-## 性能优化
-
-~~- **多线程处理**：文件扫描与文本匹配在后台线程执行~~
-- **流式读取**：大文件（>10MB）采用分块读取，防止内存溢出
-- **虚拟化渲染**：搜索结果超过阈值时自动启用虚拟化列表
-- **搜索限制**：大文件搜索结果限制为 1000 个匹配项
-- **并发控制**：限制同时处理的文件数量，避免系统过载
-
-## 系统要求
-
-- Windows 10/11
-- 内存：建议 4GB 以上
-- 硬盘空间：至少 100MB 可用空间
-
 ## 技术架构
 
-- **前端框架**：React 18 + Material UI
-- **桌面框架**：Electron
-- **编码检测**：chardet
-- **字符转换**：iconv-lite
-- **构建工具**：electron-builder
+- **前端框架**：React + Material UI组件库
+- **后端框架**：Tauri + Rust
 
 ## 项目结构
 
 ```
 source-modding-search-tool/
 ├── public/
-│   ├── electron.js       # Electron 主进程
-│   ├── preload.js        # 预加载脚本
 │   └── index.html        # HTML 模板
 ├── src/
-│   ├── components/       # React 组件
-│   │   ├── MainLayout.js
+│   ├── components/       # React 前端
 │   │   ├── FileDropZone.js
 │   │   ├── FileList.js
+│   │   ├── MainLayout.js
+│   │   ├── ResultLine.js
 │   │   ├── SearchPanel.js
 │   │   ├── SearchResults.js
 │   │   └── VirtualizedResults.js
-│   ├── utils/           # 工具函数
-│   │   └── searchEngine.js
-│   ├── App.js           # 主应用组件
-│   └── index.js         # 应用入口
+│   ├── utils/            # 工具函数
+│   │   ├── searchEngine.js
+│   │   └── tauriBridge.js
+│   ├── App.js            # 主应用组件
+│   └── index.js          # 应用入口
+├── src-tauri/            # Rust 后端
+│   ├── icons/
+│   │   └── icon.ico
+│   └── src/
+│   │   └── main.rs
+│   ├── build.rs
+│   ├── Cargo.toml
+│   └── tauri.conf.json
+├── test/                 # 测试用文本生成脚本
 ├── package.json
 └── README.md
 ```
-
-~~## 验收标准~~
-
-~~- ✅ 大文件测试：500MB 日志文件搜索，内存占用不超过 200MB~~
-~~- ✅ 海量文件测试：5000 个 .sp 文件搜索，UI 保持响应~~
-~~- ✅ 乱码测试：混合 GBK 和 UTF-8 文件正常显示和检索~~
-~~- ✅ 环境测试：纯净 Windows 10/11 环境直接运行~~
-
-~~## 许可证~~
-
-~~ISC License~~
