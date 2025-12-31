@@ -1,0 +1,40 @@
+/* index.css */
+
+/* 默认是浅色主题的变量 */
+:root {
+  --scrollbar-thumb-color: rgba(0, 0, 0, 0.2);
+  --scrollbar-thumb-hover-color: rgba(0, 0, 0, 0.3);
+  --body-bg-color: #f5f5f5;
+}
+
+/* 当 html 或 body 元素拥有 'dark-theme' 这个类时，切换为深色变量 */
+.dark-theme {
+  --scrollbar-thumb-color: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover-color: rgba(255, 255, 255, 0.3);
+  --body-bg-color: #121212;
+}
+
+body {
+  background-color: var(--body-bg-color);
+  /* 其他 body 样式... */
+}
+
+/* 现在，让滚动条使用这些变量 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color);
+  border-radius: 10px;
+  transition: background-color 0.3s; /* 加个过渡，会更优雅 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover-color);
+}

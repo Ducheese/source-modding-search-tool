@@ -14,6 +14,7 @@ import SearchResults from './SearchResults';
 
 const MainLayout = () => {
   const theme = useTheme();
+
   const [files, setFiles] = useState([]);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -47,43 +48,24 @@ const MainLayout = () => {
   return (
     <Box
       sx={{
-        height: '100vh',
+        height: '100vh',   // 强制占满视口
         display: 'flex',
         flexDirection: 'column',
         bgcolor: 'background.default',
-        overflowY: 'auto',
-        '&::-webkit-scrollbar': {
-          width: '6px',   // 垂直滚动条的宽度
-          height: '6px',  // 水平滚动条的高度
-        },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: 
-          theme.palette.mode === 'dark'   // 滚动条滑块的颜色
-          ? 'rgba(255, 255, 255, 0.2)'  // 暗色模式
-          : 'rgba(0, 0, 0, 0.2)',       // 浅色模式
-          borderRadius: '10px', // 滑块圆角
-        },
-        '&::-webkit-scrollbar-thumb:hover': {
-          backgroundColor: 
-          theme.palette.mode === 'dark'   // 鼠标悬停时颜色加深
-          ? 'rgba(255, 255, 255, 0.3)'  // 暗色模式
-          : 'rgba(0, 0, 0, 0.3)',       // 浅色模式
-        },
-        '&::-webkit-scrollbar-track': {
-          backgroundColor: 'transparent', // 滚动条轨道的颜色（通常设为透明）
-        },
+        overflow: 'hidden',   // 禁止最外层出现滚动条
       }}
     >
-      {/* 标题栏 */}
+      {/* 1. 标题栏 (固定高度) */}
       <Box
         sx={{
-          p: 2,
+          py: 1.5, px: 3,   // 更紧凑一点
           bgcolor: 'primary.main',
           color: 'primary.contrastText',
-          boxShadow: 2,
+          boxShadow: 3,
+          zIndex: 10,       // 堆叠顺序相对值
         }}
       >
-        <Typography variant="h5" component="h1" fontWeight="bold">
+        <Typography variant="h6" component="h1" fontWeight="bold">
           Source Modding Search Tool
         </Typography>
         <Typography variant="body2" sx={{ opacity: 0.9 }}>
@@ -91,24 +73,37 @@ const MainLayout = () => {
         </Typography>
       </Box>
 
-      {/* 主内容区 */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
+      {/* 2. 主内容区 (Flex 1, 占满剩余所有高度) */}
+      <Box 
+        sx={{ 
+          flex: 1,
+          display: 'flex', 
+          flexDirection: 'column', 
+          overflowY: 'auto',   // 滚动条
+          p: 2,   // 相当于给这个主内容区加一个内边距
+        }}
+      >
         <Grid container spacing={2} sx={{ flex: 1 }}>
           {/* 左侧面板 - 文件管理 */}
-          <Grid item xs={12} md={4}>
-            <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {/* 文件拖拽区域 */}
+          <Grid item xs={12} md={4} sx={{ flex: 1 }}>
+            <Box sx={{
+              flex: 1,
+              display: 'flex', 
+              flexDirection: 'column', 
+              height: '100%',   // 这一层要撑满，不然列表区域文字描述会偏
+              gap: 2 
+            }}>
+              {/* 上部：拖拽区 */}
               <FileDropZone onFilesAdded={handleFilesAdded} />
               
-              {/* 文件列表 */}
+              {/* 下部：列表 (Flex 1 占满剩余空间) */}
               <Paper
                 sx={{
-                  // flex: 1,
+                  flex: 1,   // 自动填满 DropZone 下方的所有空间
+                  minHeight: '100vh',
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
-                  minHeight: 'calc(100vh - 344px)',
-                  maxHeight: 'calc(100vh)',
                   border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                 }}
                 elevation={2}
@@ -123,9 +118,15 @@ const MainLayout = () => {
           </Grid>
 
           {/* 右侧面板 - 搜索和结果 */}
-          <Grid item xs={12} md={8}>
-            <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {/* 搜索面板 */}
+          <Grid item xs={12} md={8} sx={{ flex: 1 }}>
+            <Box sx={{
+              flex: 1,
+              display: 'flex', 
+              flexDirection: 'column', 
+              height: '100%',   // 这一层要撑满，不然列表区域文字描述会偏
+              gap: 2 
+            }}>
+              {/* 上部：搜索区 */}
               <SearchPanel
                 files={files}
                 onSearch={handleSearch}
@@ -133,14 +134,14 @@ const MainLayout = () => {
                 isSearching={isSearching}
               />
               
-              {/* 搜索结果 */}
+              {/* 下部：结果 (Flex 1 占满剩余空间) */}
               <Paper
                 sx={{
-                  flex: 1,
+                  flex: 1,   // 自动填满 DropZone 下方的所有空间
+                  minHeight: '100vh',
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
-                  minHeight: 'calc(100vh - 344px - 24px)',
                   border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                 }}
                 elevation={2}

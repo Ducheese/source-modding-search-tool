@@ -87,6 +87,7 @@ source-modding-search-tool/
 │   │   ├── searchEngine.js
 │   │   └── tauriBridge.js
 │   ├── App.js            # 主应用组件
+│   ├── index.css         # 全局样式
 │   └── index.js          # 应用入口
 ├── src-tauri/            # Rust 后端
 │   ├── icons/

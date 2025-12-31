@@ -17,10 +17,20 @@ function App() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
+  // 监听 darkMode 的变化，去改变 body 的 class，这样index.css就能感受到深浅色模式的变化
+  useEffect(() => {
+    const body = document.body;
+    if (darkMode) {
+      body.classList.add('dark-theme');
+    } else {
+      body.classList.remove('dark-theme');
+    }
+  }, [darkMode]); // 仅在 darkMode 变化时执行
+
   // Snackbar 消息队列
   const [snackbarQueue, setSnackbarQueue] = useState([]);
 
-// 显示 Snackbar 消息
+  // 显示 Snackbar 消息
   const showSnackbar = (message, severity = 'info') => {
     const id = Date.now();
     setSnackbarQueue([{ id, message, severity }]);
@@ -133,7 +143,9 @@ function App() {
   return (
     <SnackbarContext.Provider value={showSnackbar}>
       <ThemeProvider theme={theme}>
+        
         <CssBaseline />
+        
         <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
           <IconButton
             color="inherit"
@@ -153,14 +165,15 @@ function App() {
             {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
         </div>
+
         <MainLayout />
-        
+
         {/* Snackbar 消息 */}
         {snackbarQueue.map((item) => (
           <Snackbar
             key={item.id}
             open={true}
-            autoHideDuration={3000}
+            autoHideDuration={2000}
             onClose={() => closeSnackbar(item.id)}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             TransitionComponent={Slide}
@@ -175,6 +188,7 @@ function App() {
             </Alert>
           </Snackbar>
         ))}
+
       </ThemeProvider>
     </SnackbarContext.Provider>
   );
