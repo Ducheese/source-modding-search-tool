@@ -1,6 +1,6 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { Box, Typography, IconButton, Chip, useTheme, alpha } from '@mui/material';
-import { ExpandMore, ExpandLess, ContentCopy, Launch } from '@mui/icons-material';
+import { ExpandMore, ExpandLess, CopyAll, FileOpen } from '@mui/icons-material';
 import { VariableSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { useSnackbar } from '../App';
@@ -208,10 +208,10 @@ const VirtualizedResults = ({ results }) => {
 
           {/* 工具栏 */}
           <IconButton size="small" title="复制完整内容" onClick={() => copyFileContent(file.path)}>
-            <ContentCopy fontSize="small" />
+            <CopyAll fontSize="small" />
           </IconButton>
           <IconButton size="small" title="用默认应用打开" onClick={() => tauriAPI.openFileExternally(file.path)}>
-            <Launch fontSize="small" />
+            <FileOpen fontSize="small" />
           </IconButton>
         </Box>
       );
