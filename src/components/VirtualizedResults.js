@@ -72,7 +72,10 @@ const VirtualizedResults = ({ results }) => {
     results.files.forEach((file, index) => {
 
       // 2. 文件头
-      rows.push({ type: 'header', file, isExpanded: expandedFiles.has(file.path), isLast: index === results.files.length - 1 });
+      rows.push({ type: 'header', file, isExpanded: expandedFiles.has(file.path),
+        isLast: index === results.files.length - 1,
+        isFirst: index === 0
+      });
 
       // 3. 匹配内容
       if (expandedFiles.has(file.path)) {
@@ -146,7 +149,7 @@ const VirtualizedResults = ({ results }) => {
 
     // 2. 文件头渲染
     if (row.type === 'header') {
-      const { file, isExpanded, isLast } = row;
+      const { file, isExpanded, isLast, isFirst } = row;
       return (
         <Box
           style={style}
@@ -155,7 +158,7 @@ const VirtualizedResults = ({ results }) => {
             display: 'flex',
             alignItems: 'center',
             boxSizing: 'border-box',
-            borderTop: `1px solid ${theme.palette.divider}`,   // 顶部边框常驻
+            borderTop: isFirst ? 'none' : `1px solid ${theme.palette.divider}`,   // 顶部边框常驻
             borderBottom: isExpanded || isLast ? `1px solid ${theme.palette.divider}` : 'none',   // 底部边框条件渲染
           }}
         >
