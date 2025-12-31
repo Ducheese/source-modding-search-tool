@@ -1,40 +1,16 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Typography,
-  Chip,
-  Button,
-  IconButton,
-  Menu,
-  MenuItem,
-  useTheme,
-  alpha,
-  CircularProgress,
-  Alert,
-} from '@mui/material';
-import {
-  Download,
-  ContentCopy,
-  Launch,
-} from '@mui/icons-material';
+import { Box, Typography, Chip, Button, Menu, MenuItem, useTheme, alpha, CircularProgress, Alert } from '@mui/material';
+import { Download } from '@mui/icons-material';
 import { exportResults } from '../utils/searchEngine';
-import VirtualizedResults from './VirtualizedResults';
+import VirtualizedResults from './VirtualizedResults';   // 这是现在唯一的神
 import { useSnackbar } from '../App';
-import { tauriAPI } from '../utils/tauriBridge'; // 引入 Tauri API
 
 const SearchResults = ({ results, isSearching }) => {
-  const showSnackbar = useSnackbar();
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleExportClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleExportClose = () => {
-    setAnchorEl(null);
-  };
-
+  const handleExportClick = (event) => setAnchorEl(event.currentTarget);
+  const handleExportClose = () => setAnchorEl(null);
   const handleExport = (format) => {
     try {
       exportResults(results, format);
@@ -44,86 +20,7 @@ const SearchResults = ({ results, isSearching }) => {
     handleExportClose();
   };
 
-  const copyFilePath = (path) => {
-    navigator.clipboard.writeText(path);
-    showSnackbar('已复制文件路径', 'success');
-  };
-
-  const copyFileContent = async (path) => {
-    try {
-      // 修改：使用 tauriAPI
-      const { content } = await tauriAPI.readFile(path);
-      navigator.clipboard.writeText(content);
-      showSnackbar('已复制文件内容', 'success');
-    } catch (error) {
-      console.error('Failed to copy file content:', error);
-      showSnackbar('复制文件内容失败', 'error');
-    }
-  };
-
-  const copyLineContent = (line) => {
-    // 剔除换行符和其他空白字符
-    const cleanLine = line.replace(/[\r\n]+/g, '').trim();
-    navigator.clipboard.writeText(cleanLine);
-    showSnackbar('已复制行内容', 'success');
-  };
-
-  const openFileExternally = (path) => {
-    // 修改：使用 tauriAPI
-    tauriAPI.openFileExternally(path);
-  };
-
-  const highlightMatch = (text, query, options) => {
-    if (!query) return text;
-
-    try {
-      let searchRegex;
-      if (options.useRegex) {
-        searchRegex = new RegExp(query, options.caseSensitive ? 'g' : 'gi');
-      } else {
-        const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const pattern = options.wholeWord ? `\\b${escapedQuery}\\b` : escapedQuery;
-        searchRegex = new RegExp(pattern, options.caseSensitive ? 'g' : 'gi');
-      }
-
-      const parts = [];
-      let lastIndex = 0;
-      let match;
-
-      while ((match = searchRegex.exec(text)) !== null) {
-        parts.push(text.slice(lastIndex, match.index));
-        parts.push(
-          <span
-            key={match.index}
-            style={{
-              backgroundColor: alpha(theme.palette.primary.main, 0.3),
-              color: theme.palette.mode === 'dark'
-                ? '#BB86FC'        // 暗色模式
-                : '#6200EE',       // 浅色模式
-              fontWeight: 'bold',
-              padding: '2px 4px',
-              borderRadius: '3px',
-            }}
-          >
-            {match[0]}
-          </span>
-        );
-        lastIndex = searchRegex.lastIndex;
-      }
-
-      parts.push(text.slice(lastIndex));
-      return parts;
-    } catch (error) {
-      return text;
-    }
-  };
-
-  // 判断是否使用虚拟化列表（当结果数量超过阈值时）
-  const shouldUseVirtualization = results && results.files && (
-    results.files.length > 5 ||
-    results.totalMatches > 10
-  );
-
+  // Loading 态
   if (isSearching) {
     return (
       <Box
@@ -133,20 +30,22 @@ const SearchResults = ({ results, isSearching }) => {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          color: 'text.secondary',
+          color: theme.palette.text.secondary,
         }}
       >
         <CircularProgress size={48} sx={{ mb: 2 }} />
-        <Typography variant="h6" gutterBottom>
-          正在搜索...
-        </Typography>
-        <Typography variant="body2">
-          请稍候，正在处理文件
+        <Typography variant="h6">
+          {
+            Math.random() < 0.5
+              ? '正在穿越时间的间隙...'
+              : '少女折寿中...'
+          }
         </Typography>
       </Box>
     );
   }
 
+  // 空态
   if (!results) {
     return (
       <Box
@@ -156,19 +55,16 @@ const SearchResults = ({ results, isSearching }) => {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          color: 'text.secondary',
+          color: theme.palette.text.secondary,
         }}
       >
-        <Typography variant="h6" gutterBottom>
-          准备搜索
-        </Typography>
-        <Typography variant="body2" align="center">
-          添加文件并输入搜索内容后点击搜索按钮
-        </Typography>
+        <Typography variant="h6">无事可做</Typography>
+        <Typography variant="body2">在永恒的等待中，请输入一点什么吧。</Typography>
       </Box>
     );
   }
 
+  // 错误态
   if (results.error) {
     return (
       <Alert severity="error" sx={{ m: 2 }}>
@@ -177,6 +73,7 @@ const SearchResults = ({ results, isSearching }) => {
     );
   }
 
+  // 无结果
   if (results.files.length === 0) {
     return (
       <Box
@@ -186,201 +83,40 @@ const SearchResults = ({ results, isSearching }) => {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          color: 'text.secondary',
+          color: theme.palette.text.secondary,
         }}
       >
-        <Typography variant="h6" gutterBottom>
-          未找到匹配结果
-        </Typography>
-        <Typography variant="body2" align="center">
-          在 {results.totalFiles} 个文件中没有找到匹配 "{results.query}" 的内容
-        </Typography>
+        <Typography variant="h6">空无一物</Typography>
+        <Typography variant="body2">在 {results.totalFiles} 个文件中一无所获。</Typography>
       </Box>
     );
   }
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* 统计信息 */}
+      {/* 头部统计栏 (保持精美) */}
       <Box sx={{ p: 2, borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-          <Typography variant="h6" fontWeight="bold">
-            搜索结果
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={<Download />}
-              onClick={handleExportClick}
-            >
-              导出
-            </Button>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleExportClose}
-            >
-              <MenuItem onClick={() => handleExport('txt')}>导出为 TXT</MenuItem>
-              <MenuItem onClick={() => handleExport('md')}>导出为 Markdown</MenuItem>
+          <Typography variant="h6" fontWeight="bold">搜索结果</Typography>
+          <Box>
+            <Button size="small" variant="outlined" startIcon={<Download />} onClick={handleExportClick}>导出</Button>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleExportClose}>
+              <MenuItem onClick={() => handleExport('txt')}>TXT</MenuItem>
+              <MenuItem onClick={() => handleExport('md')}>Markdown</MenuItem>
             </Menu>
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
-          <Chip size="small" label={`总文件: ${results.totalFiles}`} />
-          <Chip size="small" label={`匹配文件: ${results.matchedFiles}`} color="primary" />
-          <Chip size="small" label={`总匹配: ${results.totalMatches}`} color="secondary" />
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          <Chip size="small" label={`总文件数: ${results.totalFiles}`} />
+          <Chip size="small" label={`匹配文件数: ${results.matchedFiles}`} color="secondary" />
+          <Chip size="small" label={`匹配行数: ${results.totalMatches}`} color="primary" />
           <Chip size="small" label={`耗时: ${results.executionTime}ms`} />
         </Box>
-
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          {results.options.caseSensitive && (
-            <Chip size="small" label="区分大小写" variant="outlined" />
-          )}
-          {results.options.wholeWord && (
-            <Chip size="small" label="全词匹配" variant="outlined" />
-          )}
-          {results.options.useRegex && (
-            <Chip size="small" label="正则表达式" variant="outlined" />
-          )}
-        </Box>
       </Box>
 
-      {/* 结果列表 */}
-      <Box sx={{ flex: 1, overflow: 'hidden' }}>
-        {shouldUseVirtualization ? (
-          <VirtualizedResults results={results} />
-        ) : (
-          <Box sx={{ height: '100%', overflow: 'auto', p: 1 }}>
-            {results.files.map((file) => (
-              <Box
-                key={file.path}
-                sx={{
-                  mb: 1,
-                  border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                  borderRadius: 1,
-                  overflow: 'hidden',
-                }}
-              >
-                <Box
-                  sx={{
-                    p: 2,
-                    bgcolor: alpha(theme.palette.primary.main, 0.05),
-                    borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="subtitle2" fontWeight="bold">
-                      {file.name}
-                    </Typography>
-                    <Chip size="small" label={`${file.matches.length} 匹配`} color="primary" />
-                  </Box>
-
-                  <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    <IconButton
-                      size="small"
-                      onClick={() => copyFilePath(file.path)}
-                      title="复制路径"
-                    >
-                      <ContentCopy fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => copyFileContent(file.path)}
-                      title="复制文件内容"
-                    >
-                      <ContentCopy fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => openFileExternally(file.path)}
-                      title="用默认程序打开"
-                    >
-                      <Launch fontSize="small" />
-                    </IconButton>
-                  </Box>
-                </Box>
-
-                {file.matches.map((match, index) => {
-                  // 这里也要适配 snake_case
-                  const lineNum = match.line_number;
-                  return (
-                    <Box
-                      key={index}
-                      sx={{
-                        p: 2,
-                        borderBottom: `1px solid ${alpha(theme.palette.divider, 0.05)}`,
-                        '&:last-child': { borderBottom: 'none' },
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                        <Typography variant="body2" color="primary" fontWeight="bold">
-                          行 {lineNum}
-                        </Typography>
-                        <IconButton
-                          size="small"
-                          onClick={() => copyLineContent(match.line)}
-                          title="复制这一行"
-                        >
-                          <ContentCopy fontSize="small" />
-                        </IconButton>
-                      </Box>
-
-                      <Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem', overflowX: 'auto', whiteSpace: 'pre',
-                        '&::-webkit-scrollbar': {
-                          height: '3px', // 水平滚动条的高度
-                        },
-                        '&::-webkit-scrollbar-thumb': {
-                          backgroundColor:
-                            theme.palette.mode === 'dark'   // 滚动条滑块的颜色
-                              ? 'rgba(255, 255, 255, 0.2)'  // 暗色模式
-                              : 'rgba(0, 0, 0, 0.2)',       // 浅色模式
-                          borderRadius: '10px', // 滑块圆角
-                        },
-                        '&::-webkit-scrollbar-thumb:hover': {
-                          backgroundColor:
-                            theme.palette.mode === 'dark'   // 鼠标悬停时颜色加深
-                              ? 'rgba(255, 255, 255, 0.3)'  // 暗色模式
-                              : 'rgba(0, 0, 0, 0.3)',       // 浅色模式
-                        },
-                        '&::-webkit-scrollbar-track': {
-                          backgroundColor: 'transparent', // 滚动条轨道的颜色（通常设为透明）
-                        },
-                      }}>
-                        {match.context.before && (
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ opacity: 0.7 }}
-                          >
-                            {String(lineNum - 1).padStart(5, '\u2007')}  {match.context.before}
-                          </Typography>
-                        )}
-                        <Typography variant="body2">
-                          {String(lineNum).padStart(5, '\u2007')}  {highlightMatch(match.line, results.query, results.options)}
-                        </Typography>
-                        {match.context.after && (
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ opacity: 0.7 }}
-                          >
-                            {String(lineNum + 1).padStart(5, '\u2007')}  {match.context.after}
-                          </Typography>
-                        )}
-                      </Box>
-                    </Box>
-                  );
-                })}
-              </Box>
-            ))}
-          </Box>
-        )}
-      </Box>
+      {/* 唯一的真神：虚拟列表 */}
+      <VirtualizedResults results={results} />
     </Box>
   );
 };

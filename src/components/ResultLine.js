@@ -136,7 +136,7 @@ const ResultLine = memo(({
               opacity: 0,   // 默认隐藏
               transition: 'opacity 0.2s',
               padding: 0.5,
-              color: 'text.secondary',
+              color: theme.palette.text.secondary,
             }}
             title="复制此行"
           >
