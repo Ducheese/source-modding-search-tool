@@ -50,8 +50,8 @@ export const exportResults = (results, format = 'txt') => {
     content += `统计信息:\n`;
     content += `- 总文件数: ${results.totalFiles}\n`;
     content += `- 匹配文件数: ${results.matchedFiles}\n`;
-    content += `- 总匹配数: ${results.totalMatches}\n`;
-    content += `- 执行时间: ${results.executionTime}ms\n\n`;
+    content += `- 匹配行数: ${results.totalMatches}\n`;
+    content += `- 耗时: ${results.executionTime}ms\n\n`;
 
     results.files.forEach(file => {
       content += `文件: ${file.path}\n`;
@@ -79,8 +79,8 @@ export const exportResults = (results, format = 'txt') => {
     content += `## 统计信息\n\n`;
     content += `- 总文件数: ${results.totalFiles}\n`;
     content += `- 匹配文件数: ${results.matchedFiles}\n`;
-    content += `- 总匹配数: ${results.totalMatches}\n`;
-    content += `- 执行时间: ${results.executionTime}ms\n\n`;
+    content += `- 匹配行数: ${results.totalMatches}\n`;
+    content += `- 耗时: ${results.executionTime}ms\n\n`;
 
     results.files.forEach(file => {
       content += `## ${file.name}\n\n`;

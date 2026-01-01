@@ -18,10 +18,19 @@ import { tauriAPI } from '../utils/tauriBridge';
 import { listen } from '@tauri-apps/api/event';
 
 const FileDropZone = ({ onFilesAdded }) => {
+  // 允许你在任何函数组件中，无需通过 Prop 层层传递，就能直接访问最近的 ThemeProvider 组件提供的主题对象。
   const theme = useTheme();
+
+  // 状态变量
   const [isDragOver, setIsDragOver] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
+
+  // 显示错误提示，把两行代码包含成一个函数
+  const showErrorAlert = (message) => {
+    setAlertMessage(message);
+    setShowAlert(true);
+  };
 
   // 支持的文件格式
   const supportedExtensions = ['.sp', '.cfg', '.ini', '.txt', '.vmt', '.qc', '.inc', '.lua', '.log', '.vdf', '.scr'];
@@ -31,22 +40,6 @@ const FileDropZone = ({ onFilesAdded }) => {
     const ext = '.' + fileName.split('.').pop().toLowerCase();
     return supportedExtensions.includes(ext);
   };
-
-  // 显示错误提示
-  const showErrorAlert = (message) => {
-    setAlertMessage(message);
-    setShowAlert(true);
-  };
-
-  const handleDragOver = useCallback((e) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
 
   // 监听 Tauri 的全局拖拽事件
   useEffect(() => {
@@ -173,6 +166,17 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
     }
   }, [onFilesAdded]);
 
+  // 文件拖放（Drag and Drop）操作的事件处理函数
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  }, []);
+
   return (
     <Paper
       sx={{
@@ -184,7 +188,7 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
         transition: 'all 0.2s ease-in-out',
         cursor: 'pointer',
         '&:hover': {
-          bgcolor: alpha(theme.palette.primary.main, 0.02),
+          bgcolor: alpha(theme.palette.primary.main, 0.05),
           borderColor: theme.palette.primary.main,
         },
       }}
@@ -197,9 +201,9 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
       <Box
         sx={{
           display: 'flex',
+          gap: 2,
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 2,
           textAlign: 'center',
         }}
       >
@@ -220,7 +224,14 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            gap: 2, 
+            flexWrap: 'wrap', 
+            justifyContent: 'center' 
+          }}
+        >
           <Button
             variant="contained"
             startIcon={<Description />}
@@ -240,10 +251,10 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
         </Box>
       </Box>
 
-      {/* 错误提示 */}
+      {/* 单独定义的错误提示 */}
       <Snackbar
         open={showAlert}
-        autoHideDuration={6000}
+        autoHideDuration={4000}
         onClose={() => setShowAlert(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
