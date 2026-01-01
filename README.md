@@ -97,7 +97,7 @@ source-modding-search-tool/
 │   ├── build.rs
 │   ├── Cargo.toml
 │   └── tauri.conf.json
-├── test/                 # 测试用文本生成脚本
+├── test/                 # 测试用文本生成脚本、现成文本
 ├── package.json
 └── README.md
 ```

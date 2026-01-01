@@ -188,7 +188,7 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
         transition: 'all 0.2s ease-in-out',
         cursor: 'pointer',
         '&:hover': {
-          bgcolor: alpha(theme.palette.primary.main, 0.05),
+          bgcolor: alpha(theme.palette.primary.main, 0.02),
           borderColor: theme.palette.primary.main,
         },
       }}
