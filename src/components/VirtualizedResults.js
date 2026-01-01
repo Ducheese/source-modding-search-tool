@@ -1,7 +1,7 @@
-import React, { useRef, useState, useMemo, useEffect } from 'react';
+import React, { useRef, useState, useMemo, useEffect, memo } from 'react';
 import { Box, Typography, IconButton, Chip, useTheme, alpha } from '@mui/material';
 import { ExpandMore, ExpandLess, CopyAll, FileOpen } from '@mui/icons-material';
-import { VariableSizeList as List } from 'react-window';
+import { VariableSizeList as List, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { useSnackbar } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
@@ -14,11 +14,173 @@ const marqueeStyles = `
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-.marquee-container:hover .marquee-content {
+.marquee-content {
   animation: marquee 10s linear infinite;
 }
 `;
 
+// --- 提取出的原子组件：跑马灯 (Marquee) ---
+// 技巧：使用负的 animation-delay 基于 Date.now() 进行全局同步
+// 这样无论组件何时挂载，它们的动画位置都相对于"绝对时间"是同步的，不会重置
+const FileMarquee = memo(({ path, onCopy }) => {
+  // 计算全局同步延迟：当前时间(秒) % 周期(10秒)
+  // 取负值，让动画直接跳到对应进度
+  const getSyncedDelay = () => {
+    const duration = 10;
+    const now = Date.now() / 1000;
+    return -(now % duration);
+  };
+
+  return (
+    <Box
+      sx={{
+        ml: 1,
+        flex: 1,
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        maskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',   // 稍微加个渐变遮罩
+        cursor: 'pointer',
+        opacity: 0.7,
+        '&:hover': { opacity: 1 },
+      }}
+      title="复制路径"
+      onClick={onCopy}
+    >
+      {/* ⭐️ 跑马灯 Wrapper：包含两份内容，宽度 fit-content */}
+      <Box
+        className="marquee-content"
+        sx={{
+          display: 'flex',
+          width: 'fit-content',
+          // 关键点：动态设置 delay，让动画"看起来"从没断过
+          animationDelay: `${getSyncedDelay()}s`
+        }}
+      >
+        {/* 第一份内容 */}
+        <Typography variant="caption" color="text.secondary" sx={{ pr: 32 }}>
+          {path}
+        </Typography>
+        {/* 第二份内容 (克隆体) */}
+        <Typography variant="caption" color="text.secondary" sx={{ pr: 32 }}>
+          {path}
+        </Typography>
+      </Box>
+    </Box>
+  );
+});
+
+// --- 提取出的行组件：Row ---
+// 必须定义在主组件外部，保证引用稳定
+const Row = memo(({ data, index, style }) => {
+  const { flatRows, toggleFile, theme, showSnackbar } = data;
+  const row = flatRows[index];
+
+  // 1. 分隔区域
+  if (row.type === 'separator') {
+    // 获取下一行数据（注意边界检查）
+    const nextRow = flatRows[index + 1];
+    // 判断下一行是否存在且是否为 header
+    const isNextHeader = nextRow && nextRow.type === 'header';
+
+    return (
+      <Box
+        style={style}
+        sx={{
+          // 这里可以加一条虚线，或者只是留白
+          borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+          borderBottom: isNextHeader ? 'none' : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+          width: '100%',
+          height: '100%',
+        }}
+      />
+    );
+  }
+
+  // 2. 文件头
+  if (row.type === 'header') {
+    const { file, isExpanded, isLast, isFirst } = row;
+
+    // 辅助动作
+    const handleCopyPath = () => {
+      navigator.clipboard.writeText(file.path);
+      showSnackbar('文件路径已复制', 'success');
+    };
+
+    const handleCopyContent = async () => {
+      try {
+        const { content } = await tauriAPI.readFile(file.path);
+        navigator.clipboard.writeText(content);
+        showSnackbar('文件内容已复制', 'success');
+      } catch (error) {
+        console.error('Failed to copy file content:', error);
+        showSnackbar('文件内容复制失败', 'error');
+      }
+    };
+
+    return (
+      <Box
+        style={style}
+        sx={{
+          px: 2,
+          display: 'flex',
+          alignItems: 'center',
+          boxSizing: 'border-box',
+          borderTop: isFirst ? 'none' : `1px solid ${theme.palette.divider}`,   // 顶部边框常驻
+          borderBottom: isExpanded || isLast ? `1px solid ${theme.palette.divider}` : 'none',   // 底部边框条件渲染
+        }}
+      >
+        <IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleFile(file.path); }} sx={{ mr: 1 }}>
+          {isExpanded ? <ExpandLess /> : <ExpandMore />}
+        </IconButton>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, overflow: 'hidden', mr: 2 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+            {file.name}
+          </Typography>
+          {/* 使用提取出的跑马灯组件 */}
+          <FileMarquee path={file.path} onCopy={handleCopyPath} />
+        </Box>
+
+        <Chip size="small" label={`${file.matches.length}`} color="primary" sx={{ height: 20, mr: 2, userSelect: 'none' }} />
+
+        {/* 工具栏 */}
+        <IconButton size="small" title="复制完整内容" onClick={handleCopyContent}>
+          <CopyAll fontSize="small" />
+        </IconButton>
+        <IconButton size="small" title="用默认应用打开" onClick={() => tauriAPI.openFileExternally(file.path)}>
+          <FileOpen fontSize="small" />
+        </IconButton>
+      </Box>
+    );
+  }
+
+  // 3. 代码行渲染 (Match or Context)
+  const isMatch = row.type === 'match';
+
+  // 辅助函数：将片段或字符串转为纯文本以供复制
+  const getRawText = () => {
+    if (typeof row.content === 'string') return row.content;
+    if (Array.isArray(row.content)) return row.content.map(s => s.text).join('');
+    return '';
+  };
+
+  return (
+    <div style={style}>
+      <ResultLine
+        lineNumber={row.lineNumber}
+        content={row.content}
+        isMatch={isMatch}
+        onCopy={() => {
+          navigator.clipboard.writeText(getRawText());
+          showSnackbar('行内容已复制', 'success');
+        }}
+      />
+    </div>
+  );
+}, areEqual); // 使用 react-window 的 areEqual 进行性能优化
+
+
+// --- 主组件 ---
 const VirtualizedResults = ({ results }) => {
   const theme = useTheme();
   const showSnackbar = useSnackbar();
@@ -72,7 +234,8 @@ const VirtualizedResults = ({ results }) => {
     results.files.forEach((file, index) => {
 
       // 2. 文件头
-      rows.push({ type: 'header', file, isExpanded: expandedFiles.has(file.path),
+      rows.push({
+        type: 'header', file, isExpanded: expandedFiles.has(file.path),
         isLast: index === results.files.length - 1,
         isFirst: index === 0
       });
@@ -109,141 +272,14 @@ const VirtualizedResults = ({ results }) => {
     return ROW_HEIGHT;
   };
 
-  // 复制文件内容
-  const copyFileContent = async (path) => {
-    try {
-      // 修改：使用 tauriAPI
-      const { content } = await tauriAPI.readFile(path);
-      navigator.clipboard.writeText(content);
-      showSnackbar('文件内容已复制', 'success');
-    } catch (error) {
-      console.error('Failed to copy file content:', error);
-      showSnackbar('文件内容复制失败', 'error');
-    }
-  };
-
-  // --- 行渲染器 ---
-  const Row = ({ index, style }) => {
-    const row = flatRows[index];
-
-    // 1. 分隔区域渲染
-    if (row.type === 'separator') {
-      // 获取下一行数据（注意边界检查）
-      const nextRow = flatRows[index + 1];
-      // 判断下一行是否存在且是否为 header
-      const isNextHeader = nextRow && nextRow.type === 'header';
-
-      return (
-        <Box
-          style={style}
-          sx={{
-            // 这里可以加一条虚线，或者只是留白
-            borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-            borderBottom: isNextHeader ? 'none' : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-            width: '100%',
-            height: '100%',
-          }}
-        />
-      );
-    }
-
-    // 2. 文件头渲染
-    if (row.type === 'header') {
-      const { file, isExpanded, isLast, isFirst } = row;
-      return (
-        <Box
-          style={style}
-          sx={{
-            px: 2,
-            display: 'flex',
-            alignItems: 'center',
-            boxSizing: 'border-box',
-            borderTop: isFirst ? 'none' : `1px solid ${theme.palette.divider}`,   // 顶部边框常驻
-            borderBottom: isExpanded || isLast ? `1px solid ${theme.palette.divider}` : 'none',   // 底部边框条件渲染
-          }}
-        >
-          <IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleFile(file.path); }} sx={{ mr: 1 }}>
-            {isExpanded ? <ExpandLess /> : <ExpandMore />}
-          </IconButton>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, overflow: 'hidden', mr: 2 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-              {file.name}
-            </Typography>
-
-            {/* ⭐️ 无缝跑马灯容器 */}
-            <Box
-              className="marquee-container"
-              sx={{
-                ml: 1,
-                flex: 1,
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                maskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',   // 稍微加个渐变遮罩
-                cursor: 'pointer',
-                opacity: 0.7,
-                '&:hover': { opacity: 1 },
-              }}
-              title="复制路径"
-              onClick={() => { navigator.clipboard.writeText(file.path); showSnackbar('文件路径已复制', 'success'); }}
-            >
-              {/* ⭐️ 跑马灯 Wrapper：包含两份内容，宽度 fit-content */}
-              <Box
-                className="marquee-content"
-                sx={{
-                  display: 'flex',
-                  width: 'fit-content'   // 关键：让宽度适应内容
-                }}
-              >
-                {/* 第一份内容 */}
-                <Typography variant="caption" color="text.secondary" sx={{ pr: 32 /* 间距 */ }}>
-                  {file.path}
-                </Typography>
-                {/* 第二份内容 (克隆体) */}
-                <Typography variant="caption" color="text.secondary" sx={{ pr: 32 /* 间距必须一致 */ }}>
-                  {file.path}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-
-          <Chip size="small" label={`${file.matches.length}`} color="primary" sx={{ height: 20, mr: 2, userSelect: 'none' }} />
-
-          {/* 工具栏 */}
-          <IconButton size="small" title="复制完整内容" onClick={() => copyFileContent(file.path)}>
-            <CopyAll fontSize="small" />
-          </IconButton>
-          <IconButton size="small" title="用默认应用打开" onClick={() => tauriAPI.openFileExternally(file.path)}>
-            <FileOpen fontSize="small" />
-          </IconButton>
-        </Box>
-      );
-    }
-
-    // 3. 代码行渲染 (Match or Context)
-    const isMatch = row.type === 'match';
-
-    // 辅助函数：将片段或字符串转为纯文本以供复制
-    const getRawText = () => {
-      if (typeof row.content === 'string') return row.content;
-      if (Array.isArray(row.content)) return row.content.map(s => s.text).join('');
-      return '';
-    };
-
-    return (
-      <div style={style}>
-        <ResultLine
-          lineNumber={row.lineNumber}
-          content={row.content}
-          isMatch={isMatch}
-          onCopy={() => {
-            navigator.clipboard.writeText(getRawText());
-            showSnackbar('行内容已复制', 'success');
-          }}
-        />
-      </div>
-    );
-  };
+  // ⭐️ 关键：将所有 Row 需要的上下文数据打包传递
+  // 这样 Row 组件即使在外部定义，也能访问到内部的 state 和 hooks
+  const itemData = useMemo(() => ({
+    flatRows,
+    toggleFile,
+    theme,
+    showSnackbar
+  }), [flatRows, theme, showSnackbar]);
 
   return (
     <Box sx={{ flex: 1, height: '100%' }}>
@@ -256,7 +292,8 @@ const VirtualizedResults = ({ results }) => {
             width={width}
             itemCount={flatRows.length}
             itemSize={getItemSize}
-            overscanCount={20} // 多渲染一点防止白屏
+            itemData={itemData}  // 传入数据包
+            overscanCount={20}   // 多渲染一点防止白屏
           >
             {Row}
           </List>

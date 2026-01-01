@@ -62,7 +62,8 @@ const MainLayout = () => {
           bgcolor: 'primary.main',
           color: 'primary.contrastText',
           boxShadow: 3,
-          zIndex: 10,       // 堆叠顺序相对值
+          userSelect: 'none',  // 禁止选中
+          zIndex: 500,         // 堆叠顺序相对值
         }}
       >
         <Typography variant="h6" component="h1" fontWeight="bold">
