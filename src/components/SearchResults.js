@@ -67,7 +67,7 @@ const SearchResults = ({ results, isSearching }) => {
   if (results.error) {
     return (
       <Alert severity="error" sx={{ m: 2 }}>
-        搜索出错: {results.error}
+        {results.error}   // searchEngine已经写了“搜索失败: ”，无需重复再写
       </Alert>
     );
   }

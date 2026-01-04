@@ -38,6 +38,12 @@ export const exportResults = (results, format = 'txt') => {
     throw new Error('没有可导出的搜索结果');
   }
 
+  // --- 新增辅助函数：把 segments 还原回纯文本 ---
+  const getLineText = (segments) => {
+    if (!segments) return '';
+    return segments.map(s => s.text).join('');
+  };
+
   let content = '';
   const timestamp = new Date().toLocaleString('zh-CN');
 
@@ -62,7 +68,8 @@ export const exportResults = (results, format = 'txt') => {
         if (match.context.before) {
           content += `  ${match.line_number - 1}: ${match.context.before}\n`;
         }
-        content += `> ${match.line_number}: ${match.line}\n`;
+        // --- 修复点：使用 getLineText 替代 match.line ---
+        content += `> ${match.line_number}: ${getLineText(match.segments)}\n`;
         if (match.context.after) {
           content += `  ${match.line_number + 1}: ${match.context.after}\n`;
         }
@@ -92,7 +99,8 @@ export const exportResults = (results, format = 'txt') => {
         if (match.context.before) {
           content += `${match.line_number - 1}: ${match.context.before}\n`;
         }
-        content += `${match.line_number}: ${match.line}\n`;
+// --- 修复点：使用 getLineText 替代 match.line ---
+        content += `${match.line_number}: ${getLineText(match.segments)}\n`;
         if (match.context.after) {
           content += `${match.line_number + 1}: ${match.context.after}\n`;
         }

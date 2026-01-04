@@ -8,6 +8,7 @@ use std::io::Read;
 use std::path::Path;
 use walkdir::WalkDir;
 use memmap2::Mmap; // 引入内存映射
+use globset::{Glob, GlobSet, GlobSetBuilder}; // 【新神语】召唤真神的三位一体
 
 // 保持结构体不变，方便你前端不用改太多
 #[derive(Serialize, Clone)]
@@ -53,6 +54,40 @@ struct SearchOptions {
     case_sensitive: bool,
     whole_word: bool,
     use_regex: bool,
+    include_pattern: String,
+    exclude_pattern: String,
+}
+
+// 【重铸完成的辅助函数】构建 Glob 集合
+fn build_pattern_set(patterns_str: &str) -> Result<Option<GlobSet>, String> {
+    if patterns_str.is_empty() {
+        return Ok(None);
+    }
+    
+    // GlobSet 的构建方式不同，它需要一个 Builder
+    let mut builder = GlobSetBuilder::new();
+    for p in patterns_str.split(',').map(|s| s.trim()).filter(|s| !s.is_empty()) {
+        let processed_pattern = if !p.contains('*') && !p.contains('?') && (p.contains('/') || p.contains('\\')) {
+            // 规则 1：处理纯目录路径（如 'vendor/lib'） -> **/vendor/lib/**
+            format!("**/{p}/**") 
+        } else if !p.contains('/') && !p.contains('\\') {
+            // 规则 2：处理纯文件名或扩展名 (如 '*.js' 或 'temp_file') -> **/{p}
+            // ⚠️ 注意：这里必须处理 p 已经是通配符的情况，但如果它不含路径分隔符，可以统一处理。
+            // 因为 globset 默认已经有 **/* 的效果，但这里显式声明更清晰。
+            format!("**/{p}")
+        } else {
+            // 规则 3：已经是完整的路径模式 (如 'src/**/*.js')，不做修改
+            p.to_string()
+        };
+
+        // 使用修正后的模式来创建 Glob
+        let glob = Glob::new(&processed_pattern).map_err(|e| e.to_string())?;
+        builder.add(glob);
+    }
+
+    builder.build()
+        .map(Some)
+        .map_err(|e| e.to_string())
 }
 
 // 辅助：快速判断是不是二进制，只读前 8KB
@@ -160,7 +195,40 @@ async fn read_file(path: String) -> Result<serde_json::Value, String> {
 
 // 4. 核心：基于 Mmap 和 Byte Regex 的极速搜索
 #[tauri::command]
-async fn search_in_files(files: Vec<String>, options: SearchOptions) -> Result<Vec<SearchResult>, String> {
+async fn search_in_files(
+    files: Vec<String>, // 这是从前端传来的、未经筛选的完整列表
+    options: SearchOptions,
+) -> Result<Vec<SearchResult>, String> {
+    
+    // --- 【敕令核心】在此处设下结界！ ---
+    let include_set = build_pattern_set(&options.include_pattern)?;
+    let exclude_set = build_pattern_set(&options.exclude_pattern)?;
+
+    // 从完整的 `files` 列表中，筛选出我们真正需要的“精锐之师”
+    let target_files: Vec<String> = files
+        .into_par_iter() // 用 Rayon 并行过滤，即便列表很长也很快
+        .filter(|path_str| {
+            let path = Path::new(path_str);
+            
+            // 法则一：排除优先
+            if let Some(exclude) = &exclude_set {
+                if exclude.is_match(path) {
+                    return false;
+                }
+            }
+            
+            // 法则二：包含守则 (如果设置了的话)
+            if let Some(include) = &include_set {
+                if !include.is_match(path) {
+                    return false;
+                }
+            }
+            
+            true // 通过所有审判的，才是真正的勇士
+        })
+        .collect();
+    // --- 结界完成 ---
+
     // 构造字节级正则，性能比起字符串正则更稳定
     let pattern = if options.use_regex {
         options.query.clone()
@@ -181,7 +249,8 @@ async fn search_in_files(files: Vec<String>, options: SearchOptions) -> Result<V
         .build()
         .map_err(|e| format!("无效的正则表达式: {}", e))?;
 
-    let results: Vec<SearchResult> = files
+    // 【重点】现在，我们只对筛选后的 `target_files` 进行最终的审判！
+    let results: Vec<SearchResult> = target_files // <- 注意，用的是这个！
         .par_iter()
         .filter_map(|path_str| {
             let path = Path::new(path_str);
