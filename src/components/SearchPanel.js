@@ -190,12 +190,22 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
               }}
             />
           )}
-          renderOption={(props, option) => (
-            <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <History sx={{ fontSize: 16, color: 'text.secondary' }} />
-              <Typography variant="body2">{option}</Typography>
-            </Box>
-          )}
+          renderOption={(props, option) => {
+            // 1. 从 props 中把 key 解构出来，剩余的属性放入 otherProps
+            const { key, ...otherProps } = props;
+            
+            return (
+              <Box 
+                component="li" 
+                key={key}           // 2. 显式传递 key
+                {...otherProps}     // 3. 展开剩余属性
+                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+              >
+                <History sx={{ fontSize: 16, color: 'text.secondary' }} />
+                <Typography variant="body2">{option}</Typography>
+              </Box>
+            );
+          }}
         />
         {/* “印章”在此处，与搜索框并列，不再受其内部干扰 */}
         <Tooltip title="高级过滤选项">
@@ -237,7 +247,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                 fullWidth
                 value={excludePattern}
                 onChange={(e) => handleFieldChange('excludePattern', e.target.value)}
-                helperText="逗号分隔，注意“排除”优先于“包含”。"
+                helperText="逗号分隔，注意“排除”优先于“包含”"
               />
             </Box>
           </Grid>
