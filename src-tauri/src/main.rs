@@ -80,8 +80,12 @@ fn build_pattern_set(patterns_str: &str) -> Result<Option<GlobSet>, String> {
             p.to_string()
         };
 
-        // 使用修正后的模式来创建 Glob
-        let glob = Glob::new(&processed_pattern).map_err(|e| e.to_string())?;
+        // 替换 Glob::new()，使用 GlobBuilder::new() 应用配置
+        let glob = globset::GlobBuilder::new(&processed_pattern)
+            .case_insensitive(true)        // 这里根据前端选项决定是否忽略大小写
+            .literal_separator(false)      // 路径分隔符更加智能/宽松
+            .build()                       // 结束配置链，将 GlobBuilder 编译成最终可用的 Glob 结构体
+            .map_err(|e| e.to_string())?;
         builder.add(glob);
     }
 
