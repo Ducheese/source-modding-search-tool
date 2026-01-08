@@ -250,6 +250,7 @@ async fn search_in_files(
     // 使用 bytes::RegexBuilder
     let re = RegexBuilder::new(&final_pattern)
         .case_insensitive(!options.case_sensitive)
+        .multi_line(options.use_regex) // 支持匹配行首行尾。行尾情况比较复杂，存在\r\n和\n两种换行格式，此时的$只会匹配到\n之前的位置，也就是说\r被视为内容之一，而不是换行符。
         .unicode(true) // 开启 unicode 支持以处理中文
         .build()
         .map_err(|e| format!("无效的正则表达式: {}", e))?;
