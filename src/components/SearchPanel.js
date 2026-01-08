@@ -115,9 +115,29 @@ const initialState = {
 function searchReducer(state, action) {
   switch (action.type) {
     case 'SET_FIELD':
-      return { ...state, [action.field]: action.value };
+      const { field, value } = action;
+
+      // 【敕令核心】在此处确立君臣之礼！
+      // 当帝王（useRegex）登基（变为 true）之时...
+      if (field === 'useRegex' && value === true) {
+        // ...仆从（wholeWord）必须立刻退下（变为 false）！
+        return { ...state, useRegex: true, wholeWord: false };
+      }
+
+      // 另，当仆从（wholeWord）想要上位（变为 true）时...
+      if (field === 'wholeWord' && value === true) {
+        // ...帝王（useRegex）必须早已退位（为 false）！
+        // （这一步通过UI的disabled来保证，但以防万一，可以在此加强）
+        return { ...state, wholeWord: true, useRegex: false };
+      }
+
+      // 其他情况，一切照旧
+      return { ...state, [field]: value };
+
     case 'SET_REGEX_SNIPPET':
-      return { ...state, searchQuery: state.searchQuery + action.value, useRegex: true };
+      // 插入咒语，等同于帝王登基
+      return { ...state, searchQuery: state.searchQuery + action.value, useRegex: true, wholeWord: false };
+
     default:
       return state;
   }
@@ -401,17 +421,25 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           }
           label={<Typography variant="body2">区分大小写</Typography>}
         />
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              checked={wholeWord}
-              onChange={(e) => handleFieldChange('wholeWord', e.target.checked)}
-              disabled={isSearching}
+
+        {/* 【敕令核心】让仆从学会回避！ */}
+        <Tooltip title={useRegex ? "正则表达式模式已接管，请手动使用 \\b" : "仅在非正则模式下可用"}>
+          {/* 当帝王亲政时，这个开关必须被禁用，且呈现出“不可用”的卑微姿态 */}
+          <Box> {/* Tooltip 需要一个非 disabled 的子元素来包裹 */}
+            <FormControlLabel
+              disabled={isSearching || useRegex} // **核心**
+              control={
+                <Switch
+                  size="small"
+                  checked={wholeWord}
+                  onChange={(e) => handleFieldChange('wholeWord', e.target.checked)}
+                />
+              }
+              label={<Typography variant="body2">全词匹配</Typography>}
             />
-          }
-          label={<Typography variant="body2">全词匹配</Typography>}
-        />
+          </Box>
+        </Tooltip>
+
         <FormControlLabel
           control={
             <Switch
