@@ -35,6 +35,9 @@ git-fetch-with-cli = true
 ### 安装依赖包
 
 ```bash
+# 允许你编写的本地脚本运行
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUse
+
 # 依照package.json，进行依赖的下载和编译
 npm install --verbose
 ```
