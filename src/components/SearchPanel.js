@@ -33,44 +33,73 @@ import {
 import { searchInFiles } from '../utils/searchEngine';
 
 // 正则快捷片段
-const REGEX_SNIPPETS = [
-  // ------------------ 锚定符 (Anchors) ----------------------------
-  { label: '行首', value: '^' },
-  { label: '行尾CRLF/LF', value: '\\r?$' },
-  // { label: '单词边界', value: '\\b' },
-  // { label: '非单词边界', value: '\\B' },
-  // { label: '例子：匹配所有单词中间的连字符', value: '\B-\B' },
-  // ------------------ 字符类 (Character Classes) ------------------
-  { label: '任意字符', value: '.' },
-  { label: '制表符', value: '\\t' },
-  { label: '空格、制表或换行符', value: '\\s' },    // 空格 、制表符\t、换行符\r\n
-  { label: '字母、数字或下划线', value: '\\w' },
-  { label: '纯数字字符', value: '\\d' },
-  // ------------------ 量词 (Quantifiers) --------------------------
-  { label: '零或一个', value: '?' },
-  { label: '零或多个', value: '*' },
-  { label: '一或多个', value: '+' },
-  { label: '指定数量', value: '{}' },
-  // ------------------ 字符集 (Character Sets) ---------------------
-  { label: '十六进制颜色代码', value: '#[0-9a-fA-F]{6}' },
-  { label: '六个中文字符', value: '[\\u4e00-\\u9fa5]{6}' },
-  // ------------------ 特殊字符转义 (Escaping) ----------------------
-  { label: '括号(', value: '\\(' },
-  { label: '括号)', value: '\\)' },
-  { label: '括号[', value: '\\[' },
-  { label: '括号]', value: '\\]' },
-  { label: '英文句号', value: '\\.' },
-  { label: '问号', value: '\\?' },
-  { label: '乘号', value: '\\*' },
-  { label: '加号', value: '\\+' },
-  // ---------------------- 非贪婪匹配 -------------------------------
-  // { label: '非贪婪零或一个', value: '??' },  // 感觉没啥用
-  { label: '非贪婪零或多个', value: '*?' },     // 比如 <p.*?</p> 匹配第一组p <p class="title">这是一个标题</p><p class="content">这是正文内容</p><p class="footer">这是页脚信息</p>
-  // { label: '非贪婪一或多个', value: '+?' },  // 感觉没啥用
-  // ---------------------- 例子 ------------------------------------
-  { label: '匹配所有"weapon_xxx.single"', value: '^[ ]*"Weapon_[^\\.\\r\\n]+\\.Single"' },
-  { label: '匹配所有武器脚本里的子弹数和种类定义', value: '"(clip_size|primary_ammo)"\\s+"[^"]+?"' },
-  { label: '匹配所有用PropData的GetEntProp', value: 'GetEntProp\\s*\\(\\s*[^,)]+?\\s*,\\s*Prop_Data\\s*,\\s*"[^"]+?"\\s*\\)' }  
+// 按类别分组的正则片段
+const REGEX_CATEGORIES = [
+  {
+    title: '锚定符',
+    items: [
+      { label: '行首', value: '^' },
+      { label: '行尾 (CRLF/LF)', value: '\\r?$' },
+      { label: '单词边界', value: '\\b' },
+      { label: '非单词边界', value: '\\B' },
+    ]
+  },
+  {
+    title: '通配字符',
+    items: [
+      { label: '任意字符', value: '.' },
+      { label: '制表符', value: '\\t' },
+      { label: '换行符 (CRLF/LF)', value: '\\r?\\n' },
+      { label: '空格、制表或换行符', value: '\\s' },    // 空格 、制表符\t、换行符\r\n
+      { label: '字母、数字或下划线', value: '\\w' },
+      { label: '纯数字字符', value: '\\d' },
+    ]
+  },
+  {
+    title: '指定前面元素的出现次数',
+    items: [
+      { label: '0或1个 (?)', value: '?' },
+      { label: '0或多个 (*)', value: '*' },
+      { label: '1或多个 (+)', value: '+' },
+      { label: '非贪婪 (*?)', value: '*?' },
+      { label: '指定数量 {}', value: '{}' },
+    ]
+  },
+  {
+    title: '字符集的使用例',
+    items: [
+      { label: '十六进制颜色代码', value: '#[0-9a-fA-F]{6}' },
+      { label: '指定数量中文字符', value: '[\\u4e00-\\u9fa5]{}' },
+    ]
+  },
+  {
+    title: '必须转义才能匹配其本身的字符',
+    items: [
+      { label: '(', value: '\\(' },
+      { label: ')', value: '\\)' },
+      { label: '[', value: '\\[' },
+      { label: ']', value: '\\]' },
+      { label: '{', value: '\\{' },
+      { label: '}', value: '\\}' },
+      { label: '.', value: '\\.' },
+      { label: '?', value: '\\?' },
+      { label: '*', value: '\\*' },
+      { label: '+', value: '\\+' },
+      { label: '^', value: '\\^' },
+      { label: '$', value: '\\$' },
+      { label: '\\', value: '\\\\' },
+      { label: '-', value: '\\-' },
+      { label: '|', value: '\\|' },
+    ]
+  },
+  {
+    title: '适用于CS起源的使用例',
+    items: [
+      { label: '匹配所有"weapon_xxx.single"', value: '^[ ]*"Weapon_[^\\.\\r\\n]+\\.Single"' },
+      { label: '匹配所有武器脚本里的子弹数和种类定义', value: '"(clip_size|primary_ammo)"\\s+"[^"]+?"' },
+      { label: '匹配所有用PropData的GetEntProp', value: 'GetEntProp\\s*\\(\\s*[^,)]+?\\s*,\\s*Prop_Data\\s*,\\s*"[^"]+?"\\s*\\)' }
+    ]
+  }
 ];
 
 // 使用 useReducer 整合所有状态配置
@@ -226,10 +255,10 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           renderOption={(props, option) => {
             // 1. 从 props 中把 key 解构出来，剩余的属性放入 otherProps
             const { key, ...otherProps } = props;
-            
+
             return (
-              <Box 
-                component="li" 
+              <Box
+                component="li"
                 key={key}           // 2. 显式传递 key
                 {...otherProps}     // 3. 展开剩余属性
                 sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
@@ -261,7 +290,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           {/* 左侧：文件过滤器 */}
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle2" gutterBottom color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <FilterList fontSize="small" /> 通配符过滤
+              <FilterList fontSize="small" /> 路径过滤通配符
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <TextField
@@ -289,36 +318,68 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           <Grid item xs={12} md={6}>
             <Box sx={{ opacity: useRegex ? 1 : 0.6, transition: 'opacity 0.2s' }}>
               <Typography variant="subtitle2" gutterBottom color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Code fontSize="small" /> 快捷正则
+                <Code fontSize="small" /> 正则快捷方式
               </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {REGEX_SNIPPETS.map((snippet) => (
-                  <Tooltip key={snippet.value} title={`插入 ${snippet.value}`}>
-                    <Chip
-                      label={snippet.label}
-                      size="small"
-                      icon={<Add sx={{ fontSize: '14px !important' }} />}
-                      onClick={() => insertRegexSnippet(snippet.value)}
-                      clickable={useRegex}
-                      color={useRegex ? "primary" : "default"}
-                      variant="outlined"
+
+              {/* --- 修改开始：分类渲染 --- */}
+              <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1.5,
+                // 如果条目太多，建议限制高度并允许滚动，否则会把搜索按钮挤出屏幕
+                maxHeight: '200px',
+                overflowY: 'auto',
+                pr: 1 // 滚动条留白
+              }}>
+                {REGEX_CATEGORIES.map((category) => (
+                  <Box key={category.title}>
+                    {/* 分类标题 */}
+                    <Typography
+                      variant="caption"
                       sx={{
-                        cursor: useRegex ? 'pointer' : 'not-allowed',
-                        // 【敕令】当关闭时，让它变得灰暗，而不是改变形态
-                        ...(!useRegex && {
-                          borderColor: theme.palette.action.disabled,
-                          color: theme.palette.action.disabled,
-                          '& .MuiChip-icon': { // 它的图标也一并灰暗
-                            color: theme.palette.action.disabled,
-                          }
-                        })
+                        display: 'block',
+                        mb: 0.5,
+                        color: 'text.secondary',
+                        fontWeight: 'bold',
+                        fontSize: '0.7rem'
                       }}
-                    />
-                  </Tooltip>
+                    >
+                      {category.title}
+                    </Typography>
+
+                    {/* 分类下的 Chips */}
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {category.items.map((snippet) => (
+                        <Tooltip key={snippet.label + snippet.value} title={`插入 ${snippet.value}`}>
+                          <Chip
+                            label={snippet.label}
+                            size="small"
+                            onClick={() => insertRegexSnippet(snippet.value)}
+                            clickable={useRegex}
+                            color={useRegex ? "primary" : "default"}
+                            variant="outlined"
+                            // 这里的样式稍微调整紧凑一点
+                            sx={{
+                              height: 24,
+                              fontSize: '0.75rem',
+                              cursor: useRegex ? 'pointer' : 'not-allowed',
+                              // 【敕令】当关闭时，让它变得灰暗，而不是改变形态
+                              ...(!useRegex && {
+                                borderColor: theme.palette.action.disabled,
+                                color: theme.palette.action.disabled,
+                              })
+                            }}
+                          />
+                        </Tooltip>
+                      ))}
+                    </Box>
+                  </Box>
                 ))}
               </Box>
+              {/* --- 修改结束 --- */}
+
               {!useRegex && (
-                <Typography variant="caption" color="text.disabled">
+                <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 1 }}>
                   * 请先开启“正则表达式”开关以使用
                 </Typography>
               )}
