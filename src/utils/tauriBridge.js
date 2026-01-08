@@ -50,7 +50,11 @@ export const tauriAPI = {
         query: options.query,
         case_sensitive: options.caseSensitive,
         whole_word: options.wholeWord,
-        use_regex: options.useRegex
+        use_regex: options.useRegex,
+        // 【新增】呈上那两份至关重要的“结界图纸”
+        // 注意：这里的命名必须与 Rust 函数的参数名完全一致！
+        include_pattern: options.includePattern,
+        exclude_pattern: options.excludePattern,
       }
     });
   }

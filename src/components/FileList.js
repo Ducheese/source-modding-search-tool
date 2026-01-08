@@ -67,6 +67,9 @@ const FileRow = memo(({ data, index, style }) => {
         </Box>
 
         <ListItemText
+          // 关键修复：显式告诉 MUI 用 div 来渲染文字容器，别用默认的 p
+          primaryTypographyProps={{ component: 'div' }}
+          secondaryTypographyProps={{ component: 'div' }}
           primary={
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography variant="body2" sx={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

@@ -28,6 +28,10 @@ anyhow = "1.0"
 content_inspector = "0.2"
 # 内存映射
 memmap2 = "0.7"
+# 允许使用通配符匹配文件路径
+globset = "0.4"
+# 单例模式
+tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 
 [features]
 # 默认开启自定义协议
