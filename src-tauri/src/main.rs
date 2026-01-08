@@ -9,6 +9,7 @@ use std::path::Path;
 use walkdir::WalkDir;
 use memmap2::Mmap; // 引入内存映射
 use globset::{Glob, GlobSet, GlobSetBuilder}; // 【新神语】召唤真神的三位一体
+use tauri::Manager; // 单例模式，阻止窗口重复打开
 
 // 保持结构体不变，方便你前端不用改太多
 #[derive(Serialize, Clone)]
@@ -390,6 +391,22 @@ async fn search_in_files(
 
 fn main() {
     tauri::Builder::default()
+        // 阻止窗口重复打开
+        .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
+
+            println!("检测到新实例启动，参数: {:?}, 目录: {:?}", argv, cwd);
+            
+            // 获取主窗口 (通常 label 叫 "main")
+            if let Some(window) = app.get_window("main") {
+                // 如果窗口最小化了，就恢复
+                let _ = window.unminimize();
+                // 聚焦窗口
+                let _ = window.set_focus();
+                // 将新实例的参数发送给前端监听
+                let _ = window.emit("single-instance-args", argv);
+            }
+        }))
+        // 开放给前端的API
         .invoke_handler(tauri::generate_handler![
             scan_directory,
             read_file,
