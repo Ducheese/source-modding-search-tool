@@ -205,6 +205,8 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
           flexDirection: 'column',
           alignItems: 'center',
           textAlign: 'center',
+          pt: 1,
+          pb: 2,
         }}
       >
         <CloudUpload

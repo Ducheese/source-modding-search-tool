@@ -151,6 +151,9 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
   return (
     <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
 
+      {/* 弹簧, 将按钮推到底部，把父容器里剩下的所有空白空间都占了 */}
+      <Box sx={{ flex: 1 }} />
+
       <Typography variant="h6" gutterBottom fontWeight="bold">
         搜索配置
       </Typography>
@@ -294,9 +297,6 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
         </Grid>
       </Collapse>
 
-      {/* 弹簧, 将按钮推到底部，把父容器里剩下的所有空白空间都占了 */}
-      <Box sx={{ flex: 1 }} />
-
       {/* 开关组：放在输入框正下方 */}
       <Box sx={{ pt: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
         <FormControlLabel
@@ -367,6 +367,9 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           </Button>
         )}
       </Box>
+
+      {/* 弹簧, 将按钮推到底部，把父容器里剩下的所有空白空间都占了 */}
+      <Box sx={{ flex: 1 }} />
 
       {/* 底部统计 */}
       <Box sx={{ pt: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
