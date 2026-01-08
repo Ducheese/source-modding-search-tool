@@ -180,31 +180,6 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     localStorage.setItem('searchHistory', JSON.stringify(newHistory));
   };
 
-  // 将文件过滤逻辑（filteredFiles）放在 useMemo 中
-  // 确保只有在 files, includePattern, excludePattern 变化时才重新计算，有效避免了不必要的重复计算，提高了性能。
-  const filteredFiles = useMemo(() => {
-
-    let targetFiles = files;
-
-    // 1. 包含模式 (Include)
-    if (includePattern.trim()) {
-      const patterns = includePattern.split(',').map(p => p.trim().toLowerCase()).filter(Boolean);
-      targetFiles = targetFiles.filter(file =>
-        patterns.some(p => (p.startsWith('*.')) ? file.name.toLowerCase().endsWith(p.slice(1)) : file.path.toLowerCase().includes(p))
-      );
-    }
-    // 2. 排除模式 (Exclude)
-    if (excludePattern.trim()) {
-      const patterns = excludePattern.split(',').map(p => p.trim().toLowerCase()).filter(Boolean);
-      targetFiles = targetFiles.filter(file =>
-        !patterns.some(p => (p.startsWith('*.')) ? file.name.toLowerCase().endsWith(p.slice(1)) : file.path.toLowerCase().includes(p))
-      );
-    }
-
-    return targetFiles;
-
-  }, [files, includePattern, excludePattern]);
-
   const handleSearch = async () => {
     // 【注意】这里不再需要前端计算 finalFilePaths 了！
     // 因为 searchInFiles 后端会自己做完全一致的过滤
@@ -233,7 +208,9 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') handleSearch();
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
   };
 
   const stopSearch = () => {
