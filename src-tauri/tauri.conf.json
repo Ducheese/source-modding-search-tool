@@ -77,7 +77,7 @@
         "title": "Source Modding Search Tool",
         "width": 1200,
         "height": 800,
-        "minWidth": 800,
+        "minWidth": 600,
         "minHeight": 600,
         "center": true,
         "fileDropEnabled": true

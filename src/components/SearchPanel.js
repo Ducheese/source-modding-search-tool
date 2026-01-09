@@ -380,6 +380,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                             variant="outlined"
                             // 这里的样式稍微调整紧凑一点
                             sx={{
+                              userSelect: 'none',  // 禁止选中
                               height: 24,
                               fontSize: '0.75rem',
                               cursor: useRegex ? 'pointer' : 'not-allowed',
