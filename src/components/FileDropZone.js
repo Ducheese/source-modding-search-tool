@@ -33,7 +33,7 @@ const FileDropZone = ({ onFilesAdded }) => {
   };
 
   // 支持的文件格式
-  const supportedExtensions = ['.sp', '.cfg', '.ini', '.txt', '.vmt', '.qc', '.inc', '.lua', '.log', '.vdf', '.scr'];
+  const supportedExtensions = ['.sp', '.cfg', '.ini', '.txt', '.vmt', '.qc', '.inc', '.lua', '.log', '.vdf', '.scr', '.res'];
 
   // 校验文件格式
   const validateFileFormat = (fileName) => {
@@ -222,7 +222,7 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
             拖拽文件到此处
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            支持 .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr 文件
+            支持 .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res 文件
           </Typography>
         </Box>
 

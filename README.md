@@ -1,6 +1,6 @@
 # Source Modding Search Tool
 
-为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, Gmod等）的 Mod 开发者提供一个轻量、高性能的本地文本检索工具。
+为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的本地文本检索工具。
 
 **代码基于iFlow CLI + GLM-4.6/4.7 + Gemini 3 Flash/Pro开发**。
 
@@ -64,7 +64,8 @@ npm run tauri build
 - `.lua` - Lua 脚本文件
 - `.log` - 日志文件
 - `.vdf` - Valve Data Format 文件
-- `.scr` - 脚本文件
+- `.scr` - 用户选项配置脚本
+- `.res` - VGUI 布局和文本
 
 ## 技术架构
 
@@ -81,6 +82,7 @@ source-modding-search-tool/
 │   ├── components/       # React 前端
 │   │   ├── FileDropZone.js
 │   │   ├── FileList.js
+│   │   ├── HelpDialog.js
 │   │   ├── MainLayout.js
 │   │   ├── ResultLine.js
 │   │   ├── SearchPanel.js

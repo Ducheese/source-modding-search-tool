@@ -6,11 +6,16 @@ import {
   Typography,
   useTheme,
   alpha,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import FileDropZone from './FileDropZone';
 import FileList from './FileList';
 import SearchPanel from './SearchPanel';
 import SearchResults from './SearchResults';
+
+import { HelpOutline } from '@mui/icons-material';
+import HelpDialog from './HelpDialog'; // 我们将要创建的画卷
 
 const MainLayout = () => {
   const theme = useTheme();
@@ -18,6 +23,8 @@ const MainLayout = () => {
   const [files, setFiles] = useState([]);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
+
+  const [helpOpen, setHelpOpen] = useState(false); // 控制画卷的展开
 
   const handleFilesAdded = useCallback((newFiles) => {
     setFiles(prevFiles => {
@@ -66,20 +73,28 @@ const MainLayout = () => {
           zIndex: 500,         // 堆叠顺序相对值
         }}
       >
-        <Typography variant="h6" component="h1" fontWeight="bold">
-          Source Modding Search Tool
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+          <Typography variant="h6" component="h1" fontWeight="bold">
+            Source Modding Search Tool
+          </Typography>
+
+          <Tooltip title="关于与帮助">
+            <IconButton onClick={() => setHelpOpen(true)} sx={{ color: 'primary.contrastText' }}>
+              <HelpOutline />
+            </IconButton>
+          </Tooltip>
+        </Box>
         <Typography variant="body2" sx={{ opacity: 0.9 }}>
           为 Valve Source 1 引擎 Mod 开发者提供的高性能本地文本检索工具
         </Typography>
       </Box>
 
       {/* 2. 主内容区 (Flex 1, 占满剩余所有高度) */}
-      <Box 
-        sx={{ 
+      <Box
+        sx={{
           flex: 1,
-          display: 'flex', 
-          flexDirection: 'column', 
+          display: 'flex',
+          flexDirection: 'column',
           overflowY: 'auto',   // 滚动条
           p: 2,   // 相当于给这个主内容区加一个内边距
         }}
@@ -89,14 +104,14 @@ const MainLayout = () => {
           <Grid item xs={12} md={4} sx={{ flex: 1 }}>
             <Box sx={{
               flex: 1,
-              display: 'flex', 
-              flexDirection: 'column', 
+              display: 'flex',
+              flexDirection: 'column',
               height: '100%',   // 这一层要撑满，不然列表区域文字描述会偏
-              gap: 2 
+              gap: 2
             }}>
               {/* 上部：拖拽区 */}
               <FileDropZone onFilesAdded={handleFilesAdded} />
-              
+
               {/* 下部：列表 (Flex 1 占满剩余空间) */}
               <Paper
                 sx={{
@@ -122,10 +137,10 @@ const MainLayout = () => {
           <Grid item xs={12} md={8} sx={{ flex: 1 }}>
             <Box sx={{
               flex: 1,
-              display: 'flex', 
-              flexDirection: 'column', 
+              display: 'flex',
+              flexDirection: 'column',
               height: '100%',   // 这一层要撑满，不然列表区域文字描述会偏
-              gap: 2 
+              gap: 2
             }}>
               {/* 上部：搜索区 */}
               <SearchPanel
@@ -134,7 +149,7 @@ const MainLayout = () => {
                 onSearchStart={handleSearchStart}
                 isSearching={isSearching}
               />
-              
+
               {/* 下部：结果 (Flex 1 占满剩余空间) */}
               <Paper
                 sx={{
@@ -156,6 +171,8 @@ const MainLayout = () => {
           </Grid>
         </Grid>
       </Box>
+
+      <HelpDialog open={helpOpen} onClose={() => setHelpOpen(false)} />
     </Box>
   );
 };
