@@ -44,7 +44,7 @@ const HelpDialog = ({ open, onClose }) => {
         {/* 介绍 */}
         <Box sx={{ mb: 3, px: 1 }}>
           <Typography variant="h6" gutterBottom>这是什么</Typography>
-          <Typography>本工具旨在为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的<b>跨文本</b>检索工具，因此支持提交和检索的文本文件格式只包括：.sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res。</Typography>
+          <Typography>本工具旨在为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的<b>跨文本</b>检索工具，因此支持提交和检索的文本文件格式只包括：.sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut。</Typography>
         </Box>
 
         {/* 说明 */}

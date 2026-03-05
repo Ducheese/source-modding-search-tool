@@ -66,6 +66,7 @@ npm run tauri build
 - `.vdf` - Valve Data Format 文件
 - `.scr` - 用户选项配置脚本
 - `.res` - VGUI 布局和文本
+- `.nut` - 求生之路地图脚本文件
 
 ## 技术架构
 
