@@ -244,16 +244,21 @@ const VirtualizedResults = ({ results }) => {
       if (expandedFiles.has(file.path)) {
         file.matches.forEach(match => {
           // 上下文 (Before)
-          if (match.context.before !== null) {
-            rows.push({ type: 'context', content: match.context.before, lineNumber: match.line_number - 1 });
+          if (match.context.before && match.context.before.length > 0) {
+            const startLine = match.line_number - match.context.before.length;
+            match.context.before.forEach((content, idx) => {
+              rows.push({ type: 'context', content, lineNumber: startLine + idx });
+            });
           }
 
           // 匹配本身 (Match)
           rows.push({ type: 'match', content: match.segments, lineNumber: match.line_number });
 
           // 上下文 (After)
-          if (match.context.after !== null) {
-            rows.push({ type: 'context', content: match.context.after, lineNumber: match.line_number + 1 });
+          if (match.context.after && match.context.after.length > 0) {
+            match.context.after.forEach((content, idx) => {
+              rows.push({ type: 'context', content, lineNumber: match.line_number + 1 + idx });
+            });
           }
 
           // ⭐️ 注入分隔区域 (Separator) ，姑且是每组都加

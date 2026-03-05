@@ -8,7 +8,7 @@ use std::io::Read;
 use std::path::Path;
 use walkdir::WalkDir;
 use memmap2::Mmap; // 引入内存映射
-use globset::{Glob, GlobSet, GlobSetBuilder}; // 【新神语】召唤真神的三位一体
+use globset::{GlobSet, GlobSetBuilder}; // 【新神语】召唤真神的三位一体
 use tauri::Manager; // 单例模式，阻止窗口重复打开
 
 // 保持结构体不变，方便你前端不用改太多
@@ -38,8 +38,8 @@ struct MatchItem {
 
 #[derive(Serialize, Clone)]
 struct MatchContext {
-    before: Option<String>,
-    after: Option<String>,
+    before: Vec<String>,
+    after: Vec<String>,
 }
 
 // 新增片段结构体
@@ -47,6 +47,10 @@ struct MatchContext {
 struct Segment {
     text: String,
     is_match: bool,
+}
+
+fn default_context_lines() -> usize {
+    1
 }
 
 #[derive(Deserialize)]
@@ -57,6 +61,8 @@ struct SearchOptions {
     use_regex: bool,
     include_pattern: String,
     exclude_pattern: String,
+    #[serde(default = "default_context_lines")]
+    context_lines: usize,
 }
 
 // 【重铸完成的辅助函数】构建 Glob 集合
@@ -343,27 +349,34 @@ async fn search_in_files(
                     segments.push(Segment { text, is_match: false });
                 }
 
-                // 3. 提取上一行（Before）
-                let before = if line_idx > 0 {
-                    let before_idx = line_idx - 1;
-                    let before_start = if before_idx == 0 { 0 } else { newline_indices[before_idx - 1] + 1 };
-                    let before_end = newline_indices[before_idx];
-                    let before_bytes = &mmap[before_start..before_end];
-                    Some(String::from_utf8_lossy(before_bytes).trim_end_matches('\r').to_string())
-                } else {
-                    None
+                let context_lines = if options.context_lines == 0 { 1 } else { options.context_lines };
+
+                let get_line_text = |target_idx: usize| -> String {
+                    let target_start = if target_idx == 0 { 0 } else { newline_indices[target_idx - 1] + 1 };
+                    let target_end = if target_idx >= newline_indices.len() { mmap.len() } else { newline_indices[target_idx] };
+                    let mut text = String::from_utf8_lossy(&mmap[target_start..target_end]).to_string();
+                    if text.ends_with('\r') { text.pop(); }
+                    text
                 };
 
-                // 4. 提取下一行（After）
-                let after = if line_idx < total_lines - 1 && line_idx < newline_indices.len() {
-                    let after_idx = line_idx + 1;
-                    let after_start = newline_indices[line_idx] + 1; // 当前行结束的下一个字节
-                    let after_end = if after_idx >= newline_indices.len() { mmap.len() } else { newline_indices[after_idx] };
-                    let after_bytes = &mmap[after_start..after_end];
-                    Some(String::from_utf8_lossy(after_bytes).trim_end_matches('\r').to_string())
-                } else {
-                    None
-                };
+                // 3. 提取多行上下文（Before/After）
+                let mut before = Vec::new();
+                let mut after = Vec::new();
+
+                if context_lines > 0 {
+                    for offset in (1..=context_lines).rev() {
+                        if line_idx >= offset {
+                            before.push(get_line_text(line_idx - offset));
+                        }
+                    }
+
+                    for offset in 1..=context_lines {
+                        let target_idx = line_idx + offset;
+                        if target_idx < total_lines {
+                            after.push(get_line_text(target_idx));
+                        }
+                    }
+                }
 
                 // **** 【上下文/行号获取的精髓部分】END ****
                 

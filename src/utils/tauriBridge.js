@@ -55,6 +55,7 @@ export const tauriAPI = {
         // 注意：这里的命名必须与 Rust 函数的参数名完全一致！
         include_pattern: options.includePattern,
         exclude_pattern: options.excludePattern,
+        context_lines: options.contextLines,
       }
     });
   }

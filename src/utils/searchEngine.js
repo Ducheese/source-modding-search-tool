@@ -65,13 +65,18 @@ export const exportResults = (results, format = 'txt') => {
 
       file.matches.forEach(match => {
         content += `行 ${match.line_number}:\n`; // 注意：Rust返回的是 snake_case
-        if (match.context.before) {
-          content += `  ${match.line_number - 1}: ${match.context.before}\n`;
+        if (match.context.before && match.context.before.length > 0) {
+          const startLine = match.line_number - match.context.before.length;
+          match.context.before.forEach((line, idx) => {
+            content += `  ${startLine + idx}: ${line}\n`;
+          });
         }
         // --- 修复点：使用 getLineText 替代 match.line ---
         content += `> ${match.line_number}: ${getLineText(match.segments)}\n`;
-        if (match.context.after) {
-          content += `  ${match.line_number + 1}: ${match.context.after}\n`;
+        if (match.context.after && match.context.after.length > 0) {
+          match.context.after.forEach((line, idx) => {
+            content += `  ${match.line_number + 1 + idx}: ${line}\n`;
+          });
         }
         content += '\n';
       });
@@ -96,13 +101,18 @@ export const exportResults = (results, format = 'txt') => {
       file.matches.forEach(match => {
         content += `### 行 ${match.line_number}\n\n`;
         content += '```text\n';
-        if (match.context.before) {
-          content += `${match.line_number - 1}: ${match.context.before}\n`;
+        if (match.context.before && match.context.before.length > 0) {
+          const startLine = match.line_number - match.context.before.length;
+          match.context.before.forEach((line, idx) => {
+            content += `${startLine + idx}: ${line}\n`;
+          });
         }
 // --- 修复点：使用 getLineText 替代 match.line ---
         content += `${match.line_number}: ${getLineText(match.segments)}\n`;
-        if (match.context.after) {
-          content += `${match.line_number + 1}: ${match.context.after}\n`;
+        if (match.context.after && match.context.after.length > 0) {
+          match.context.after.forEach((line, idx) => {
+            content += `${match.line_number + 1 + idx}: ${line}\n`;
+          });
         }
         content += '```\n\n';
       });

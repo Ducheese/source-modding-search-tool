@@ -110,6 +110,7 @@ const initialState = {
   useRegex: false,
   includePattern: '',
   excludePattern: '',
+  moreContext: false,
 };
 
 function searchReducer(state, action) {
@@ -149,7 +150,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
   // 使用 useReducer 统一管理搜索配置（initialState），避免了大量 useState 的堆砌
   const [state, dispatch] = useReducer(searchReducer, initialState);
-  const { searchQuery, caseSensitive, wholeWord, useRegex, includePattern, excludePattern } = state;
+  const { searchQuery, caseSensitive, wholeWord, useRegex, includePattern, excludePattern, moreContext } = state;
 
   const [searchHistory, setSearchHistory] = useState([]);
 
@@ -196,6 +197,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
         useRegex,
         includePattern,
         excludePattern,
+        contextLines: moreContext ? 2 : 1,
       };
 
       // 直接把完整的文件列表扔给后端，让它自己去筛选！
@@ -451,6 +453,17 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
             />
           }
           label={<Typography variant="body2">正则表达式</Typography>}
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              size="small"
+              checked={moreContext}
+              onChange={(e) => handleFieldChange('moreContext', e.target.checked)}
+              disabled={isSearching}
+            />
+          }
+          label={<Typography variant="body2">更多上下文</Typography>}
         />
       </Box>
 
