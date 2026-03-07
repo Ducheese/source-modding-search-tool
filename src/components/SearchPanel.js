@@ -197,7 +197,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
         useRegex,
         includePattern,
         excludePattern,
-        contextLines: moreContext ? 2 : 1,
+        contextLines: moreContext ? 4 : 1,
       };
 
       // 直接把完整的文件列表扔给后端，让它自己去筛选！
