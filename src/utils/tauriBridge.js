@@ -58,5 +58,15 @@ export const tauriAPI = {
         context_lines: options.contextLines,
       }
     });
+  },
+  
+  // AI写正则
+  generateAiRegex: async (payload) => {
+    return await invoke('generate_ai_regex', { request: payload });
+  },
+
+  // 测试连接
+  testAiConnection: async (payload) => {
+    return await invoke('test_ai_connection', { request: payload });
   }
 };

@@ -14,7 +14,6 @@ import {
   Autocomplete,
   Typography,
   useTheme,
-  alpha,
   CircularProgress,
   Grid,
   Tooltip,
@@ -28,9 +27,11 @@ import {
   FilterAlt,
   FilterList,
   Code,
-  Add,
 } from '@mui/icons-material';
 import { searchInFiles } from '../utils/searchEngine';
+import { useSnackbar } from '../App';
+import { tauriAPI } from '../utils/tauriBridge';
+import { DEFAULT_AI_SYSTEM_PROMPT, loadAiSettings } from '../utils/aiDefaults';
 
 // 正则快捷片段
 // 按类别分组的正则片段
@@ -111,12 +112,21 @@ const initialState = {
   includePattern: '',
   excludePattern: '',
   moreContext: false,
+  aiRegex: false,
 };
 
 function searchReducer(state, action) {
   switch (action.type) {
     case 'SET_FIELD':
       const { field, value } = action;
+
+      if (field === 'aiRegex' && value === true) {
+        return { ...state, aiRegex: true, useRegex: true, wholeWord: false, caseSensitive: false };
+      }
+
+      if (field === 'aiRegex' && value === false) {
+        return { ...state, aiRegex: false, useRegex: false};
+      }
 
       // 【敕令核心】在此处确立君臣之礼！
       // 当帝王（useRegex）登基（变为 true）之时...
@@ -150,15 +160,18 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
   // 使用 useReducer 统一管理搜索配置（initialState），避免了大量 useState 的堆砌
   const [state, dispatch] = useReducer(searchReducer, initialState);
-  const { searchQuery, caseSensitive, wholeWord, useRegex, includePattern, excludePattern, moreContext } = state;
+  const { searchQuery, caseSensitive, wholeWord, useRegex, includePattern, excludePattern, moreContext, aiRegex } = state;
 
   const [searchHistory, setSearchHistory] = useState([]);
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
 
   // 新增：控制高级选项展开的状态
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   // 用于输入正则快捷方式
   const searchInputRef = useRef(null);
+
+  const showSnackbar = useSnackbar();
 
   // 从 localStorage 加载搜索历史
   useEffect(() => {
@@ -181,20 +194,22 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     localStorage.setItem('searchHistory', JSON.stringify(newHistory));
   };
 
-  const handleSearch = async () => {
+  const handleSearch = async (overrideQuery, overrideUseRegex) => {
     // 【注意】这里不再需要前端计算 finalFilePaths 了！
     // 因为 searchInFiles 后端会自己做完全一致的过滤
-    if (!searchQuery.trim() || files.length === 0) return;
+    const finalQuery = typeof overrideQuery === 'string' ? overrideQuery : searchQuery;
+    const finalUseRegex = typeof overrideUseRegex === 'boolean' ? overrideUseRegex : useRegex;
+    if (!finalQuery.trim() || files.length === 0) return;
 
-    saveSearchHistory(searchQuery);
+    saveSearchHistory(finalQuery);
     onSearchStart();
 
     try {
       const searchOptions = {
-        query: searchQuery,
+        query: finalQuery,
         caseSensitive,
         wholeWord,
-        useRegex,
+        useRegex: finalUseRegex,
         includePattern,
         excludePattern,
         contextLines: moreContext ? 4 : 1,
@@ -209,9 +224,47 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     }
   };
 
+  const handleAiRegexSearch = async () => {
+
+    const intent = searchQuery.trim();
+    if (!intent || files.length === 0) return;
+
+    const settings = loadAiSettings();
+    if (!settings.baseUrl || !settings.apiKey || !settings.modelName) {
+      showSnackbar(`请进入「关于与帮助」填写「大模型接入配置」`, 'warning');
+      return;
+    }
+
+    setIsAiGenerating(true);
+    try {
+      const response = await tauriAPI.generateAiRegex({
+        user_prompt: intent,
+        system_prompt: settings.systemPrompt || DEFAULT_AI_SYSTEM_PROMPT,
+        api_key: settings.apiKey,
+        base_url: settings.baseUrl,
+        model_name: settings.modelName,
+      });
+      const regex = response?.regex?.trim();
+      if (!regex) {
+        throw new Error('未返回有效的正则表达式');
+      }
+      dispatch({ type: 'SET_FIELD', field: 'searchQuery', value: regex });
+      await handleSearch(regex, true);
+    } catch (error) {
+      showSnackbar('正则表达式生成失败', 'error');
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleSearch();
+      if (isAiGenerating) return;  // 防止重复提交，收到两次输出
+      if (aiRegex) {
+        handleAiRegexSearch();
+      } else {
+        handleSearch();
+      }
     }
   };
 
@@ -252,11 +305,11 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
             <TextField
               {...params}
               inputRef={searchInputRef}
-              placeholder="输入搜索内容..."
+              placeholder={aiRegex ? '输入您的意图...' : '输入搜索内容...'}
               variant="outlined"
               size="small"
               onKeyPress={handleKeyPress}
-              disabled={isSearching}
+              disabled={isSearching || isAiGenerating}
               InputProps={{
                 ...params.InputProps,
                 startAdornment: (
@@ -267,7 +320,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                 ),
                 endAdornment: (
                   <>
-                    {isSearching && <CircularProgress size={20} />}
+                    {(isSearching || isAiGenerating) && <CircularProgress size={20} />}
                     {params.InputProps.endAdornment}
                   </>
                 ),
@@ -413,17 +466,21 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
       {/* 开关组：放在输入框正下方 */}
       <Box sx={{ pt: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              checked={caseSensitive}
-              onChange={(e) => handleFieldChange('caseSensitive', e.target.checked)}
-              disabled={isSearching}
+        <Tooltip title={aiRegex ? "AI写正则模式已接管，请手动使用 (?i)" : "仅在非AI写正则模式下可用"}>
+          <Box>
+            <FormControlLabel
+              disabled={isSearching || aiRegex}
+              control={
+                <Switch
+                  size="small"
+                  checked={caseSensitive}
+                  onChange={(e) => handleFieldChange('caseSensitive', e.target.checked)}
+                />
+              }
+              label={<Typography variant="body2">区分大小写</Typography>}
             />
-          }
-          label={<Typography variant="body2">区分大小写</Typography>}
-        />
+          </Box>
+        </Tooltip>
 
         {/* 【敕令核心】让仆从学会回避！ */}
         <Tooltip title={useRegex ? "正则表达式模式已接管，请手动使用 \\b" : "仅在非正则模式下可用"}>
@@ -443,29 +500,40 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           </Box>
         </Tooltip>
 
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              checked={useRegex}
-              onChange={(e) => handleFieldChange('useRegex', e.target.checked)}
-              disabled={isSearching}
+            <FormControlLabel
+              control={
+                <Switch
+                  size="small"
+                  checked={useRegex}
+                  onChange={(e) => handleFieldChange('useRegex', e.target.checked)}
+                  disabled={isSearching || aiRegex}
+                />
+              }
+              label={<Typography variant="body2">正则表达式</Typography>}
             />
-          }
-          label={<Typography variant="body2">正则表达式</Typography>}
-        />
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              checked={moreContext}
-              onChange={(e) => handleFieldChange('moreContext', e.target.checked)}
-              disabled={isSearching}
+            <FormControlLabel
+              control={
+                <Switch
+                  size="small"
+                  checked={moreContext}
+                  onChange={(e) => handleFieldChange('moreContext', e.target.checked)}
+                  disabled={isSearching}
+                />
+              }
+              label={<Typography variant="body2">更多上下文</Typography>}
             />
-          }
-          label={<Typography variant="body2">更多上下文</Typography>}
-        />
-      </Box>
+            <FormControlLabel
+              control={
+                <Switch
+                  size="small"
+                  checked={aiRegex}
+                  onChange={(e) => handleFieldChange('aiRegex', e.target.checked)}
+                  disabled={isSearching || isAiGenerating}
+                />
+              }
+              label={<Typography variant="body2">AI写正则</Typography>}
+            />
+          </Box>
 
       {/* --- 底部：搜索按钮 --- */}
       <Box sx={{ pt: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -474,8 +542,14 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
             variant="contained"
             size="large" // 更大的按钮
             startIcon={<Search />}
-            onClick={handleSearch}
-            disabled={!searchQuery.trim() || files.length === 0}
+            onClick={() => {
+              if (aiRegex) {
+                handleAiRegexSearch();
+              } else {
+                handleSearch();
+              }
+            }}
+            disabled={!searchQuery.trim() || files.length === 0 || isAiGenerating}
             fullWidth // 填满宽度，更有气势
             sx={{
               height: 48,

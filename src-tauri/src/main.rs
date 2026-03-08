@@ -10,6 +10,7 @@ use walkdir::WalkDir;
 use memmap2::Mmap; // 引入内存映射
 use globset::{GlobSet, GlobSetBuilder}; // 【新神语】召唤真神的三位一体
 use tauri::Manager; // 单例模式，阻止窗口重复打开
+use reqwest::Client;
 
 // 保持结构体不变，方便你前端不用改太多
 #[derive(Serialize, Clone)]
@@ -63,6 +64,88 @@ struct SearchOptions {
     exclude_pattern: String,
     #[serde(default = "default_context_lines")]
     context_lines: usize,
+}
+
+#[derive(Deserialize)]
+struct AiRegexRequest {
+    user_prompt: String,
+    system_prompt: String,
+    api_key: String,
+    base_url: String,
+    model_name: String,
+}
+
+#[derive(Serialize)]
+struct AiRegexResponse {
+    regex: String,
+}
+
+#[derive(Deserialize)]
+struct OpenAiResponse {
+    choices: Vec<OpenAiChoice>,
+}
+
+#[derive(Deserialize)]
+struct OpenAiChoice {
+    message: OpenAiMessage,
+}
+
+#[derive(Deserialize)]
+struct OpenAiMessage {
+    content: Option<String>,
+}
+
+fn normalize_base_url(base_url: &str) -> String {
+    let trimmed = base_url.trim().trim_end_matches('/');
+    if trimmed.is_empty() {
+        return String::new();
+    }
+    
+    // 如果已经是完整的 /v1/chat/completions 端点
+    if trimmed.ends_with("/v1/chat/completions") {
+        // 去掉 /chat/completions 部分，只保留 /v1
+        let without_completions = &trimmed[..trimmed.len() - "/chat/completions".len()];
+        return without_completions.to_string();
+    }
+    
+    // 如果已经是 /v1 结尾，保持不变
+    if trimmed.ends_with("/v1") {
+        return trimmed.to_string();
+    }
+    
+    // 其他情况添加 /v1
+    format!("{trimmed}/v1")
+}
+
+fn extract_regex_from_text(text: &str) -> String {
+    let trimmed = text.trim();
+    if trimmed.is_empty() {
+        return String::new();
+    }
+
+    // 处理代码块格式
+    if let (Some(start), Some(end)) = (trimmed.find("```"), trimmed.rfind("```")) {
+        if end > start + 3 {
+            let mut inner = trimmed[start + 3..end].trim().to_string();
+            if let Some(first_line_end) = inner.find('\n') {
+                let first_line = inner[..first_line_end].trim();
+                let maybe_lang = first_line.chars().all(|c| c.is_alphanumeric() || c == '-' || c == '_');
+                if maybe_lang {
+                    inner = inner[first_line_end + 1..].trim().to_string();
+                }
+            }
+            return inner.trim().to_string();
+        }
+    }
+
+    // 处理引号包围格式
+    if (trimmed.starts_with('"') && trimmed.ends_with('"'))
+        || (trimmed.starts_with('`') && trimmed.ends_with('`'))
+    {
+        return trimmed[1..trimmed.len() - 1].trim().to_string();
+    }
+
+    trimmed.to_string()
 }
 
 // 【重铸完成的辅助函数】构建 Glob 集合
@@ -403,6 +486,89 @@ async fn search_in_files(
     Ok(results)
 }
 
+#[tauri::command]
+async fn generate_ai_regex(request: AiRegexRequest) -> Result<AiRegexResponse, String> {
+    if request.user_prompt.trim().is_empty() {
+        return Err("用户意图为空，无法生成正则表达式。".to_string());
+    }
+    if request.api_key.trim().is_empty() {
+        return Err("API Key 不能为空。".to_string());
+    }
+    if request.base_url.trim().is_empty() {
+        return Err("API Base Url 不能为空。".to_string());
+    }
+    if request.model_name.trim().is_empty() {
+        return Err("模型名称不能为空。".to_string());
+    }
+
+    let api_base = normalize_base_url(&request.base_url);
+    if api_base.is_empty() {
+        return Err("API Base Url 无效。".to_string());
+    }
+
+    let endpoint = format!("{}/chat/completions", api_base);
+
+    let payload = serde_json::json!({
+        "model": request.model_name,
+        "messages": [
+            {"role": "system", "content": request.system_prompt},
+            {"role": "user", "content": request.user_prompt}
+        ],
+        // "temperature": 0.1,      // 温度（先不硬编码了吧）
+        "stream": false             // 确认是非流式传输
+    });
+
+    let client = Client::new();     // 发送 HTTP 请求
+    let response = client
+        .post(&endpoint)
+        .bearer_auth(request.api_key)
+        .json(&payload)
+        .send()
+        .await
+        .map_err(|e| format!("AI 请求失败: {e}"))?;
+
+    let status = response.status();
+    let body = response
+        .text()
+        .await
+        .map_err(|e| format!("AI 响应读取失败: {e}"))?;
+
+    if !status.is_success() {
+        return Err(format!("AI 请求失败: HTTP {} - {}", status, body));
+    }
+
+    let parsed: OpenAiResponse = serde_json::from_str(&body)
+        .map_err(|e| format!("AI 响应解析失败: {e}"))?;
+    let content = parsed
+        .choices
+        .first()
+        .and_then(|c| c.message.content.clone())
+        .unwrap_or_default();
+
+    let regex = extract_regex_from_text(&content);
+    if regex.trim().is_empty() {
+        return Err("AI 未返回有效正则表达式。".to_string());
+    }
+
+    Ok(AiRegexResponse { regex })
+}
+
+#[tauri::command]
+async fn test_ai_connection(request: AiRegexRequest) -> Result<(), String> {
+    let payload = AiRegexRequest {
+        user_prompt: "请只回复OK".to_string(),
+        system_prompt: request.system_prompt,
+        api_key: request.api_key,
+        base_url: request.base_url,
+        model_name: request.model_name,
+    };
+    let response = generate_ai_regex(payload).await?;
+    if response.regex.trim().is_empty() {
+        return Err("AI 连接测试失败：返回为空。".to_string());
+    }
+    Ok(())
+}
+
 fn main() {
     tauri::Builder::default()
         // 阻止窗口重复打开
@@ -425,7 +591,9 @@ fn main() {
             scan_directory,
             read_file,
             get_file_stats,
-            search_in_files
+            search_in_files,
+            generate_ai_regex,
+            test_ai_connection
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

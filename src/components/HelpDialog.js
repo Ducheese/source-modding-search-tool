@@ -8,8 +8,13 @@ import {
   Box,
   Tabs,
   Tab,
+  TextField,
+  Button,
 } from '@mui/material';
 import { Close } from '@mui/icons-material';
+import { useSnackbar } from '../App';
+import { tauriAPI } from '../utils/tauriBridge';
+import { DEFAULT_AI_SYSTEM_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -22,7 +27,47 @@ const TabPanel = (props) => {
 
 const HelpDialog = ({ open, onClose }) => {
   const [tabValue, setTabValue] = React.useState(0);
+  const [aiSettings, setAiSettings] = React.useState(loadAiSettings());
+  const [isTesting, setIsTesting] = React.useState(false);
   const handleTabChange = (event, newValue) => setTabValue(newValue);
+
+  const showSnackbar = useSnackbar();
+
+  React.useEffect(() => {
+    if (!open) return;
+    setAiSettings(loadAiSettings());
+  }, [open]);
+
+  const handleAiSettingChange = (field, value) => {
+    setAiSettings(prev => {
+      const next = { ...prev, [field]: value };
+      localStorage.setItem(AI_SETTINGS_STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const handleTestConnection = async () => {
+    if (!aiSettings.baseUrl.trim() || !aiSettings.apiKey.trim() || !aiSettings.modelName.trim()) {
+      showSnackbar('请填写API Base Url、API Key和模型名称', 'warning');
+      return;
+    }
+
+    setIsTesting(true);
+    try {
+      await tauriAPI.testAiConnection({
+        user_prompt: '请只回复 OK',
+        system_prompt: aiSettings.systemPrompt || DEFAULT_AI_SYSTEM_PROMPT,
+        api_key: aiSettings.apiKey,
+        base_url: aiSettings.baseUrl,
+        model_name: aiSettings.modelName,
+      });
+      showSnackbar('连接测试成功', 'success');
+    } catch (error) {
+      showSnackbar('连接测试失败', 'error');
+    } finally {
+      setIsTesting(false);
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -60,6 +105,7 @@ const HelpDialog = ({ open, onClose }) => {
             <Tabs value={tabValue} onChange={handleTabChange}>
               <Tab label="路径过滤通配符" />
               <Tab label="正则使用建议" />
+              <Tab label="大模型接入配置" />
             </Tabs>
           </Box>
 
@@ -82,6 +128,56 @@ const HelpDialog = ({ open, onClose }) => {
                 <li>当你需要匹配行首、行尾的“空白”时，请养成使用 <code>[ \t]*</code> 代替 <code>\s*</code> 的习惯，避免跨行匹配导致显示错误</li>
               </ul>
             </Typography>
+          </TabPanel>
+
+          <TabPanel value={tabValue} index={2}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField
+                label="API Base Url"
+                value={aiSettings.baseUrl}
+                onChange={(e) => handleAiSettingChange('baseUrl', e.target.value)}
+                placeholder="https://api.siliconflow.cn/v1"
+                size="small"
+              />
+              <TextField
+                label="API Key"
+                value={aiSettings.apiKey}
+                onChange={(e) => handleAiSettingChange('apiKey', e.target.value)}
+                type="password"
+                placeholder="sk-xxx"
+                size="small"
+              />
+              <TextField
+                label="模型名称"
+                value={aiSettings.modelName}
+                onChange={(e) => handleAiSettingChange('modelName', e.target.value)}
+                placeholder="Qwen/Qwen3-8B"
+                size="small"
+              />
+              <TextField
+                label="AI写正则的提示词"
+                value={aiSettings.systemPrompt}
+                onChange={(e) => handleAiSettingChange('systemPrompt', e.target.value)}
+                multiline
+                minRows={6}
+                maxRows={18}
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                <Button
+                  variant="outlined"
+                  onClick={() => handleAiSettingChange('systemPrompt', DEFAULT_AI_SYSTEM_PROMPT)}
+                >
+                  重置提示词
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleTestConnection}
+                  disabled={isTesting}
+                >
+                  {isTesting ? '测试中...' : '测试连接'}
+                </Button>
+              </Box>
+            </Box>
           </TabPanel>
 
         </Box>
