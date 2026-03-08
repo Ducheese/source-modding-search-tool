@@ -84,7 +84,10 @@ F. 武器脚本与弹药体系 (.txt, .kv)：
 输出：(?i)^[ \t]*"Damage"\s+"?\d+(?:\.\d+)?"?
 
 输入：查找所有 bind 指令及其按键和命令
-输出：(?i)^[ \t]*bind[ \t]+[^ \t\r\n]+[ \t]+[^\r\n]*`;
+输出：(?i)^[ \t]*bind[ \t]+[^ \t\r\n]+[ \t]+[^\r\n]*
+
+输入：匹配xxx yyy[MAXPLAYERS+1] = {zzz}; 但不包括xxx yyy[MAXPLAYERS+1] = {zzz,...}; 
+输出：(?i)^[ \t]*[a-zA-Z0-9_:]+[ \t]+[a-zA-Z0-9_]+[ \t]*\[[ \t]*MAXPLAYERS[ \t]*\+[ \t]*1[ \t]*\][ \t]*=[ \t]*\{[^},]+\}[ \t]*;?`;
 
 export const loadAiSettings = () => {
   const raw = localStorage.getItem(AI_SETTINGS_STORAGE_KEY);

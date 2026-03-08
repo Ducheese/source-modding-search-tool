@@ -65,7 +65,7 @@ const ResultLine = memo(({
           display: 'flex',
           alignItems: 'center',
           px: 1,   // 水平方向上的内边距（Padding on the X-axis）
-          fontFamily: 'monospace',   // 等宽字体是必须的
+          fontFamily: '"JetBrains Mono", "Noto Sans SC", monospace',   // 等宽字体是必须的
           fontSize: '0.875rem',
           color: isMatch ? theme.palette.text.primary : alpha(theme.palette.text.secondary, 0.3),
           // 美化滚动条
@@ -89,12 +89,12 @@ const ResultLine = memo(({
               style={{
                 backgroundColor: seg.is_match ? alpha(theme.palette.primary.main, 0.2) : 'transparent',
                 color: seg.is_match ? theme.palette.primary.main : theme.palette.text.primary,
-                fontWeight: seg.is_match ? 'bold' : 'normal',
                 borderRadius: '2px',
               }}
             >
               <Typography
                 variant="body2"
+                sx={{ fontFamily: 'inherit', fontWeight: seg.is_match ? 700 : 400 }}
               >
                 {seg.text}
               </Typography>
@@ -105,6 +105,7 @@ const ResultLine = memo(({
           <span>
             <Typography
               variant="body2"
+              sx={{ fontFamily: 'inherit', fontWeight: 400 }}
             >
               {content}
             </Typography>
