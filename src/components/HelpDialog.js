@@ -56,14 +56,14 @@ const HelpDialog = ({ open, onClose }) => {
     try {
       await tauriAPI.testAiConnection({
         user_prompt: '请只回复 OK',
-        system_prompt: aiSettings.systemPrompt || DEFAULT_AI_SYSTEM_PROMPT,
+        system_prompt: '你是一个测试助手。请直接回复用户请求的内容，不要添加任何额外信息。',
         api_key: aiSettings.apiKey,
         base_url: aiSettings.baseUrl,
         model_name: aiSettings.modelName,
       });
-      showSnackbar('连接测试成功', 'success');
+      showSnackbar('连接成功', 'success');
     } catch (error) {
-      showSnackbar('连接测试失败', 'error');
+      showSnackbar('连接超时', 'error');
     } finally {
       setIsTesting(false);
     }

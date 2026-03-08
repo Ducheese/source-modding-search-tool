@@ -251,7 +251,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       dispatch({ type: 'SET_FIELD', field: 'searchQuery', value: regex });
       await handleSearch(regex, true);
     } catch (error) {
-      showSnackbar('正则表达式生成失败', 'error');
+      showSnackbar('已超时', 'error');
     } finally {
       setIsAiGenerating(false);
     }

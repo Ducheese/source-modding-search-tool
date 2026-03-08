@@ -11,6 +11,7 @@ use memmap2::Mmap; // 引入内存映射
 use globset::{GlobSet, GlobSetBuilder}; // 【新神语】召唤真神的三位一体
 use tauri::Manager; // 单例模式，阻止窗口重复打开
 use reqwest::Client;
+use std::time::Duration;
 
 // 保持结构体不变，方便你前端不用改太多
 #[derive(Serialize, Clone)]
@@ -518,7 +519,13 @@ async fn generate_ai_regex(request: AiRegexRequest) -> Result<AiRegexResponse, S
         "stream": false             // 确认是非流式传输
     });
 
-    let client = Client::new();     // 发送 HTTP 请求
+    // 创建带超时设置的客户端
+    let client = Client::builder()
+        .timeout(Duration::from_secs(30))         // 最多再等待 25秒
+        .connect_timeout(Duration::from_secs(5))  // 连接超时 5秒
+        .build()
+        .map_err(|e| format!("创建HTTP客户端失败: {e}"))?;
+
     let response = client
         .post(&endpoint)
         .bearer_auth(request.api_key)
