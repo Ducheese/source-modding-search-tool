@@ -2,6 +2,7 @@
 
 use rayon::prelude::*;
 use regex::bytes::RegexBuilder; // 注意：改为 bytes 的正则
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Read;
@@ -11,7 +12,9 @@ use memmap2::Mmap; // 引入内存映射
 use globset::{GlobSet, GlobSetBuilder}; // 【新神语】召唤真神的三位一体
 use tauri::Manager; // 单例模式，阻止窗口重复打开
 use reqwest::Client;
+use futures_util::StreamExt;
 use std::time::Duration;
+use anyhow::{bail, ensure, Context};
 
 // 保持结构体不变，方便你前端不用改太多
 #[derive(Serialize, Clone)]
@@ -76,6 +79,21 @@ struct AiRegexRequest {
     model_name: String,
 }
 
+#[derive(Deserialize)]
+struct AiChatMessage {
+    role: String,
+    content: String,
+}
+
+#[derive(Deserialize)]
+struct AiChatStreamRequest {
+    messages: Vec<AiChatMessage>,
+    api_key: String,
+    base_url: String,
+    model_name: String,
+    request_id: String,
+}
+
 #[derive(Serialize)]
 struct AiRegexResponse {
     regex: String,
@@ -118,6 +136,15 @@ fn normalize_base_url(base_url: &str) -> String {
     format!("{trimmed}/v1")
 }
 
+fn create_http_client() -> anyhow::Result<Client> {
+    Client::builder()
+        .timeout(Duration::from_secs(180))
+        .connect_timeout(Duration::from_secs(5))
+        .build()
+        .context("创建HTTP客户端失败")
+}
+
+// 考虑更加全面了，遇到不听话的AI就有用
 fn extract_regex_from_text(text: &str) -> String {
     let trimmed = text.trim();
     if trimmed.is_empty() {
@@ -139,6 +166,16 @@ fn extract_regex_from_text(text: &str) -> String {
         }
     }
 
+    // 处理单行行内代码
+    if let Some(start) = trimmed.find('`') {
+        if let Some(end) = trimmed[start + 1..].find('`') {
+            let inner = trimmed[start + 1..start + 1 + end].trim();
+            if !inner.is_empty() {
+                return inner.to_string();
+            }
+        }
+    }
+
     // 处理引号包围格式
     if (trimmed.starts_with('"') && trimmed.ends_with('"'))
         || (trimmed.starts_with('`') && trimmed.ends_with('`'))
@@ -146,7 +183,83 @@ fn extract_regex_from_text(text: &str) -> String {
         return trimmed[1..trimmed.len() - 1].trim().to_string();
     }
 
+    // 处理 /regex/flags 形式
+    for line in trimmed.lines() {
+        let line = line.trim();
+        if line.starts_with('/') && line.len() > 1 {
+            if let Some(last_slash) = line.rfind('/') {
+                if last_slash > 0 {
+                    let candidate = &line[1..last_slash];
+                    let flags = &line[last_slash + 1..];
+                    if flags.chars().all(|c| c.is_ascii_alphabetic()) && !candidate.trim().is_empty() {
+                        return candidate.trim().to_string();
+                    }
+                }
+            }
+        }
+    }
+
+    // 处理 “regex: ...” / “正则：...” 等提示语
+    if let Ok(label_re) = Regex::new(r"(?i)^(regex|pattern|正则)\s*[:：]\s*(.+)$") {
+        for line in trimmed.lines() {
+            let line = line.trim();
+            if let Some(caps) = label_re.captures(line) {
+                if let Some(value) = caps.get(2) {
+                    let value = value.as_str().trim();
+                    if !value.is_empty() {
+                        return value.to_string();
+                    }
+                }
+            }
+        }
+    }
+
     trimmed.to_string()
+}
+
+fn validate_ai_request_common(api_key: &str, base_url: &str, model_name: &str) -> anyhow::Result<String> {
+    ensure!(!api_key.trim().is_empty(), "API Key 不能为空。");
+    ensure!(!base_url.trim().is_empty(), "API Base Url 不能为空。");
+    ensure!(!model_name.trim().is_empty(), "模型名称不能为空。");
+
+    let api_base = normalize_base_url(base_url);
+    ensure!(!api_base.is_empty(), "API Base Url 无效。");
+    Ok(api_base)
+}
+
+fn collect_sse_events(buffer: &mut String) -> Vec<String> {
+    let mut events = Vec::new();
+
+    loop {
+        let Some(idx) = buffer.find("\n\n") else { break; };
+        let raw = buffer[..idx].to_string();
+        buffer.drain(..idx + 2);
+
+        let raw = raw.trim();
+        if raw.is_empty() {
+            continue;
+        }
+
+        let mut data_lines = Vec::new();
+        for line in raw.lines() {
+            let line = line.trim_end();
+            if line.starts_with(':') {
+                continue;
+            }
+            if let Some(rest) = line.strip_prefix("data:") {
+                let data = rest.trim_start();
+                if !data.is_empty() {
+                    data_lines.push(data.to_string());
+                }
+            }
+        }
+
+        if !data_lines.is_empty() {
+            events.push(data_lines.join("\n"));
+        }
+    }
+
+    events
 }
 
 // 【重铸完成的辅助函数】构建 Glob 集合
@@ -487,26 +600,9 @@ async fn search_in_files(
     Ok(results)
 }
 
-#[tauri::command]
-async fn generate_ai_regex(request: AiRegexRequest) -> Result<AiRegexResponse, String> {
-    if request.user_prompt.trim().is_empty() {
-        return Err("用户意图为空，无法生成正则表达式。".to_string());
-    }
-    if request.api_key.trim().is_empty() {
-        return Err("API Key 不能为空。".to_string());
-    }
-    if request.base_url.trim().is_empty() {
-        return Err("API Base Url 不能为空。".to_string());
-    }
-    if request.model_name.trim().is_empty() {
-        return Err("模型名称不能为空。".to_string());
-    }
-
-    let api_base = normalize_base_url(&request.base_url);
-    if api_base.is_empty() {
-        return Err("API Base Url 无效。".to_string());
-    }
-
+async fn generate_ai_regex_internal(request: AiRegexRequest) -> anyhow::Result<AiRegexResponse> {
+    ensure!(!request.user_prompt.trim().is_empty(), "用户意图为空，无法生成正则表达式。" );
+    let api_base = validate_ai_request_common(&request.api_key, &request.base_url, &request.model_name)?;
     let endpoint = format!("{}/chat/completions", api_base);
 
     let payload = serde_json::json!({
@@ -515,37 +611,25 @@ async fn generate_ai_regex(request: AiRegexRequest) -> Result<AiRegexResponse, S
             {"role": "system", "content": request.system_prompt},
             {"role": "user", "content": request.user_prompt}
         ],
-        // "temperature": 0.1,      // 温度（先不硬编码了吧）
-        "stream": false             // 确认是非流式传输
+        "stream": false
     });
 
-    // 创建带超时设置的客户端
-    let client = Client::builder()
-        .timeout(Duration::from_secs(30))         // 最多再等待 25秒
-        .connect_timeout(Duration::from_secs(5))  // 连接超时 5秒
-        .build()
-        .map_err(|e| format!("创建HTTP客户端失败: {e}"))?;
-
+    let client = create_http_client()?;
     let response = client
         .post(&endpoint)
         .bearer_auth(request.api_key)
         .json(&payload)
         .send()
         .await
-        .map_err(|e| format!("AI 请求失败: {e}"))?;
+        .context("AI 请求失败")?;
 
     let status = response.status();
-    let body = response
-        .text()
-        .await
-        .map_err(|e| format!("AI 响应读取失败: {e}"))?;
-
+    let body = response.text().await.context("AI 响应读取失败")?;
     if !status.is_success() {
-        return Err(format!("AI 请求失败: HTTP {} - {}", status, body));
+        bail!("AI 请求失败: HTTP {} - {}", status, body);
     }
 
-    let parsed: OpenAiResponse = serde_json::from_str(&body)
-        .map_err(|e| format!("AI 响应解析失败: {e}"))?;
+    let parsed: OpenAiResponse = serde_json::from_str(&body).context("AI 响应解析失败")?;
     let content = parsed
         .choices
         .first()
@@ -553,11 +637,120 @@ async fn generate_ai_regex(request: AiRegexRequest) -> Result<AiRegexResponse, S
         .unwrap_or_default();
 
     let regex = extract_regex_from_text(&content);
-    if regex.trim().is_empty() {
-        return Err("AI 未返回有效正则表达式。".to_string());
+    ensure!(!regex.trim().is_empty(), "AI 未返回有效正则表达式。" );
+    Ok(AiRegexResponse { regex })
+}
+
+#[tauri::command]
+async fn generate_ai_regex(request: AiRegexRequest) -> Result<AiRegexResponse, String> {
+    generate_ai_regex_internal(request).await.map_err(|e| e.to_string())
+}
+
+async fn stream_ai_chat_internal(window: tauri::Window, request: AiChatStreamRequest) -> anyhow::Result<()> {
+    ensure!(!request.messages.is_empty(), "对话内容为空。" );
+    let api_base = validate_ai_request_common(&request.api_key, &request.base_url, &request.model_name)?;
+    let endpoint = format!("{}/chat/completions", api_base);
+
+    let messages: Vec<serde_json::Value> = request
+        .messages
+        .iter()
+        .map(|m| serde_json::json!({
+            "role": m.role,
+            "content": m.content,
+        }))
+        .collect();
+
+    let payload = serde_json::json!({
+        "model": request.model_name,
+        "messages": messages,
+        "stream": true,
+        "stream_options": { "include_usage": true }
+    });
+
+    let client = create_http_client()?;
+    let response = client
+        .post(&endpoint)
+        .bearer_auth(request.api_key)
+        .json(&payload)
+        .send()
+        .await
+        .context("AI 请求失败")?;
+
+    let status = response.status();
+    if !status.is_success() {
+        let body = response.text().await.unwrap_or_else(|_| "无法读取响应体".to_string());
+        let _ = window.emit("ai-chat-stream", serde_json::json!({
+            "requestId": request.request_id,
+            "error": format!("AI 请求失败: HTTP {} - {}", status, body),
+        }));
+        bail!("AI 请求失败: HTTP {} - {}", status, body);
     }
 
-    Ok(AiRegexResponse { regex })
+    let mut usage: Option<serde_json::Value> = None;
+    let mut done = false;
+    let mut buffer = String::new();
+    let mut stream = response.bytes_stream();
+
+    while let Some(chunk_result) = stream.next().await {
+        let chunk = chunk_result.context("AI 流式响应读取失败")?;
+        let chunk_text = String::from_utf8_lossy(&chunk);
+        let normalized = chunk_text.replace("\r\n", "\n").replace('\r', "\n");
+        buffer.push_str(&normalized);
+
+        for data in collect_sse_events(&mut buffer) {
+            if data == "[DONE]" {
+                done = true;
+                break;
+            }
+
+            let parsed: serde_json::Value = match serde_json::from_str(&data) {
+                Ok(v) => v,
+                Err(_) => continue,
+            };
+
+            if let Some(u) = parsed.get("usage") {
+                usage = Some(u.clone());
+            }
+
+            let delta = parsed
+                .get("choices")
+                .and_then(|c| c.as_array())
+                .and_then(|arr| arr.first())
+                .and_then(|choice| choice.get("delta"));
+
+            if let Some(delta) = delta {
+                let content = delta.get("content").and_then(|v| v.as_str());
+                let reasoning = delta.get("reasoning_content").and_then(|v| v.as_str());
+
+                if content.is_some() || reasoning.is_some() {
+                    let _ = window.emit("ai-chat-stream", serde_json::json!({
+                        "requestId": request.request_id,
+                        "delta": {
+                            "content": content,
+                            "reasoning_content": reasoning,
+                        }
+                    }));
+                }
+            }
+        }
+
+        if done {
+            break;
+        }
+    }
+
+    let _ = window.emit("ai-chat-stream", serde_json::json!({
+        "requestId": request.request_id,
+        "done": true,
+        "usage": usage,
+    }));
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn stream_ai_chat(window: tauri::Window, request: AiChatStreamRequest) -> Result<(), String> {
+    stream_ai_chat_internal(window, request).await.map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -600,7 +793,8 @@ fn main() {
             get_file_stats,
             search_in_files,
             generate_ai_regex,
-            test_ai_connection
+            test_ai_connection,
+            stream_ai_chat
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

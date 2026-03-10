@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Box, Typography, Chip, Button, Menu, MenuItem, useTheme, alpha, CircularProgress, Alert } from '@mui/material';
-import { Download } from '@mui/icons-material';
+import { Download, SmartToy } from '@mui/icons-material';
 import { exportResults } from '../utils/searchEngine';
+import AIChatDialog from './AIChatDialog';
 import VirtualizedResults from './VirtualizedResults';   // 这是现在唯一的神
 
 const SearchResults = ({ results, isSearching }) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
 
   const handleExportClick = (event) => setAnchorEl(event.currentTarget);
   const handleExportClose = () => setAnchorEl(null);
@@ -97,7 +99,15 @@ const SearchResults = ({ results, isSearching }) => {
       <Box sx={{ p: 2, borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Typography variant="h6" fontWeight="bold">搜索结果</Typography>
-          <Box>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              size="small"
+              variant="contained"
+              startIcon={<SmartToy />}
+              onClick={() => setAiChatOpen(true)}
+            >
+              发给AI分析
+            </Button>
             <Button size="small" variant="outlined" startIcon={<Download />} onClick={handleExportClick}>导出</Button>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleExportClose}>
               <MenuItem onClick={() => handleExport('txt')}>TXT</MenuItem>
@@ -116,6 +126,11 @@ const SearchResults = ({ results, isSearching }) => {
 
       {/* 唯一的真神：虚拟列表 */}
       <VirtualizedResults results={results} />
+      <AIChatDialog
+        open={aiChatOpen}
+        onClose={() => setAiChatOpen(false)}
+        results={results}
+      />
     </Box>
   );
 };

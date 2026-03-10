@@ -31,9 +31,7 @@ export const searchInFiles = async (files, searchOptions) => {
 };
 
 // 导出功能逻辑保持不变，因为这只是纯文本处理，不涉及繁重计算
-export const exportResults = (results, format = 'txt') => {
-  // ... (保持原有的 exportResults 代码不变，这部分性能瓶颈不大)
-  // 为了节省篇幅，这里复用你之前的代码逻辑即可，因为数据结构已经对齐。
+export const formatResultsForExport = (results, format = 'txt') => {
   if (!results || results.files.length === 0) {
     throw new Error('没有可导出的搜索结果');
   }
@@ -107,7 +105,7 @@ export const exportResults = (results, format = 'txt') => {
             content += `${startLine + idx}: ${line}\n`;
           });
         }
-// --- 修复点：使用 getLineText 替代 match.line ---
+        // --- 修复点：使用 getLineText 替代 match.line ---
         content += `${match.line_number}: ${getLineText(match.segments)}\n`;
         if (match.context.after && match.context.after.length > 0) {
           match.context.after.forEach((line, idx) => {
@@ -117,6 +115,17 @@ export const exportResults = (results, format = 'txt') => {
         content += '```\n\n';
       });
     });
+  }
+
+  return content;
+};
+
+export const exportResults = (results, format = 'txt') => {
+  // ... (保持原有的 exportResults 代码不变，这部分性能瓶颈不大)
+  // 为了节省篇幅，这里复用你之前的代码逻辑即可，因为数据结构已经对齐。
+  const content = formatResultsForExport(results, format);
+  if (!content) {
+    throw new Error('没有可导出的搜索结果');
   }
 
   const blob = new Blob([content], {

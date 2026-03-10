@@ -68,5 +68,10 @@ export const tauriAPI = {
   // 测试连接
   testAiConnection: async (payload) => {
     return await invoke('test_ai_connection', { request: payload });
+  },
+
+  // AI流式对话
+  streamAiChat: async (payload) => {
+    return await invoke('stream_ai_chat', { request: payload });
   }
 };
