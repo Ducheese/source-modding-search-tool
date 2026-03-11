@@ -614,7 +614,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
                   borderRadius: 2,
                   bgcolor: canSend ? 'primary.main' : alpha(theme.palette.action.disabled, 0.08),
                   color: canSend ? 'primary.contrastText' : 'action.disabled',
-                  transition: 'background-color 0.2s, color 0.2s',
+                  transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
                   '&:hover': { bgcolor: canSend ? 'primary.dark' : undefined },
                   '&.Mui-disabled': {
                     bgcolor: alpha(theme.palette.action.disabled, 0.08),

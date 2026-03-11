@@ -52,7 +52,7 @@ const FileRow = memo(({ data, index, style }) => {
           borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
           px: 2,
           // 悬停效果更明显一点
-          transition: 'background-color 0.2s',
+          transition: 'background-color 0.2s ease-in-out',
           '&:hover': {
             bgcolor: alpha(theme.palette.action.hover, 0.04),
           },
@@ -127,7 +127,7 @@ const FileRow = memo(({ data, index, style }) => {
               }}
               sx={{
                 color: theme.palette.text.secondary,
-                transition: 'all 0.2s',
+                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
                 '&:hover': { color: 'error.main' }
               }}
             >

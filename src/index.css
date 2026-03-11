@@ -32,7 +32,7 @@ body {
 ::-webkit-scrollbar-thumb {
   background-color: var(--scrollbar-thumb-color);
   border-radius: 10px;
-  transition: background-color 0.3s; /* 加个过渡，会更优雅 */
+  transition: background-color 0.2s ease-in-out; /* 加个过渡，会更优雅 */
 }
 
 ::-webkit-scrollbar-thumb:hover {

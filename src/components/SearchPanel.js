@@ -391,7 +391,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
           {/* 右侧：正则辅助 (仅在开启正则时高亮，否则淡化) */}
           <Grid item xs={12} md={6}>
-            <Box sx={{ opacity: useRegex ? 1 : 0.6, transition: 'opacity 0.2s' }}>
+            <Box sx={{ opacity: useRegex ? 1 : 0.6, transition: 'opacity 0.2s ease-in-out' }}>
               <Typography variant="subtitle2" gutterBottom color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Code fontSize="small" /> 正则快捷方式
               </Typography>

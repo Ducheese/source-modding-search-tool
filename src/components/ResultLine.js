@@ -135,7 +135,7 @@ const ResultLine = memo(({
             }}
             sx={{
               opacity: 0,   // 默认隐藏
-              transition: 'opacity 0.2s',
+              transition: 'opacity 0.2s ease-in-out',
               padding: 0.5,
               color: theme.palette.text.secondary,
             }}
