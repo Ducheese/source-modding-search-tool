@@ -336,7 +336,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
       {/* --- 核心搜索区 --- */}
       {/* 2. 【敕令】将“印章”移至框外，与主体并立 */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
         <Autocomplete
           sx={{ flex: 1 }} // 让 Autocomplete 占据大部分空间
           freeSolo
