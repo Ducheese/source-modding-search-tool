@@ -2,7 +2,6 @@
 
 use rayon::prelude::*;
 use regex::bytes::RegexBuilder; // 注意：改为 bytes 的正则
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Read;
@@ -144,14 +143,14 @@ fn create_http_client() -> anyhow::Result<Client> {
         .context("创建HTTP客户端失败")
 }
 
-// 考虑更加全面了，遇到不听话的AI就有用
+// 去掉多余的考虑情况，感觉意义不大
 fn extract_regex_from_text(text: &str) -> String {
     let trimmed = text.trim();
     if trimmed.is_empty() {
         return String::new();
     }
 
-    // 处理代码块格式
+    // 处理代码块格式（有去除语言标识符，如 `regex:`）
     if let (Some(start), Some(end)) = (trimmed.find("```"), trimmed.rfind("```")) {
         if end > start + 3 {
             let mut inner = trimmed[start + 3..end].trim().to_string();
@@ -166,16 +165,6 @@ fn extract_regex_from_text(text: &str) -> String {
         }
     }
 
-    // 处理单行行内代码
-    if let Some(start) = trimmed.find('`') {
-        if let Some(end) = trimmed[start + 1..].find('`') {
-            let inner = trimmed[start + 1..start + 1 + end].trim();
-            if !inner.is_empty() {
-                return inner.to_string();
-            }
-        }
-    }
-
     // 处理引号包围格式
     if (trimmed.starts_with('"') && trimmed.ends_with('"'))
         || (trimmed.starts_with('`') && trimmed.ends_with('`'))
@@ -183,40 +172,10 @@ fn extract_regex_from_text(text: &str) -> String {
         return trimmed[1..trimmed.len() - 1].trim().to_string();
     }
 
-    // 处理 /regex/flags 形式
-    for line in trimmed.lines() {
-        let line = line.trim();
-        if line.starts_with('/') && line.len() > 1 {
-            if let Some(last_slash) = line.rfind('/') {
-                if last_slash > 0 {
-                    let candidate = &line[1..last_slash];
-                    let flags = &line[last_slash + 1..];
-                    if flags.chars().all(|c| c.is_ascii_alphabetic()) && !candidate.trim().is_empty() {
-                        return candidate.trim().to_string();
-                    }
-                }
-            }
-        }
-    }
-
-    // 处理 “regex: ...” / “正则：...” 等提示语
-    if let Ok(label_re) = Regex::new(r"(?i)^(regex|pattern|正则)\s*[:：]\s*(.+)$") {
-        for line in trimmed.lines() {
-            let line = line.trim();
-            if let Some(caps) = label_re.captures(line) {
-                if let Some(value) = caps.get(2) {
-                    let value = value.as_str().trim();
-                    if !value.is_empty() {
-                        return value.to_string();
-                    }
-                }
-            }
-        }
-    }
-
     trimmed.to_string()
 }
 
+// sonnet：行业级，没有实质问题。
 fn validate_ai_request_common(api_key: &str, base_url: &str, model_name: &str) -> anyhow::Result<String> {
     ensure!(!api_key.trim().is_empty(), "API Key 不能为空。");
     ensure!(!base_url.trim().is_empty(), "API Base Url 不能为空。");
@@ -227,6 +186,7 @@ fn validate_ai_request_common(api_key: &str, base_url: &str, model_name: &str) -
     Ok(api_base)
 }
 
+// sonnet：整份代码里写得最好的函数，逐条对照 RFC 8895 检验都没问题
 fn collect_sse_events(buffer: &mut String) -> Vec<String> {
     let mut events = Vec::new();
 
@@ -240,6 +200,8 @@ fn collect_sse_events(buffer: &mut String) -> Vec<String> {
             continue;
         }
 
+        // collect_sse_events 里的 trim_end() 是作用在 SSE 协议行（data: {...}这整行）上的
+        // 去掉的是行尾的 \r，不是 JSON 值内部的内容。这是正确的 SSE 解析行为，不算多余加工。
         let mut data_lines = Vec::new();
         for line in raw.lines() {
             let line = line.trim_end();
@@ -688,16 +650,27 @@ async fn stream_ai_chat_internal(window: tauri::Window, request: AiChatStreamReq
 
     let mut usage: Option<serde_json::Value> = None;
     let mut done = false;
-    let mut buffer = String::new();
-    let mut stream = response.bytes_stream();
 
+    // 在函数顶部，把 buffer 改成字节缓冲（这个改动大多数模型都有提，姑且采纳sonnet的写法）
+    let mut byte_buf: Vec<u8> = Vec::new();
+    let mut text_buf = String::new();
+    let mut stream = response.bytes_stream();
+    
     while let Some(chunk_result) = stream.next().await {
         let chunk = chunk_result.context("AI 流式响应读取失败")?;
-        let chunk_text = String::from_utf8_lossy(&chunk);
-        let normalized = chunk_text.replace("\r\n", "\n").replace('\r', "\n");
-        buffer.push_str(&normalized);
+        byte_buf.extend_from_slice(&chunk);
 
-        for data in collect_sse_events(&mut buffer) {
+        // 从字节缓冲中提取完整 UTF-8 字符，剩余不完整字节留在 byte_buf
+        let valid_up_to = match std::str::from_utf8(&byte_buf) {
+            Ok(_) => byte_buf.len(),
+            Err(e) => e.valid_up_to(),
+        };
+        let text = std::str::from_utf8(&byte_buf[..valid_up_to]).unwrap();
+        let normalized = text.replace("\r\n", "\n").replace('\r', "\n");
+        text_buf.push_str(&normalized);
+        byte_buf.drain(..valid_up_to);
+
+        for data in collect_sse_events(&mut text_buf) {
             if data == "[DONE]" {
                 done = true;
                 break;
@@ -717,7 +690,8 @@ async fn stream_ai_chat_internal(window: tauri::Window, request: AiChatStreamReq
                 .and_then(|c| c.as_array())
                 .and_then(|arr| arr.first())
                 .and_then(|choice| choice.get("delta"));
-
+            
+            //  从 delta 里取出的 content 字符串是直接 emit 出去的
             if let Some(delta) = delta {
                 let content = delta.get("content").and_then(|v| v.as_str());
                 let reasoning = delta.get("reasoning_content").and_then(|v| v.as_str());
