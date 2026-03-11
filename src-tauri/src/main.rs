@@ -430,20 +430,28 @@ async fn search_in_files(
 
             // 二进制检查
             if is_binary(&mmap) { return None; }
+
+            // 编码检测与解码：统一转为 UTF-8，修复 GBK 等非 UTF-8 文件的乱码问题
+            let head_len = mmap.len().min(8192);
+            let mut detector = chardetng::EncodingDetector::new();
+            detector.feed(&mmap[..head_len], true);
+            let encoding = detector.guess(None, true);
+            let (cow, _, _) = encoding.decode(&mmap);
+            let content_bytes = cow.as_bytes();
             
             let mut matches: Vec<MatchItem> = Vec::new();
             
             // 为了高效获取上下文，我们先预计算所有换行符的位置。
             // 这一步会消耗一些时间，但只执行一次，能让后续的行号和上下文查找变得极快且准确。
-            let newline_indices: Vec<usize> = mmap.iter()
+            let newline_indices: Vec<usize> = content_bytes.iter()
                 .enumerate()
                 .filter(|(_, &b)| b == b'\n')
                 .map(|(i, _)| i)
                 .collect();
-            let total_lines = newline_indices.len() + if mmap.is_empty() { 0 } else { 1 };
+            let total_lines = newline_indices.len() + if content_bytes.is_empty() { 0 } else { 1 };
 
-            // 在 mmap 上直接搜索
-            for mat in re.find_iter(&mmap) {
+            // 在解码后的 UTF-8 字节上搜索
+            for mat in re.find_iter(content_bytes) {
                 if matches.len() >= 500 { break; } // 限制数量
 
                 let start = mat.start();
@@ -462,7 +470,7 @@ async fn search_in_files(
 
                 // 2. 确定当前行的起止位置
                 let line_start = if line_idx == 0 { 0 } else { newline_indices[line_idx - 1] + 1 };
-                let line_end = if line_idx >= newline_indices.len() { mmap.len() } else { newline_indices[line_idx] };
+                let line_end = if line_idx >= newline_indices.len() { content_bytes.len() } else { newline_indices[line_idx] };
                 
                 // 3. 避免重复添加同一行的多个匹配
                 // 检查 matches 中最后一个元素的行号，如果相同，说明这一行已经被添加过了（包含了所有高亮），直接跳过
@@ -474,7 +482,7 @@ async fn search_in_files(
 
                 // 4. 生成高亮片段 (Segments) - 这就是你要的“后端处理正则切分”
                 // 我们需要对 *这一行* 再次运行正则，找出 *所有* 匹配项，然后切分
-                let line_bytes = &mmap[line_start..line_end];
+                let line_bytes = &content_bytes[line_start..line_end];
                 let mut segments = Vec::new();
                 let mut last_idx = 0;
 
@@ -512,8 +520,8 @@ async fn search_in_files(
 
                 let get_line_text = |target_idx: usize| -> String {
                     let target_start = if target_idx == 0 { 0 } else { newline_indices[target_idx - 1] + 1 };
-                    let target_end = if target_idx >= newline_indices.len() { mmap.len() } else { newline_indices[target_idx] };
-                    let mut text = String::from_utf8_lossy(&mmap[target_start..target_end]).to_string();
+                    let target_end = if target_idx >= newline_indices.len() { content_bytes.len() } else { newline_indices[target_idx] };
+                    let mut text = String::from_utf8_lossy(&content_bytes[target_start..target_end]).to_string();
                     if text.ends_with('\r') { text.pop(); }
                     text
                 };
