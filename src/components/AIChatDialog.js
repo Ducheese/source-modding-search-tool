@@ -238,6 +238,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
     '& th': {
       backgroundColor: alpha(theme.palette.text.primary, 0.04),
       fontWeight: 600,
+      whiteSpace: 'nowrap',   // ← 加这一行，标题行永不换行
     },
     // 行内代码
     '& code': {
@@ -247,6 +248,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
       backgroundColor: alpha(theme.palette.text.primary, 0.06),
       padding: '0.15em 0.4em',
       borderRadius: '4px',
+      fontWeight: 400,   // ← 加这一行，代码不会被加粗
     },
     // 代码块
     '& pre': {
@@ -257,14 +259,17 @@ const AIChatDialog = ({ open, onClose, results }) => {
       margin: '0 0 1rem 0',
       '& code': { color: 'inherit', backgroundColor: 'transparent', padding: 0 },
     },
-    // 引用块
+    // 引用块（挺好的，对味了）
     '& blockquote': {
       margin: '0 0 1rem 0',
-      padding: '0.5rem 0 0.5rem 1.2rem',
-      borderLeft: `4px solid ${alpha(theme.palette.primary.main, 0.55)}`,
-      backgroundColor: alpha(theme.palette.primary.main, 0.03),
+      padding: '0.3rem 0 0.3rem 1rem',
+      borderLeft: `3px solid ${alpha(theme.palette.text.secondary, 0.3)}`,
+      // 不设 backgroundColor
       color: theme.palette.text.secondary,
-      borderRadius: '0 6px 6px 0',
+      borderRadius: 0,
+      fontStyle: 'italic',  // 斜体是 blockquote 的经典语义表达
+      '& p': { margin: 0 },
+      '& code': { fontStyle: 'normal' },  // 代码不斜体
     },
   }), [theme]);
 
@@ -505,7 +510,21 @@ const AIChatDialog = ({ open, onClose, results }) => {
     const mergedThink = `${message.reasoningRaw || ''}${message.thinkContent || ''}`.trim();
 
     return (
-      <Box key={message.id} sx={{ mb: 2.5 }}>
+      <Box
+        key={message.id}
+        sx={{
+          mb: 2.5,
+          pl: 1.5,
+          py: 1,   // ← 加这一行
+          borderLeft: isUser
+            ? `4px solid ${alpha(theme.palette.primary.main, 0.5)}`
+            : `4px solid transparent`,   // 占位，防止内容左移抖动
+          bgcolor: isUser
+            ? alpha(theme.palette.primary.main, 0.04)
+            : 'transparent',
+          borderRadius: '0 4px 4px 0',
+        }}
+      >
         {/* 消息头：角色名 + 时间戳 */}
         <Box sx={{ mb: 0.5 }}>
           <Typography
