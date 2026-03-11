@@ -14,7 +14,7 @@ import {
 import { Close } from '@mui/icons-material';
 import { useSnackbar } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
-import { DEFAULT_AI_REGEX_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
+import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_CHAT_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -156,8 +156,17 @@ const HelpDialog = ({ open, onClose }) => {
               />
               <TextField
                 label="AI写正则的提示词"
-                value={aiSettings.systemPrompt}
-                onChange={(e) => handleAiSettingChange('systemPrompt', e.target.value)}
+                value={aiSettings.regexPrompt}
+                onChange={(e) => handleAiSettingChange('regexPrompt', e.target.value)}
+                multiline
+                minRows={6}
+                maxRows={18}
+              />
+              <TextField
+                label="AI对话分析的提示词"
+                value={aiSettings.chatPrompt}
+                onChange={(e) => handleAiSettingChange('chatPrompt', e.target.value)}
+                placeholder="用{{context}}表示搜索结果"
                 multiline
                 minRows={6}
                 maxRows={18}
@@ -165,9 +174,13 @@ const HelpDialog = ({ open, onClose }) => {
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                 <Button
                   variant="outlined"
-                  onClick={() => handleAiSettingChange('systemPrompt', DEFAULT_AI_REGEX_PROMPT)}
+                  onClick={() => {
+                      handleAiSettingChange('regexPrompt', DEFAULT_AI_REGEX_PROMPT)
+                      handleAiSettingChange('chatPrompt', DEFAULT_AI_CHAT_PROMPT)
+                    }
+                  }
                 >
-                  重置提示词
+                  重置所有提示词
                 </Button>
                 <Button
                   variant="contained"

@@ -454,11 +454,11 @@ const AIChatDialog = ({ open, onClose, results }) => {
     // 构建发送给 API 的消息历史：
     // 1. 系统提示（含搜索结果上下文）
     // 2. 已完成的 user/assistant 消息（过滤掉还在 streaming 的，避免发送空内容）
-    const systemPrompt = DEFAULT_AI_CHAT_PROMPT
+    const chatPrompt = DEFAULT_AI_CHAT_PROMPT
       .replace('{{context}}', contextPromptRef.current);
 
     const chatMessages = [
-      { role: 'system', content: systemPrompt },
+      { role: 'system', content: chatPrompt },
       ...nextMessages
         .filter((m) => (m.role === 'user' || m.role === 'assistant') && !m.streaming)
         .map((m) => ({ role: m.role, content: m.content || '' })),

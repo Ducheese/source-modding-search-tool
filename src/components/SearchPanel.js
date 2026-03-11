@@ -239,7 +239,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     try {
       const response = await tauriAPI.generateAiRegex({
         user_prompt: intent,
-        system_prompt: settings.systemPrompt || DEFAULT_AI_REGEX_PROMPT,
+        system_prompt: settings.regexPrompt || DEFAULT_AI_REGEX_PROMPT,
         api_key: settings.apiKey,
         base_url: settings.baseUrl,
         model_name: settings.modelName,
