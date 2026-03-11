@@ -624,7 +624,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
               >
                 {isStreaming
                   ? <CircularProgress size={18} color="inherit" />
-                  : <Send sx={{ fontSize: 18 }} />
+                  : <Send sx={{ fontSize: 20 }} />
                 }
               </IconButton>
             </Box>
