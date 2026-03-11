@@ -237,6 +237,8 @@ ${DOMAIN_KNOWLEDGE_BASE}
 {{context}}
 `;
 
+export const DEFAULT_AI_REGEX_EXPLAIN_PROMPT = `你是一个正则表达式专家。用一到两句简洁的中文描述该正则表达式能匹配什么内容，面向有技术背景的开发者，只描述匹配目标，不逐一讲解语法符号。直接输出描述文字，不要任何格式包裹。`;
+
 export const loadAiSettings = () => {
   const raw = localStorage.getItem(AI_SETTINGS_STORAGE_KEY);
   if (!raw) {

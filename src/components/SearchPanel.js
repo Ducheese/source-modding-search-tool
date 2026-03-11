@@ -31,7 +31,7 @@ import {
 import { searchInFiles } from '../utils/searchEngine';
 import { useSnackbar } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
-import { DEFAULT_AI_REGEX_PROMPT, loadAiSettings } from '../utils/aiDefaults';
+import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_REGEX_EXPLAIN_PROMPT, loadAiSettings } from '../utils/aiDefaults';
 
 // 正则快捷片段
 // 按类别分组的正则片段
@@ -168,10 +168,52 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
   // 新增：控制高级选项展开的状态
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  // 正则解释
+  const [regexExplanation, setRegexExplanation] = useState('');
+  const [isExplaining, setIsExplaining] = useState(false);
+
+  const explainRegex = async (regexStr) => {
+    if (!regexStr.trim()) return;
+    const settings = loadAiSettings();
+    // 未配置 AI 则静默跳过，不打扰用户
+    if (!settings.baseUrl || !settings.apiKey || !settings.modelName) return;
+
+    setIsExplaining(true);
+    setRegexExplanation('');
+    try {
+      const response = await tauriAPI.generateAiRegex({
+        user_prompt: regexStr,
+        system_prompt: DEFAULT_AI_REGEX_EXPLAIN_PROMPT,
+        api_key: settings.apiKey,
+        base_url: settings.baseUrl,
+        model_name: settings.modelName,
+      });
+      const explanation = response?.regex?.trim();
+      if (explanation) setRegexExplanation(explanation);
+    } catch (_) {
+      // 静默失败，不影响主搜索流程
+    } finally {
+      setIsExplaining(false);
+    }
+  };
+
   // 用于输入正则快捷方式
   const searchInputRef = useRef(null);
 
   const showSnackbar = useSnackbar();
+
+  // isSearching 变为 true 时，正则表达式已经落定（无论来自用户输入还是 AI 生成），统一触发解释
+  useEffect(() => {
+    if (isSearching && (useRegex || aiRegex)) {
+      explainRegex(searchQuery);
+    }
+  }, [isSearching]);
+
+  useEffect(() => {
+    if (!useRegex && !aiRegex) {
+      setRegexExplanation('');
+    }
+  }, [useRegex, aiRegex]);
 
   // 从 localStorage 加载搜索历史
   useEffect(() => {
@@ -310,6 +352,16 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
               size="small"
               onKeyPress={handleKeyPress}
               disabled={isSearching || isAiGenerating}
+              helperText={
+                (useRegex || aiRegex)
+                  ? isExplaining
+                    ? <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+                        <CircularProgress size={10} thickness={5} />
+                        正则解释中…
+                      </Box>
+                    : regexExplanation || undefined
+                  : undefined
+              }
               InputProps={{
                 ...params.InputProps,
                 startAdornment: (
