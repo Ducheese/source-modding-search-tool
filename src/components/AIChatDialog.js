@@ -16,7 +16,7 @@ import { Close, ExpandLess, ExpandMore, Send } from '@mui/icons-material';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useSnackbar } from '../App';
-import { loadAiSettings } from '../utils/aiDefaults';
+import { DEFAULT_AI_CHAT_PROMPT, loadAiSettings } from '../utils/aiDefaults';
 import { formatResultsForExport } from '../utils/searchEngine';
 import { tauriAPI } from '../utils/tauriBridge';
 import { listen } from '@tauri-apps/api/event';
@@ -454,8 +454,11 @@ const AIChatDialog = ({ open, onClose, results }) => {
     // 构建发送给 API 的消息历史：
     // 1. 系统提示（含搜索结果上下文）
     // 2. 已完成的 user/assistant 消息（过滤掉还在 streaming 的，避免发送空内容）
+    const systemPrompt = DEFAULT_AI_CHAT_PROMPT
+      .replace('{{context}}', contextPromptRef.current);
+
     const chatMessages = [
-      { role: 'system', content: `以下是搜索结果上下文：\n\n${contextPromptRef.current}` },
+      { role: 'system', content: systemPrompt },
       ...nextMessages
         .filter((m) => (m.role === 'user' || m.role === 'assistant') && !m.streaming)
         .map((m) => ({ role: m.role, content: m.content || '' })),

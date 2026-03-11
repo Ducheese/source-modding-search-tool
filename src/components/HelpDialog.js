@@ -14,7 +14,7 @@ import {
 import { Close } from '@mui/icons-material';
 import { useSnackbar } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
-import { DEFAULT_AI_SYSTEM_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
+import { DEFAULT_AI_REGEX_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -165,7 +165,7 @@ const HelpDialog = ({ open, onClose }) => {
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                 <Button
                   variant="outlined"
-                  onClick={() => handleAiSettingChange('systemPrompt', DEFAULT_AI_SYSTEM_PROMPT)}
+                  onClick={() => handleAiSettingChange('systemPrompt', DEFAULT_AI_REGEX_PROMPT)}
                 >
                   重置提示词
                 </Button>
