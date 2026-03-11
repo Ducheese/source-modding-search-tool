@@ -126,6 +126,7 @@ const HelpDialog = ({ open, onClose }) => {
               本工具搜索结果的最小显示单位是行，也支持行首行尾的正则锚定，但站在程序后台的视角，整个文本文件并没有分行的概念，而是一个包含换行符的“单行文本”。因此有如下建议：
               <ul>
                 <li>当你需要匹配行首、行尾的“空白”时，请养成使用 <code>[ \t]*</code> 代替 <code>\s*</code> 的习惯，避免跨行匹配导致显示错误</li>
+                <li>字节正则引擎不支持断言（look around），如 <code>(?=...)</code>、<code>(?!...)</code>、<code>(?&lt;=...)</code>、<code>(?&lt;!...)</code> 等语法将无法正常工作</li>
               </ul>
             </Typography>
           </TabPanel>

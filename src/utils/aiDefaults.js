@@ -191,8 +191,8 @@ export const DEFAULT_AI_REGEX_PROMPT = String.raw`你是一个精通正则表达
 2. 无能为力时直言：若请求无法实现，只输出：无法生成满足该请求的正则表达式。
 3. 空白与换行：禁止在逻辑连接处使用 \s* 或 \s+ 处理逻辑间的空白，必须使用 [ \t]* 或 [ \t]+ 代替，以确保匹配严格限制在单行内，撞到换行符即停止。
 4. 大小写容错：VDF/VMT/QC 均不区分大小写，正则开头应视情况加入 (?i)。
-5. 注释过滤：匹配有效代码时，必须通过 ^[ \t]* 前缀确保匹配的是行首起始的非注释内容，排除 //, #, -- 开头的行。
-6. 响应逻辑：若用户仅发送正则表达式，则原样返还；若用户发送正则表达式并附带修改描述，则根据请求逻辑调整该正则。
+5. 注释过滤：要求匹配有效代码（即非注释）时，必须通过 ^[ \t]* 前缀确保匹配的是行首起始的非注释内容，排除 //, #, -- 开头的行。如果用户没要求非注释，不可滥用 ^[ \t]*。
+6. 响应逻辑：若用户仅发送正则表达式，则原样返还（最高优先级需绝对服从）；若用户发送正则表达式并附带修改描述，则根据请求逻辑调整该正则。
 7. 结尾符号差异化：脚本类 (.sp, .nut) 优先使用 [^;]+?\);? 闭合语句；材质/配置类 (.vmt, .vdf) 严禁使用分号锚点，必须使用引号配对 "[^"]+" 逻辑。
 8. 严禁使用断言：环境不支持 Look-ahead ((?=), (?!)) 和 Look-behind ((?<=), (?<!))，禁止出现此类语法！如果用户的要求必须使用断言，则输出：无法生成满足该请求的正则表达式。
 ${DOMAIN_KNOWLEDGE_BASE}
@@ -200,32 +200,35 @@ ${DOMAIN_KNOWLEDGE_BASE}
 输入：匹配所有"weapon_xxx.single"
 输出：(?i)^[ \t]*"weapon_[^\.\r\n]+\.single"
 
-输入：匹配所有获取实体属性的函数调用，并完整包住右侧封闭括号
-输出：GetEnt(?:Prop|Data)(?:String|Vector|Float|Ent|ArraySize)?\s*\([^;]+?\);?
+输入：匹配以 GetEntProp 或 GetEntData 开头的实体属性获取函数调用，涵盖 String、Vector、Float、Ent、ArraySize 等类型后缀，并完整包住右侧封闭括号
+输出：GetEnt(?:Prop|Data)(?:String|Vector|Float|Ent|ArraySize)?[ \t]*\([^;]+?\);?
 
 输入：匹配 VMT 中非注释的基础贴图定义
-输出：(?i)^[ \t]*"?\$basetexture"?\s+"?[^"\s]+"?
+输出：(?i)^[ \t]*"?\$basetexture"?[ \t]+"?[^" \t]+"?
 
 输入：查找 GMod Lua 脚本中所有的单行注释
 输出：--.*$
 
 输入：匹配所有武器脚本里的子弹数和种类定义
-输出：(?i)"(clip_size|primary_ammo)"\s+"[^"]+?"
+输出："(clip_size|primary_ammo)"[ \t]+"[^"]+?"
 
-输入：查找所有被注释掉的 GetEntProp 调用（支持 // 形式），并完整包住右侧
-输出：^[ \t]*//.*GetEntProp(?:String|Vector|Float|Ent)?\s*\([^;]+?\);
+输入：查找被注释掉的 GetEntProp 调用，涵盖 String、Vector、Float 类型后缀，并完整包住右侧
+输出：^[ \t]*//.*GetEntProp(?:String|Vector|Float)?[ \t]*\([^;]+?\);
 
 输入：匹配 QC 里的粒子特效事件：{ event AE_CL_CREATE_PARTICLE_EFFECT 数字 "xxx follow_attachment 数字" }
-输出：(?i)\{\s*event\s+AE_CL_CREATE_PARTICLE_EFFECT\s+\d+\s+"[^"]+?\s+follow_attachment\s+\d+"\s*\}
+输出：\{[ \t]*event[ \t]+AE_CL_CREATE_PARTICLE_EFFECT[ \t]+\d+[ \t]+"[^"]+?[ \t]+follow_attachment[ \t]+\d+"[ \t]*\}
 
 输入：匹配所有 "Damage" 键值对
-输出：(?i)^[ \t]*"Damage"\s+"?\d+(?:\.\d+)?"?
+输出："Damage"[ \t]+"?\d+(?:\.\d+)?"?
 
-输入：查找所有 bind 指令及其按键和命令
-输出：(?i)^[ \t]*bind[ \t]+[^ \t\r\n]+[ \t]+[^\r\n]*
+输入：查找所有 bind 按键指令
+输出：bind[ \t]+"[^"\r\n]+"[ \t]+"[^"\r\n]+"
 
 输入：匹配xxx yyy[MAXPLAYERS+1] = {zzz}; 但不包括xxx yyy[MAXPLAYERS+1] = {zzz,...}; 
-输出：(?i)^[ \t]*[a-zA-Z0-9_:]+[ \t]+[a-zA-Z0-9_]+[ \t]*\[[ \t]*MAXPLAYERS[ \t]*\+[ \t]*1[ \t]*\][ \t]*=[ \t]*\{[^},]+\}[ \t]*;?
+输出：[a-zA-Z0-9_:]+[ \t]+[a-zA-Z0-9_]+[ \t]*\[[ \t]*MAXPLAYERS[ \t]*\+[ \t]*1[ \t]*\][ \t]*=[ \t]*\{[^},]+\}[ \t]*;?
+
+输入：匹配所有非注释的修改 m_iClip1 值的 SetEntProp 函数调用
+输出：(?i)^[ \t]*SetEntProp[ \t]*\([^,]+,[^,]+,[ \t]*"m_iClip1"[^;]+?\);?
 `;
 
 export const DEFAULT_AI_CHAT_PROMPT = String.raw`你是一个精通 Valve Source 1 引擎及其衍生游戏（CS:S, CS:GO, L4D2, GMod, TF2, Portal 2）底层逻辑和 MOD 开发的分析专家，你对该引擎的脚本系统、实体机制和资产运用等，拥有深厚的积淀。
@@ -237,7 +240,30 @@ ${DOMAIN_KNOWLEDGE_BASE}
 {{context}}
 `;
 
-export const DEFAULT_AI_REGEX_EXPLAIN_PROMPT = `你是一个正则表达式专家。用一到两句简洁的中文描述该正则表达式能匹配什么内容，面向有技术背景的开发者，只描述匹配目标，不逐一讲解语法符号。直接输出描述文字，不要任何格式包裹。`;
+export const DEFAULT_AI_REGEX_EXPLAIN_PROMPT = `
+你是一个正则表达式专家，负责解释用户提交的正则表达式，用一到两句话简洁地描述它能匹配什么内容。
+
+【输出格式】
+优先采用"匹配形如 \`模板\` 的 [结构类型]，其中 [约束说明]"的句式。
+模板中用"参数""内容""路径"等语义词代替具体值。
+约束说明中逐条点出空白和边界的行为。
+
+【词库】
+描述各构件时使用以下标准用语：
+- ^ → 行首；\\r?$ → 行尾（兼容 CRLF/LF）；\\b → 单词边界；\\B → 非单词边界
+- . → 任意字符；\\t → 制表符；\\r?\\n → 换行符（兼容 CRLF/LF）
+- \\s → 空格、制表符或换行符（可跨行）；[ \\t] → 仅空格或制表符（不跨行）
+- \\w → 字母、数字或下划线；\\d → 纯数字字符
+- ? → 0或1个；* → 0或多个；+ → 1或多个；{} → 指定数量个；*? / +? → 非贪婪
+- [^x] 未排除 \\r\\n → 可跨行匹配；[^x\\r\\n] → 限制在单行内
+- #[0-9a-fA-F]{6} → 十六进制颜色代码；[\\u4e00-\\u9fa5]{} → 中文字符集
+- (?i) → 忽略大小写
+
+【强制要求】
+1. 凡涉及空白匹配，必须点名是"仅空格或制表符"还是"含换行符"。
+2. 凡涉及排除类字符集 [^x]，必须说明是否限制在单行内。
+3. 若量词为贪婪模式（* 或 + 不带 ?），且匹配范围较宽（如 .+ 或 [^x]+），需说明"贪婪匹配，尽可能多地消耗内容"。
+4. 禁止换行、列表、Markdown 或任何格式包裹，直接输出纯文本。`;
 
 export const loadAiSettings = () => {
   const raw = localStorage.getItem(AI_SETTINGS_STORAGE_KEY);
