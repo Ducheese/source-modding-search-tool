@@ -310,7 +310,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
     requestMetaRef.current.clear();
 
     try {
-      contextPromptRef.current = formatResultsForExport(results, 'txt');
+      contextPromptRef.current = formatResultsForExport(results, 'md');
     } catch {
       contextPromptRef.current = '搜索结果为空或无法导出。';
     }
@@ -454,7 +454,8 @@ const AIChatDialog = ({ open, onClose, results }) => {
     // 构建发送给 API 的消息历史：
     // 1. 系统提示（含搜索结果上下文）
     // 2. 已完成的 user/assistant 消息（过滤掉还在 streaming 的，避免发送空内容）
-    const chatPrompt = DEFAULT_AI_CHAT_PROMPT
+    // 有个||是出于防御性编程的目的
+    const chatPrompt = (settings.chatPrompt || DEFAULT_AI_CHAT_PROMPT)
       .replace('{{context}}', contextPromptRef.current);
 
     const chatMessages = [
