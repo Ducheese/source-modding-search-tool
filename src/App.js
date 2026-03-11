@@ -179,7 +179,7 @@ function App() {
         <CssBaseline />
 
         {/* 深浅色模式切换按钮，纵深次序1000 */}
-        <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
+        <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 1301 }}>
           <IconButton
             color="inherit"
             onClick={() => {

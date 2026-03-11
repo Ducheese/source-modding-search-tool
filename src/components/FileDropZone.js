@@ -192,7 +192,7 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
           borderColor: theme.palette.primary.main,
         },
       }}
-      elevation={1}
+      elevation={0}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       // 注意：Tauri 的 file-drop 事件是全局的，这里的 onDrop 主要是为了阻止浏览器默认行为
