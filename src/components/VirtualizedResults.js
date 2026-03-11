@@ -134,7 +134,7 @@ const Row = memo(({ data, index, style }) => {
         </IconButton>
 
         <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, overflow: 'hidden', mr: 2 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: '700', whiteSpace: 'nowrap' }}>
             {file.name}
           </Typography>
           {/* 使用提取出的跑马灯组件 */}

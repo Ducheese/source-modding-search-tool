@@ -74,7 +74,7 @@ const MainLayout = () => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-          <Typography variant="h6" component="h1" fontWeight="bold">
+          <Typography variant="h6" component="h1" fontWeight="700">
             Source Modding Search Tool
           </Typography>
 

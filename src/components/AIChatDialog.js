@@ -549,7 +549,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           {/* 标题部分 */}
-          <Typography variant="h6" component="h1" fontWeight="bold">
+          <Typography variant="h6" component="h1" fontWeight="700">
             发给 AI 分析
           </Typography>
           {/* 关闭按钮部分 */}

@@ -94,7 +94,7 @@ const ResultLine = memo(({
             >
               <Typography
                 variant="body2"
-                sx={{ fontFamily: 'inherit', fontWeight: seg.is_match ? 700 : 400 }}
+                sx={{ fontFamily: 'inherit', fontWeight: seg.is_match ? 500 : 400 }}
               >
                 {seg.text}
               </Typography>

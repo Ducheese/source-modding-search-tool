@@ -264,7 +264,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
       <Box sx={{ p: 2, borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="h6" fontWeight="bold">
+            <Typography variant="h6" fontWeight="700">
               文件列表 ({files.length})
             </Typography>
             {loadingStats && <CircularProgress size={16} />}

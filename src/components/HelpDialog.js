@@ -75,7 +75,7 @@ const HelpDialog = ({ open, onClose }) => {
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           {/* 标题部分 */}
-          <Typography variant="h6" component="h1" fontWeight="bold">
+          <Typography variant="h6" component="h1" fontWeight="700">
             关于 & 帮助
           </Typography>
           {/* 关闭按钮部分 */}

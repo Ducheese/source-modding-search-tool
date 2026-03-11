@@ -288,7 +288,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       {/* 弹簧, 将按钮推到底部，把父容器里剩下的所有空白空间都占了 */}
       <Box sx={{ flex: 1 }} />
 
-      <Typography variant="h6" gutterBottom fontWeight="bold">
+      <Typography variant="h6" gutterBottom fontWeight="700">
         搜索配置
       </Typography>
 
@@ -415,7 +415,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                         display: 'block',
                         mb: 0.5,
                         color: 'text.secondary',
-                        fontWeight: 'bold',
+                        fontWeight: '700',
                         fontSize: '0.7rem'
                       }}
                     >
@@ -554,7 +554,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
             sx={{
               height: 48,
               fontSize: '1.1rem',
-              fontWeight: 'bold',
+              fontWeight: '700',
               boxShadow: theme.shadows[4]
             }}
           >

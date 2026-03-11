@@ -98,7 +98,7 @@ const SearchResults = ({ results, isSearching }) => {
       {/* 头部统计栏 (保持精美) */}
       <Box sx={{ p: 2, borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-          <Typography variant="h6" fontWeight="bold">搜索结果</Typography>
+          <Typography variant="h6" fontWeight="700">搜索结果</Typography>
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
               size="small"
