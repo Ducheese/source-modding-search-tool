@@ -10,12 +10,18 @@ import {
   Tab,
   TextField,
   Button,
+  Tooltip,
+  useTheme,
 } from '@mui/material';
-import { Close, Help } from '@mui/icons-material';
+import { Close, Help, CheckCircle } from '@mui/icons-material';
 import { useSnackbar } from '../App';
+import { useThemeScheme, COLOR_SCHEMES } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
 import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_CHAT_PROMPT, DEFAULT_AI_EXPLAIN_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
 
+// ─────────────────────────────────────────────────────────────
+// TabPanel
+// ─────────────────────────────────────────────────────────────
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
   return (
@@ -25,13 +31,110 @@ const TabPanel = (props) => {
   );
 };
 
+// ─────────────────────────────────────────────────────────────
+// SchemeCard — 单张配色卡片
+// ─────────────────────────────────────────────────────────────
+const SchemeCard = ({ scheme, selected, darkMode, onClick }) => {
+  const theme = useTheme();
+  const primary   = darkMode ? scheme.darkPrimary   : scheme.lightPrimary;
+  const secondary = darkMode ? scheme.darkSecondary : scheme.lightSecondary;
+
+  return (
+    <Tooltip title={scheme.desc} arrow>
+      <Box
+        onClick={onClick}
+        sx={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 1,
+          p: 1.5,
+          borderRadius: 2,
+          cursor: 'pointer',
+          border: selected
+            ? `2px solid ${theme.palette.primary.main}`
+            : `2px solid ${theme.palette.divider}`,
+          bgcolor: selected
+            ? (t) => `${t.palette.primary.main}14`   // 8% tint
+            : 'background.paper',
+          transition: 'border-color 0.2s, background-color 0.2s, transform 0.15s',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: 3,
+          },
+          minWidth: 88,
+        }}
+      >
+        {/* 色块预览 */}
+        <Box sx={{ display: 'flex', gap: 0.75 }}>
+          {/* 主色 */}
+          <Box
+            sx={{
+              width: 36,
+              height: 36,
+              borderRadius: '50%',
+              bgcolor: primary,
+              boxShadow: `0 2px 6px ${primary}88`,     // 据说是 MD3 的 Tonal Shadow 做法，不过挺有质感的，像在发光一样
+              border: '2px solid rgba(255,255,255,0.25)',
+            }}
+          />
+          {/* 副色 */}
+          <Box
+            sx={{
+              width: 20,
+              height: 20,
+              borderRadius: '50%',
+              bgcolor: secondary,
+              boxShadow: `0 2px 4px ${secondary}88`,
+              border: '2px solid rgba(255,255,255,0.25)',
+              alignSelf: 'flex-end',
+              mb: '2px',
+            }}
+          />
+        </Box>
+
+        {/* 名称 */}
+        <Typography
+          variant="caption"
+          fontWeight={selected ? 700 : 400}
+          sx={{ color: selected ? 'primary.main' : 'text.secondary', lineHeight: 1.2, textAlign: 'center' }}
+        >
+          {scheme.label}
+        </Typography>
+
+        {/* 已选中角标 */}
+        {selected && (
+          <CheckCircle
+            sx={{
+              position: 'absolute',
+              top: 4,
+              right: 4,
+              fontSize: 16,
+              color: 'primary.main',
+            }}
+          />
+        )}
+      </Box>
+    </Tooltip>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
+// HelpDialog
+// ─────────────────────────────────────────────────────────────
 const HelpDialog = ({ open, onClose }) => {
   const [tabValue, setTabValue] = React.useState(0);
   const [aiSettings, setAiSettings] = React.useState(loadAiSettings());
   const [isTesting, setIsTesting] = React.useState(false);
-  const handleTabChange = (event, newValue) => setTabValue(newValue);
+  const handleTabChange = (_, newValue) => setTabValue(newValue);
 
   const showSnackbar = useSnackbar();
+
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  
+  const { schemeId, setSchemeId } = useThemeScheme();
 
   React.useEffect(() => {
     if (!open) return;
@@ -77,7 +180,7 @@ const HelpDialog = ({ open, onClose }) => {
           {/* 标题部分 */}
           <Typography variant="h6" component="h1" fontWeight="700" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Help sx={{ color: 'primary.main' }} />
-            关于 & 帮助
+            关于 &amp; 帮助
           </Typography>
           {/* 关闭按钮部分 */}
           <IconButton onClick={onClose}>
@@ -99,17 +202,19 @@ const HelpDialog = ({ open, onClose }) => {
           <Typography>在左上角“虚线框区域”完成文件提交，在左下角“文件列表区域”进行检查和初筛，在右上角“搜索配置区域”填上要检索的字符、正则或过滤通配符，在右下角“搜索结果区域”查看或导出结果。</Typography>
         </Box>
 
-        {/* 关于高级选项 */}
+        {/* ── Tabs ── */}
         <Box>
 
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={tabValue} onChange={handleTabChange}>
+            <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
               <Tab label="路径过滤通配符" />
               <Tab label="正则使用建议" />
               <Tab label="大模型接入配置" />
+              <Tab label="色彩方案" />
             </Tabs>
           </Box>
 
+          {/* Tab 0 — 路径过滤通配符 */}
           <TabPanel value={tabValue} index={0}>
             <Typography component="div">
               本工具使用 Unix Shell 风格通配符进行路径筛选。它比正则表达式更简单，更专注于文件路径匹配。为简化输入，还有以下自动处理规则：
@@ -122,6 +227,7 @@ const HelpDialog = ({ open, onClose }) => {
             </Typography>
           </TabPanel>
 
+          {/* Tab 1 — 正则使用建议 */}
           <TabPanel value={tabValue} index={1}>
             <Typography component="div">
               本工具搜索结果的最小显示单位是行，也支持行首行尾的正则锚定，但站在程序后台的视角，整个文本文件并没有分行的概念，而是一个包含换行符的“单行文本”。因此有如下建议：
@@ -132,6 +238,7 @@ const HelpDialog = ({ open, onClose }) => {
             </Typography>
           </TabPanel>
 
+          {/* Tab 2 — 大模型接入配置 */}
           <TabPanel value={tabValue} index={2}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <TextField
@@ -203,6 +310,85 @@ const HelpDialog = ({ open, onClose }) => {
                   {isTesting ? '测试中...' : '测试连接'}
                 </Button>
               </Box>
+            </Box>
+          </TabPanel>
+
+          {/* Tab 3 — 外观设置（配色方案） */}
+          <TabPanel value={tabValue} index={3}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+
+              {/* 说明文字 */}
+              <Typography variant="body2" color="text.secondary">
+                以下是符合 Material Design 2 规范的界面配色方案：
+              </Typography>
+
+              {/* 配色卡片行 */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 2,
+                  alignItems: 'flex-start',
+                }}
+              >
+                {COLOR_SCHEMES.map((scheme) => (
+                  <SchemeCard
+                    key={scheme.id}
+                    scheme={scheme}
+                    selected={schemeId === scheme.id}
+                    darkMode={isDark}
+                    onClick={() => {
+                      setSchemeId(scheme.id);
+                      showSnackbar(`已切换到「${scheme.label}」配色`, 'success');
+                    }}
+                  />
+                ))}
+              </Box>
+
+              {/* 当前配色的色值预览 */}
+              <Box
+                sx={{
+                  p: 2,
+                  borderRadius: 2,
+                  border: `1px solid ${theme.palette.divider}`,
+                  bgcolor: 'background.paper',
+                  // width: 'fit-content',  // 如果要自适应宽度
+                }}
+              >
+                <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                  当前方案：{COLOR_SCHEMES[schemeId].label} — {COLOR_SCHEMES[schemeId].desc}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                  {[
+                    { label: 'Primary',        color: theme.palette.primary.main },
+                    { label: 'Pri. Dark',      color: theme.palette.primary.dark },
+                    { label: 'Secondary',      color: theme.palette.secondary.main },
+                    { label: 'Sec. Dark',      color: theme.palette.secondary.dark },
+                    { label: 'Background',     color: theme.palette.background.default },
+                    { label: 'Surface',        color: theme.palette.background.paper },
+                    { label: 'Error',          color: theme.palette.error.main },
+                  ].map(({ label, color }) => (
+                    <Tooltip title={color} arrow key={label}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, width: 56 }}>
+                        <Box
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 1,
+                            bgcolor: color,
+                            border: `1px solid ${theme.palette.divider}`,
+                            boxShadow: 1,
+                          }}
+                        />
+                        <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.secondary' }}>
+                          {label}
+                        </Typography>
+                      </Box>
+                    </Tooltip>
+                  ))}
+                </Box>
+              </Box>
+
             </Box>
           </TabPanel>
 
