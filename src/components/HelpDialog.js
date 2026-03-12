@@ -11,7 +11,7 @@ import {
   TextField,
   Button,
 } from '@mui/material';
-import { Close } from '@mui/icons-material';
+import { Close, Help } from '@mui/icons-material';
 import { useSnackbar } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
 import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_CHAT_PROMPT, DEFAULT_AI_EXPLAIN_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
@@ -75,7 +75,8 @@ const HelpDialog = ({ open, onClose }) => {
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           {/* 标题部分 */}
-          <Typography variant="h6" component="h1" fontWeight="700">
+          <Typography variant="h6" component="h1" fontWeight="700" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Help sx={{ color: 'primary.main' }} />
             关于 & 帮助
           </Typography>
           {/* 关闭按钮部分 */}
