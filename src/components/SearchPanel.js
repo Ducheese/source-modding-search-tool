@@ -537,7 +537,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
       {/* 开关组：放在输入框正下方 */}
       <Box sx={{ pt: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
-        <Tooltip title={aiRegex ? "AI写正则模式已接管，请手动使用 (?i)" : "仅在非AI写正则模式下可用"}>
+        <Tooltip title={aiRegex ? "AI 写正则模式已接管，请手动使用 (?i)" : "仅在非 AI 写正则模式下可用"}>
           <Box>
             <FormControlLabel
               disabled={isSearching || aiRegex}
@@ -602,7 +602,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                   disabled={isSearching || isAiGenerating}
                 />
               }
-              label={<Typography variant="body2">AI写正则</Typography>}
+              label={<Typography variant="body2">AI 写正则</Typography>}
             />
           </Box>
 

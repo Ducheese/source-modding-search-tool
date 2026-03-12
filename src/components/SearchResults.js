@@ -106,7 +106,7 @@ const SearchResults = ({ results, isSearching }) => {
               startIcon={<SmartToy />}
               onClick={() => setAiChatOpen(true)}
             >
-              发给AI分析
+              发给 AI 分析
             </Button>
             <Button size="small" variant="outlined" startIcon={<Download />} onClick={handleExportClick}>导出</Button>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleExportClose}>
