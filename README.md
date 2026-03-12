@@ -2,7 +2,11 @@
 
 为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的本地文本检索工具。
 
-**代码基于iFlow CLI + GLM-4.6/4.7 + Gemini 3 Flash/Pro开发**。
+**代码基于以下方式开发**
+1. iFlow CLI + GLM-4.6/4.7（从0开始创造雏形，初见agent神力）
+2. Gemini 3 Flash/Pro 无agent（主贡献是技术栈更换和前后端性能优化，高级选项面板是锦上添花）
+3. OMO Hephaestus + GPT 5.2 Codex（重拾“屎山”代码，实现更多上下文开关，实现大模型接入雏形）
+4. Claude Sonnet 4.6 无agent（大模型接入功能优化）
 
 ## 开发环境设置
 
@@ -81,6 +85,7 @@ source-modding-search-tool/
 │   └── index.html        # HTML 模板
 ├── src/
 │   ├── components/       # React 前端
+│   │   ├── AIChatDialog.js
 │   │   ├── FileDropZone.js
 │   │   ├── FileList.js
 │   │   ├── HelpDialog.js
@@ -90,6 +95,7 @@ source-modding-search-tool/
 │   │   ├── SearchResults.js
 │   │   └── VirtualizedResults.js
 │   ├── utils/            # 工具函数
+│   │   ├── aiDefaults.js
 │   │   ├── searchEngine.js
 │   │   └── tauriBridge.js
 │   ├── App.js            # 主应用组件
