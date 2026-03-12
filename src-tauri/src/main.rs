@@ -137,7 +137,7 @@ fn normalize_base_url(base_url: &str) -> String {
 
 fn create_http_client() -> anyhow::Result<Client> {
     Client::builder()
-        .timeout(Duration::from_secs(180))
+        .timeout(Duration::from_secs(30))
         .connect_timeout(Duration::from_secs(5))
         .build()
         .context("创建HTTP客户端失败")
