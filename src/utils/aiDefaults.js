@@ -240,8 +240,7 @@ ${DOMAIN_KNOWLEDGE_BASE}
 {{context}}
 `;
 
-export const DEFAULT_AI_REGEX_EXPLAIN_PROMPT = `
-你是一个正则表达式专家，负责解释用户提交的正则表达式，用一到两句话简洁地描述它能匹配什么内容。
+export const DEFAULT_AI_EXPLAIN_PROMPT = String.raw`你是一个正则表达式专家，负责解释用户提交的正则表达式，用一到两句话简洁地描述它能匹配什么内容。
 
 【输出格式】
 优先采用"匹配形如 [模板] 的 [结构类型]，其中 [约束说明]"的句式。
@@ -250,13 +249,13 @@ export const DEFAULT_AI_REGEX_EXPLAIN_PROMPT = `
 
 【词库】
 描述各构件时使用以下标准用语：
-- ^ → 行首；\\r?$ → 行尾（兼容 CRLF/LF）；\\b → 单词边界；\\B → 非单词边界
-- . → 任意字符；\\t → 制表符；\\r?\\n → 换行符（兼容 CRLF/LF）
-- \\s → 空格、制表符或换行符（可跨行）；[ \\t] → 仅空格或制表符（不跨行）
-- \\w → 字母、数字或下划线；\\d → 纯数字字符
+- ^ → 行首；\r?$ → 行尾（兼容 CRLF/LF）；\b → 单词边界；\B → 非单词边界
+- . → 任意字符；\t → 制表符；\r?\n → 换行符（兼容 CRLF/LF）
+- \s → 空格、制表符或换行符（可跨行）；[ \t] → 仅空格或制表符（不跨行）
+- \w → 字母、数字或下划线；\d → 纯数字字符
 - ? → 0或1个；* → 0或多个；+ → 1或多个；{} → 指定数量个；*? / +? → 非贪婪
-- [^x] 未排除 \\r\\n → 可跨行匹配；[^x\\r\\n] → 限制在单行内
-- #[0-9a-fA-F]{6} → 十六进制颜色代码；[\\u4e00-\\u9fa5]{} → 中文字符集
+- [^x] 未排除 \r\n → 可跨行匹配；[^x\r\n] → 限制在单行内
+- #[0-9a-fA-F]{6} → 十六进制颜色代码；[\u4e00-\u9fa5]{} → 中文字符集
 - (?i) → 忽略大小写
 - ^[ \t]* → 任意数量缩进（无脑匹配缩进）
 - [^;]+?\);? → 闭合函数语句（括号和分号匹配完全）
@@ -266,7 +265,8 @@ export const DEFAULT_AI_REGEX_EXPLAIN_PROMPT = `
 1. 凡涉及空白匹配，必须点名是"仅空格或制表符"还是"含换行符"。
 2. 凡涉及排除类字符集 [^x]，必须说明是否限制在单行内。
 3. 若量词为贪婪模式（* 或 + 不带 ?），且匹配范围较宽（如 .+ 或 [^x]+），需说明"存在贪婪匹配"。
-4. 禁止换行、列表、Markdown 或任何格式包裹，直接输出纯文本。`;
+4. 禁止换行、列表、Markdown 或任何格式包裹，直接输出纯文本。
+`;
 
 export const loadAiSettings = () => {
   const raw = localStorage.getItem(AI_SETTINGS_STORAGE_KEY);
@@ -277,6 +277,7 @@ export const loadAiSettings = () => {
       modelName: '',
       regexPrompt: DEFAULT_AI_REGEX_PROMPT,
       chatPrompt: DEFAULT_AI_CHAT_PROMPT,  // ← 加
+      explainPrompt: DEFAULT_AI_EXPLAIN_PROMPT,  // ← 加
     };
   }
 
@@ -288,6 +289,7 @@ export const loadAiSettings = () => {
       modelName: parsed.modelName || '',
       regexPrompt: parsed.regexPrompt || DEFAULT_AI_REGEX_PROMPT,
       chatPrompt: parsed.chatPrompt || DEFAULT_AI_CHAT_PROMPT,  // ← 加
+      explainPrompt: parsed.explainPrompt || DEFAULT_AI_EXPLAIN_PROMPT,  // ← 加
     };
   } catch (error) {
     return {
@@ -296,6 +298,7 @@ export const loadAiSettings = () => {
       modelName: '',
       regexPrompt: DEFAULT_AI_REGEX_PROMPT,
       chatPrompt: DEFAULT_AI_CHAT_PROMPT,  // ← 加
+      explainPrompt: DEFAULT_AI_EXPLAIN_PROMPT,  // ← 加
     };
   }
 };

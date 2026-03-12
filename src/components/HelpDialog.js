@@ -14,7 +14,7 @@ import {
 import { Close } from '@mui/icons-material';
 import { useSnackbar } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
-import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_CHAT_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
+import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_CHAT_PROMPT, DEFAULT_AI_EXPLAIN_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -173,12 +173,22 @@ const HelpDialog = ({ open, onClose }) => {
                 minRows={6}
                 maxRows={18}
               />
+              <TextField
+                label="AI解释正则的提示词"
+                value={aiSettings.explainPrompt}
+                onChange={(e) => handleAiSettingChange('explainPrompt', e.target.value)}
+                placeholder="建议输出简单文本，不支持换行符和富文本渲染"
+                multiline
+                minRows={6}
+                maxRows={18}
+              />
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                 <Button
                   variant="outlined"
                   onClick={() => {
                       handleAiSettingChange('regexPrompt', DEFAULT_AI_REGEX_PROMPT)
                       handleAiSettingChange('chatPrompt', DEFAULT_AI_CHAT_PROMPT)
+                      handleAiSettingChange('explainPrompt', DEFAULT_AI_EXPLAIN_PROMPT)
                     }
                   }
                 >

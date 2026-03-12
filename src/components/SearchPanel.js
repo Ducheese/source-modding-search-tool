@@ -31,7 +31,7 @@ import {
 import { searchInFiles } from '../utils/searchEngine';
 import { useSnackbar } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
-import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_REGEX_EXPLAIN_PROMPT, loadAiSettings } from '../utils/aiDefaults';
+import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_EXPLAIN_PROMPT, loadAiSettings } from '../utils/aiDefaults';
 
 // 正则快捷片段
 // 按类别分组的正则片段
@@ -183,7 +183,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     try {
       const response = await tauriAPI.generateAiRegex({
         user_prompt: regexStr,
-        system_prompt: DEFAULT_AI_REGEX_EXPLAIN_PROMPT,
+        system_prompt: settings.explainPrompt || DEFAULT_AI_EXPLAIN_PROMPT,
         api_key: settings.apiKey,
         base_url: settings.baseUrl,
         model_name: settings.modelName,
