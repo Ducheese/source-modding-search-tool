@@ -180,6 +180,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
     setIsExplaining(true);
     setRegexExplanation('');
+    explainAbortedRef.current = false;
     try {
       const response = await tauriAPI.generateAiRegex({
         user_prompt: regexStr,
@@ -188,6 +189,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
         base_url: settings.baseUrl,
         model_name: settings.modelName,
       });
+      if (explainAbortedRef.current) return;
       const explanation = response?.regex?.trim();
       if (explanation) setRegexExplanation(explanation);
     } catch (_) {
@@ -199,6 +201,10 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
   // 用于输入正则快捷方式
   const searchInputRef = useRef(null);
+  // 用于中断 AI 写正则：置为 true 后，响应回来时结果会被丢弃
+  const regexAbortedRef = useRef(false);
+  // 用于中断正则解释：关闭正则模式时置为 true，响应回来时结果会被丢弃
+  const explainAbortedRef = useRef(false);
 
   const showSnackbar = useSnackbar();
 
@@ -210,8 +216,11 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
   }, [isSearching]);
 
   useEffect(() => {
-    if (!useRegex && !aiRegex) {
+    if (!useRegex && !aiRegex && isExplaining) {
+      explainAbortedRef.current = true;
+      setIsExplaining(false);
       setRegexExplanation('');
+      showSnackbar('已中断请求', 'warning');
     }
   }, [useRegex, aiRegex]);
 
@@ -278,6 +287,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     }
 
     setIsAiGenerating(true);
+    regexAbortedRef.current = false;
     try {
       const response = await tauriAPI.generateAiRegex({
         user_prompt: intent,
@@ -286,6 +296,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
         base_url: settings.baseUrl,
         model_name: settings.modelName,
       });
+      if (regexAbortedRef.current) return;
       const regex = response?.regex?.trim();
       if (!regex) {
         throw new Error('未返回有效的正则表达式');
@@ -342,7 +353,15 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           freeSolo
           options={searchHistory}
           inputValue={searchQuery}
-          onInputChange={(e, value) => handleFieldChange('searchQuery', value)}
+          onInputChange={(e, value, reason) => {
+            if (reason === 'clear' && isAiGenerating) {
+              regexAbortedRef.current = true;
+              setIsAiGenerating(false);
+              showSnackbar('已中断请求', 'warning');
+            }
+            else // 只中断不清空
+              handleFieldChange('searchQuery', value);
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -357,7 +376,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                   ? isExplaining
                     ? <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
                         <CircularProgress size={10} thickness={5} />
-                        正则解释中…
+                        AI 解释正则中…
                       </Box>
                     : regexExplanation || undefined
                   : undefined
