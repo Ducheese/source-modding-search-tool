@@ -81,36 +81,40 @@ const ResultLine = memo(({
           },
         }}
       >
-        {Array.isArray(content) ? (
-          // 渲染后端切好的片段
-          content.map((seg, i) => (
-            <span
-              key={i}
-              style={{
-                backgroundColor: seg.is_match ? alpha(theme.palette.primary.main, 0.2) : 'transparent',
-                color: seg.is_match ? theme.palette.primary.main : theme.palette.text.primary,
-                borderRadius: '2px',
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{ fontFamily: 'inherit', fontWeight: seg.is_match ? 500 : 400 }}
+        <span>  {/* ← 套一层，让 flex 只有一个子项，解决复制字全散开的问题 */}
+          {Array.isArray(content) ? (
+            // 渲染后端切好的片段
+            content.map((seg, i) => (
+              <span
+                key={i}
+                style={{
+                  backgroundColor: seg.is_match ? alpha(theme.palette.primary.main, 0.2) : 'transparent',
+                  color: seg.is_match ? theme.palette.primary.main : theme.palette.text.primary,
+                  borderRadius: '2px',
+                }}
               >
-                {seg.text}
+                <Typography
+                  component="span"   // 必须
+                  variant="body2"
+                  sx={{ fontFamily: 'inherit', fontWeight: seg.is_match ? 500 : 400 }}
+                >
+                  {seg.text}
+                </Typography>
+              </span>
+            ))
+          ) : (
+            // 普通字符串（上下文）
+            <span>
+              <Typography
+                component="span"
+                variant="body2"
+                sx={{ fontFamily: 'inherit', fontWeight: 400 }}
+              >
+                {content}
               </Typography>
             </span>
-          ))
-        ) : (
-          // 普通字符串（上下文）
-          <span>
-            <Typography
-              variant="body2"
-              sx={{ fontFamily: 'inherit', fontWeight: 400 }}
-            >
-              {content}
-            </Typography>
-          </span>
-        )}
+          )}
+        </span>
       </Box>
 
       {/* 3. 操作按钮区域 (固定在右侧) */}
