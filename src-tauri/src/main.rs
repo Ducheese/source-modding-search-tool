@@ -135,7 +135,17 @@ fn normalize_base_url(base_url: &str) -> String {
     format!("{trimmed}/v1")
 }
 
+// 用于 AI 写正则 / 解释正则：响应快，超时短
 fn create_http_client() -> anyhow::Result<Client> {
+    Client::builder()
+        .timeout(Duration::from_secs(30))
+        .connect_timeout(Duration::from_secs(5))
+        .build()
+        .context("创建HTTP客户端失败")
+}
+
+// 用于流式对话：输出可能较长，超时宽松
+fn create_stream_http_client() -> anyhow::Result<Client> {
     Client::builder()
         .timeout(Duration::from_secs(180))
         .connect_timeout(Duration::from_secs(5))
@@ -637,7 +647,7 @@ async fn stream_ai_chat_internal(window: tauri::Window, request: AiChatStreamReq
         "stream_options": { "include_usage": true }
     });
 
-    let client = create_http_client()?;
+    let client = create_stream_http_client()?;
     let response = client
         .post(&endpoint)
         .bearer_auth(request.api_key)

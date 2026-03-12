@@ -1,5 +1,7 @@
 # Source Modding Search Tool
 
+<img src="src-tauri/icons/ChatGPT%20Image%202026-03-12.png" alt="应用图标" width="100">
+
 为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的本地文本检索工具。
 
 **代码基于以下方式开发**
