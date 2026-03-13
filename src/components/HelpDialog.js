@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -11,13 +11,20 @@ import {
   TextField,
   Button,
   Tooltip,
+  CircularProgress,
+  Alert,
+  Collapse,
+  Chip,
   useTheme,
+  alpha,
 } from '@mui/material';
-import { Close, Help, CheckCircle } from '@mui/icons-material';
+import { Close, Help, CheckCircle, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { useSnackbar } from '../App';
 import { useThemeScheme, COLOR_SCHEMES } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
 import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_CHAT_PROMPT, DEFAULT_AI_EXPLAIN_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 // ─────────────────────────────────────────────────────────────
 // TabPanel
@@ -121,6 +128,43 @@ const SchemeCard = ({ scheme, selected, darkMode, onClick }) => {
 };
 
 // ─────────────────────────────────────────────────────────────
+// ReleaseEntry — 单条更新日志（折叠/展开）
+// ─────────────────────────────────────────────────────────────
+const ReleaseEntry = ({ tag, name, body, markdownStyles }) => {
+  const [expanded, setExpanded] = React.useState(false);
+  const theme = useTheme();
+  return (
+    <Box sx={{ borderBottom: `1px solid ${alpha(theme.palette.divider, 0.15)}` }}>
+
+      <Box
+        onClick={() => setExpanded(v => !v)}
+        sx={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          py: 1.5, px: 1, cursor: 'pointer', userSelect: 'none',
+          borderRadius: 1,
+          '&:hover': { bgcolor: alpha(theme.palette.action.hover, 0.08) },
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2" fontWeight={700}>{name}</Typography>
+          {name !== tag && (
+            <Chip label={tag} size="small" color="secondary" variant="outlined" sx={{ height: 20, fontSize: '0.68rem' }} />
+          )}
+        </Box>
+        {expanded ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+      </Box>
+
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <Box sx={{ px: 1, pb: 2, ...markdownStyles }}>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{body}</ReactMarkdown>
+        </Box>
+      </Collapse>
+
+    </Box>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
 // HelpDialog
 // ─────────────────────────────────────────────────────────────
 const HelpDialog = ({ open, onClose }) => {
@@ -129,6 +173,8 @@ const HelpDialog = ({ open, onClose }) => {
   const [isTesting, setIsTesting] = React.useState(false);
   const handleTabChange = (_, newValue) => setTabValue(newValue);
 
+  const [changelog, setChangelog] = useState(null);   // null=未加载, 'loading', 'error', [{tag, body}]
+
   const showSnackbar = useSnackbar();
 
   const theme = useTheme();
@@ -136,10 +182,115 @@ const HelpDialog = ({ open, onClose }) => {
   
   const { schemeId, setSchemeId } = useThemeScheme();
 
+  // ── Memo ──
+  // markdownStyles 依赖 theme，只在 theme 切换时重建，不随每次渲染重建
+  const markdownStyles = useMemo(() => ({
+    fontFamily: '"Roboto", "Helvetica", "Arial", "Noto Sans SC", sans-serif',
+    lineHeight: 1.75,
+    color: theme.palette.text.primary,
+    maxWidth: '100%',
+    wordBreak: 'break-word',
+    '& p': { margin: '0.5rem 0 1rem 0' },
+    // 标题：每级明确区分字号（参考 Typora 默认主题比例）
+    '& h1': { fontSize: '1.8em', fontWeight: 700, margin: '1.5rem 0 0.8rem', lineHeight: 1.3 },
+    '& h2': { fontSize: '1.4em', fontWeight: 600, margin: '1.4rem 0 0.7rem', lineHeight: 1.3 },
+    '& h3': { fontSize: '1.15em', fontWeight: 600, margin: '1.2rem 0 0.6rem', lineHeight: 1.3 },
+    '& h4': { fontSize: '1em', fontWeight: 600, fontStyle: 'italic', margin: '1rem 0 0.5rem' },
+    '& ul, & ol': { paddingLeft: '1.5rem', margin: '0 0 1rem 0' },
+    '& li': { marginBottom: '0.35rem' },
+    // 链接
+    '& a': {
+      color: theme.palette.primary.main,
+      textDecoration: 'none',
+      '&:hover': { textDecoration: 'underline' },
+    },
+    // 图片
+    '& img': { maxWidth: '100%', height: 'auto', borderRadius: '4px' },
+    // 分割线
+    '& hr': {
+      border: 'none',
+      borderTop: `1px solid ${alpha(theme.palette.divider, 0.4)}`,
+      margin: '1.5rem 0',
+    },
+    // 表格
+    '& table': {
+      width: '100%',
+      borderCollapse: 'collapse',
+      marginBottom: '1rem',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      boxShadow: `0 0 0 1px ${alpha(theme.palette.divider, 0.25)}`,
+    },
+    '& th, & td': {
+      border: `1px solid ${alpha(theme.palette.divider, 0.15)}`,
+      padding: '9px 14px',
+      textAlign: 'left',
+      fontSize: '0.9rem',
+    },
+    '& th': {
+      backgroundColor: alpha(theme.palette.text.primary, 0.04),
+      fontWeight: 600,
+      whiteSpace: 'nowrap',   // ← 加这一行，标题行永不换行
+    },
+    // 行内代码
+    '& code': {
+      fontFamily: '"JetBrains Mono", "Noto Sans SC", monospace',
+      fontSize: '0.85em',
+      color: theme.palette.mode === 'dark' ? '#ff7b72' : '#d73a49',
+      backgroundColor: alpha(theme.palette.text.primary, 0.06),
+      padding: '0.15em 0.4em',
+      borderRadius: '4px',
+      fontWeight: 400,   // ← 加这一行，代码不会被加粗
+    },
+    // 代码块
+    '& pre': {
+      backgroundColor: theme.palette.mode === 'dark' ? '#161b22' : '#f6f8fa',
+      padding: '14px 16px',
+      borderRadius: '8px',
+      overflowX: 'auto',
+      margin: '0 0 1rem 0',
+      '& code': { color: 'inherit', backgroundColor: 'transparent', padding: 0 },
+    },
+    // 引用块（挺好的，对味了）
+    '& blockquote': {
+      margin: '0 0 1rem 0',
+      padding: '0.3rem 0 0.3rem 1rem',
+      borderLeft: `3px solid ${alpha(theme.palette.text.secondary, 0.3)}`,
+      // 不设 backgroundColor
+      color: theme.palette.text.secondary,
+      borderRadius: 0,
+      fontStyle: 'italic',  // 斜体是 blockquote 的经典语义表达
+      '& p': { margin: 0 },
+      '& code': { fontStyle: 'normal' },  // 代码不斜体
+    },
+  }), [theme]);
+
   React.useEffect(() => {
     if (!open) return;
     setAiSettings(loadAiSettings());
   }, [open]);
+
+  useEffect(() => {
+    if (tabValue !== 4 || changelog !== null) return;
+    setChangelog('loading');
+    fetch('https://api.github.com/repos/Ducheese/source-modding-search-tool/releases')
+      .then(r => r.json())
+      .then(data => {
+        if (!Array.isArray(data)) {
+          const isRateLimit = data?.message?.toLowerCase().includes('rate limit');
+          setChangelog(isRateLimit ? 'ratelimit' : 'error');
+          return;
+        }
+        setChangelog(data.map(r => ({
+          tag: r.tag_name,
+          name: r.name || r.tag_name,
+          body: (r.body || '（无说明）')
+            .replace(/<img\b[^>]*>/gi, '')   // HTML img 标签（含 GitHub 的非自闭合形式）
+            .trim(),
+        })));
+      })
+      .catch(() => setChangelog('error'));
+  }, [tabValue, changelog]);
 
   const handleAiSettingChange = (field, value) => {
     setAiSettings(prev => {
@@ -221,6 +372,7 @@ const HelpDialog = ({ open, onClose }) => {
               <Tab label="正则使用建议" />
               <Tab label="大模型接入配置" />
               <Tab label="色彩方案" />
+              <Tab label="更新日志" />
             </Tabs>
           </Box>
 
@@ -435,6 +587,33 @@ const HelpDialog = ({ open, onClose }) => {
               </Box>
 
             </Box>
+          </TabPanel>
+
+          {/* Tab 4 — 更新日志 */}
+          <TabPanel value={tabValue} index={4}>
+            {changelog === null || changelog === 'loading' ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                <CircularProgress size={28} />
+              </Box>
+            ) : changelog === 'ratelimit' ? (
+              <Alert severity="info">
+                GitHub API 请求次数已达上限，请稍后再试，或直接访问
+                {' '}<a href="https://github.com/Ducheese/source-modding-search-tool/releases" target="_blank" rel="noopener noreferrer">Release 页面</a>
+              </Alert>
+            ) : changelog === 'error' ? (
+              <Alert
+                severity="warning"
+                action={<Button size="small" onClick={() => setChangelog(null)}>重试</Button>}
+              >
+                加载失败，请检查网络连接
+              </Alert>
+            ) : (
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                {changelog.map(({ tag, name, body }) => (
+                  <ReleaseEntry key={tag} tag={tag} name={name} body={body} markdownStyles={markdownStyles} />
+                ))}
+              </Box>
+            )}
           </TabPanel>
 
         </Box>
