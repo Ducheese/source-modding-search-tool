@@ -29,6 +29,8 @@ import {
   FilterAlt,
   FilterList,
   Code,
+  ExpandLess,
+  ExpandMore,
 } from '@mui/icons-material';
 import { searchInFiles } from '../utils/searchEngine';
 import { useSnackbar } from '../App';
@@ -114,6 +116,7 @@ const initialState = {
   includePattern: '',
   excludePattern: '',
   moreContext: false,
+  contextLines: 4,
   aiRegex: false,
 };
 
@@ -162,7 +165,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
   // 使用 useReducer 统一管理搜索配置（initialState），避免了大量 useState 的堆砌
   const [state, dispatch] = useReducer(searchReducer, initialState);
-  const { searchQuery, caseSensitive, wholeWord, useRegex, includePattern, excludePattern, moreContext, aiRegex } = state;
+  const { searchQuery, caseSensitive, wholeWord, useRegex, includePattern, excludePattern, moreContext, contextLines, aiRegex } = state;
 
   const [searchHistory, setSearchHistory] = useState([]);
   const [isAiGenerating, setIsAiGenerating] = useState(false);
@@ -265,7 +268,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
         useRegex: finalUseRegex,
         includePattern,
         excludePattern,
-        contextLines: moreContext ? 4 : 1,
+        contextLines: moreContext ? contextLines : 1,
       };
 
       // 直接把完整的文件列表扔给后端，让它自己去筛选！
@@ -586,17 +589,39 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
               }
               label={<Typography variant="body2">正则表达式</Typography>}
             />
-            <FormControlLabel
-              control={
-                <Switch
-                  size="small"
-                  checked={moreContext}
-                  onChange={(e) => handleFieldChange('moreContext', e.target.checked)}
-                  disabled={isSearching}
-                />
-              }
-              label={<Typography variant="body2">更多上下文</Typography>}
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    size="small"
+                    checked={moreContext}
+                    onChange={(e) => handleFieldChange('moreContext', e.target.checked)}
+                    disabled={isSearching}
+                  />
+                }
+                label={
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+                    <Typography variant="body2">
+                      更多上下文{moreContext ? ` · ${contextLines} 行` : ''}
+                    </Typography>
+                    {moreContext && (
+                      <Box sx={{ display: 'flex', flexDirection: 'column', ml: 0.25 }}>
+                        <IconButton size="small" disabled={isSearching}
+                          onClick={(e) => { e.preventDefault(); const v = parseInt(contextLines, 10); handleFieldChange('contextLines', (isNaN(v) ? 4 : v) >= 10 ? 2 : v + 1); }}
+                          sx={{ p: 0, width: 14, height: 10, color: 'text.secondary' }}>
+                          <ExpandLess sx={{ fontSize: 12 }} />
+                        </IconButton>
+                        <IconButton size="small" disabled={isSearching}
+                          onClick={(e) => { e.preventDefault(); const v = parseInt(contextLines, 10); handleFieldChange('contextLines', (isNaN(v) ? 4 : v) <= 2 ? 10 : v - 1); }}
+                          sx={{ p: 0, width: 14, height: 10, color: 'text.secondary' }}>
+                          <ExpandMore sx={{ fontSize: 12 }} />
+                        </IconButton>
+                      </Box>
+                    )}
+                  </Box>
+                }
+              />
+            </Box>
             <FormControlLabel
               control={
                 <Switch
