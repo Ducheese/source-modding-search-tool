@@ -638,12 +638,12 @@ const AIChatDialog = ({ open, onClose, results }) => {
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, mb: 0.25 }}>
 
                 {/* 思考按钮 + 预算输入（开启时显示） */}
-                <Tooltip
-                  title={enableThinking ? '点击关闭深度思考' : '点击开启深度思考，输入思考预算'}
-                  placement="left"
-                  arrow
-                >
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                  <Tooltip
+                    title={enableThinking ? '点击关闭深度思考' : '点击开启深度思考，设置思考预算'}
+                    placement="left"
+                    arrow
+                  >
                     <IconButton
                       size="small"
                       disabled={isStreaming}
@@ -674,45 +674,45 @@ const AIChatDialog = ({ open, onClose, results }) => {
                     >
                       <Lightbulb sx={{ fontSize: 18 }} />
                     </IconButton>
+                  </Tooltip>
 
-                    {/* 预算输入：仅开启时显示 */}
-                    {enableThinking && !isStreaming && (
-                      <Box sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        width: 40,
-                        border: '1px solid',
-                        borderColor: alpha(theme.palette.text.primary, 0.23),
-                        borderRadius: 1.5,
-                        overflow: 'hidden',
-                      }}>
-                        <IconButton
-                          size="small"
-                          disabled={isStreaming}
-                          onClick={() => setThinkingBudget(v => v >= 32768 ? 128 : v * 2)}
-                          sx={{ width: '100%', height: 10, borderRadius: 0, py: 0 }}
-                        >
-                          <ExpandLess sx={{ fontSize: 14 }} />
-                        </IconButton>
-                        <Typography
-                          variant="caption"
-                          sx={{ fontSize: '0.62rem', lineHeight: 1, py: 0.5, userSelect: 'none', color: isStreaming ? 'text.disabled' : 'text.secondary' }}
-                        >
-                          {thinkingBudget}
-                        </Typography>
-                        <IconButton
-                          size="small"
-                          disabled={isStreaming}
-                          onClick={() => setThinkingBudget(v => v <= 128 ? 32768 : v / 2)}
-                          sx={{ width: '100%', height: 10, borderRadius: 0, py: 0 }}
-                        >
-                          <ExpandMore sx={{ fontSize: 14 }} />
-                        </IconButton>
-                      </Box>
-                    )}
-                  </Box>
-                </Tooltip>
+                  {/* 预算输入：仅开启时显示 */}
+                  {enableThinking && !isStreaming && (
+                    <Box sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      width: 40,
+                      border: '1px solid',
+                      borderColor: alpha(theme.palette.text.primary, 0.23),
+                      borderRadius: 1.5,
+                      overflow: 'hidden',
+                    }}>
+                      <IconButton
+                        size="small"
+                        disabled={isStreaming}
+                        onClick={() => setThinkingBudget(v => v >= 32768 ? 128 : v * 2)}
+                        sx={{ width: '100%', height: 10, borderRadius: 0, py: 0 }}
+                      >
+                        <ExpandLess sx={{ fontSize: 14 }} />
+                      </IconButton>
+                      <Typography
+                        variant="caption"
+                        sx={{ fontSize: '0.62rem', lineHeight: 1, py: 0.5, userSelect: 'none', color: isStreaming ? 'text.disabled' : 'text.secondary' }}
+                      >
+                        {thinkingBudget}
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        disabled={isStreaming}
+                        onClick={() => setThinkingBudget(v => v <= 128 ? 32768 : v / 2)}
+                        sx={{ width: '100%', height: 10, borderRadius: 0, py: 0 }}
+                      >
+                        <ExpandMore sx={{ fontSize: 14 }} />
+                      </IconButton>
+                    </Box>
+                  )}
+                </Box>
 
                 {/* 发送按钮 */}
                 <IconButton
