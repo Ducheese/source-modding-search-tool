@@ -150,7 +150,8 @@ const HelpDialog = ({ open, onClose }) => {
   };
 
   const handleTestConnection = async () => {
-    if (!aiSettings.baseUrl.trim() || !aiSettings.apiKey.trim() || !aiSettings.modelName.trim()) {
+    if (!aiSettings.baseUrl.trim() || !aiSettings.apiKey.trim() || 
+    (!aiSettings.regexModelName.trim() && !aiSettings.chatModelName.trim() && !aiSettings.explainModelName.trim())) {
       showSnackbar('请填写API Base Url、API Key和模型名称', 'warning');
       return;
     }
@@ -162,7 +163,7 @@ const HelpDialog = ({ open, onClose }) => {
         system_prompt: '你是一个测试助手。请直接回复用户请求的内容，不要添加任何额外信息。',
         api_key: aiSettings.apiKey,
         base_url: aiSettings.baseUrl,
-        model_name: aiSettings.modelName,
+        model_name: aiSettings.regexModelName || aiSettings.chatModelName || aiSettings.explainModelName,
       });
       showSnackbar('连接成功', 'success');
     } catch (error) {
@@ -256,13 +257,32 @@ const HelpDialog = ({ open, onClose }) => {
                 placeholder="sk-xxx"
                 size="small"
               />
-              <TextField
-                label="模型名称"
-                value={aiSettings.modelName}
-                onChange={(e) => handleAiSettingChange('modelName', e.target.value)}
-                placeholder="Qwen/Qwen3-8B"
-                size="small"
-              />
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  label="用于 AI 写正则的模型"
+                  value={aiSettings.regexModelName}
+                  onChange={(e) => handleAiSettingChange('regexModelName', e.target.value)}
+                  placeholder="Qwen/Qwen3-8B"
+                  size="small"
+                  sx={{ flex: 1 }}
+                />
+                <TextField
+                  label="用于 AI 对话的模型"
+                  value={aiSettings.chatModelName}
+                  onChange={(e) => handleAiSettingChange('chatModelName', e.target.value)}
+                  placeholder="留空则使用最左边模型"
+                  size="small"
+                  sx={{ flex: 1 }}
+                />
+                <TextField
+                  label="用于 AI 解释正则的模型"
+                  value={aiSettings.explainModelName}
+                  onChange={(e) => handleAiSettingChange('explainModelName', e.target.value)}
+                  placeholder="留空则使用最左边模型"
+                  size="small"
+                  sx={{ flex: 1 }}
+                />
+              </Box>
               <TextField
                 label="AI 写正则的提示词"
                 value={aiSettings.regexPrompt}

@@ -7,12 +7,13 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Tooltip,
   Typography,
   TextField,
   alpha,
   useTheme,
 } from '@mui/material';
-import { Close, ExpandLess, ExpandMore, Send, SmartToy } from '@mui/icons-material';
+import { Close, ExpandLess, ExpandMore, Lightbulb, Send, SmartToy } from '@mui/icons-material';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useSnackbar } from '../App';
@@ -181,6 +182,8 @@ const AIChatDialog = ({ open, onClose, results }) => {
   const [messages,   setMessages]   = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
+  const [enableThinking, setEnableThinking] = useState(false);
+  const [thinkingBudget, setThinkingBudget] = useState(4096);
 
   // ── Refs（用于事件回调中访问最新值，避免 stale closure）──
   const messagesRef       = useRef([]);   // 消息列表的 source of truth
@@ -414,7 +417,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
     if (!content) return;
 
     const settings = loadAiSettings();
-    if (!settings.baseUrl || !settings.apiKey || !settings.modelName) {
+    if (!settings.baseUrl || !settings.apiKey || (!settings.chatModelName && !settings.regexModelName)) {
       showSnackbar('请进入「关于与帮助」填写「大模型接入配置」', 'warning');
       return;
     }
@@ -436,7 +439,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
       parseBuffer:   '',
       reasoningRaw:  '',
       createdAt:     formatTimestamp(now),
-      modelName:     settings.modelName,
+      modelName:     settings.chatModelName || settings.regexModelName,
       streaming:     true,
       thinkCollapsed: false,
     };
@@ -467,11 +470,13 @@ const AIChatDialog = ({ open, onClose, results }) => {
 
     try {
       await tauriAPI.streamAiChat({
-        messages:    chatMessages,
-        api_key:     settings.apiKey,
-        base_url:    settings.baseUrl,
-        model_name:  settings.modelName,
-        request_id:  requestId,
+        messages:        chatMessages,
+        api_key:         settings.apiKey,
+        base_url:        settings.baseUrl,
+        model_name:      settings.chatModelName || settings.regexModelName,
+        request_id:      requestId,
+        enable_thinking: enableThinking,
+        thinking_budget: thinkingBudget,
       });
     } catch {
       showSnackbar('AI 请求启动失败', 'error');
@@ -617,8 +622,8 @@ const AIChatDialog = ({ open, onClose, results }) => {
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
               <TextField
                 multiline
-                minRows={2}
-                maxRows={6}
+                minRows={enableThinking && !isStreaming ? 5 : 3}
+                maxRows={8}
                 placeholder="输入你的问题 · Enter 发送 · Shift+Enter 换行"
                 fullWidth
                 value={inputValue}
@@ -626,31 +631,112 @@ const AIChatDialog = ({ open, onClose, results }) => {
                 onKeyDown={handleKeyDown}
                 size="small"
               />
-              {/* 发送按钮：有图标 + 流式时显示 loading */}
-              <IconButton
-                onClick={handleSend}
-                disabled={!canSend}
-                sx={{
-                  alignSelf: 'flex-end',
-                  mb: 0.25,
-                  width: 40,
-                  height: 40,
-                  borderRadius: 2,
-                  bgcolor: canSend ? 'primary.main' : alpha(theme.palette.action.disabled, 0.08),
-                  color: canSend ? 'primary.contrastText' : 'action.disabled',
-                  transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-                  '&:hover': { bgcolor: canSend ? 'primary.dark' : undefined },
-                  '&.Mui-disabled': {
-                    bgcolor: alpha(theme.palette.action.disabled, 0.08),
-                    color: 'action.disabled',
-                  },
-                }}
-              >
-                {isStreaming
-                  ? <CircularProgress size={18} color="inherit" />
-                  : <Send sx={{ fontSize: 20 }} />
-                }
-              </IconButton>
+
+              {/* 右侧按钮列：思考按钮（含预算）+ 发送按钮 */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, mb: 0.25 }}>
+
+                {/* 思考按钮 + 预算输入（开启时显示） */}
+                <Tooltip
+                  title={enableThinking ? '点击关闭深度思考' : '点击开启深度思考，输入思考预算'}
+                  placement="left"
+                  arrow
+                >
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                    <IconButton
+                      size="small"
+                      disabled={isStreaming}
+                      onClick={() => setEnableThinking(v => !v)}
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 2,
+                        bgcolor: enableThinking
+                          ? alpha(theme.palette.primary.main, 0.12)
+                          : 'transparent',
+                        color: enableThinking ? 'primary.main' : 'text.secondary',
+                        border: '1px solid',
+                        borderColor: enableThinking
+                          ? theme.palette.primary.main
+                          : alpha(theme.palette.text.primary, 0.23),
+                        transition: 'all 0.2s ease-in-out',
+                        '&:hover': {
+                          bgcolor: enableThinking
+                            ? alpha(theme.palette.primary.main, 0.2)
+                            : alpha(theme.palette.action.hover, 0.08),
+                        },
+                        '&.Mui-disabled': {
+                          borderColor: alpha(theme.palette.text.primary, 0.12),
+                          color: 'action.disabled',
+                        },
+                      }}
+                    >
+                      <Lightbulb sx={{ fontSize: 18 }} />
+                    </IconButton>
+
+                    {/* 预算输入：仅开启时显示 */}
+                    {enableThinking && !isStreaming && (
+                      <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        width: 40,
+                        border: '1px solid',
+                        borderColor: alpha(theme.palette.text.primary, 0.23),
+                        borderRadius: 1.5,
+                        overflow: 'hidden',
+                      }}>
+                        <IconButton
+                          size="small"
+                          disabled={isStreaming || thinkingBudget >= 32768}
+                          onClick={() => setThinkingBudget(v => Math.min(32768, v * 2))}
+                          sx={{ width: '100%', height: 10, borderRadius: 0, py: 0 }}
+                        >
+                          <ExpandLess sx={{ fontSize: 14 }} />
+                        </IconButton>
+                        <Typography
+                          variant="caption"
+                          sx={{ fontSize: '0.62rem', lineHeight: 1, py: 0.5, userSelect: 'none', color: isStreaming ? 'text.disabled' : 'text.secondary' }}
+                        >
+                          {thinkingBudget}
+                        </Typography>
+                        <IconButton
+                          size="small"
+                          disabled={isStreaming || thinkingBudget <= 128}
+                          onClick={() => setThinkingBudget(v => Math.max(128, v / 2))}
+                          sx={{ width: '100%', height: 10, borderRadius: 0, py: 0 }}
+                        >
+                          <ExpandMore sx={{ fontSize: 14 }} />
+                        </IconButton>
+                      </Box>
+                    )}
+                  </Box>
+                </Tooltip>
+
+                {/* 发送按钮 */}
+                <IconButton
+                  onClick={handleSend}
+                  disabled={!canSend}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 2,
+                    bgcolor: canSend ? 'primary.main' : alpha(theme.palette.action.disabled, 0.08),
+                    color: canSend ? 'primary.contrastText' : 'action.disabled',
+                    transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                    '&:hover': { bgcolor: canSend ? 'primary.dark' : undefined },
+                    '&.Mui-disabled': {
+                      bgcolor: alpha(theme.palette.action.disabled, 0.08),
+                      color: 'action.disabled',
+                    },
+                  }}
+                >
+                  {isStreaming
+                    ? <CircularProgress size={18} color="inherit" />
+                    : <Send sx={{ fontSize: 20 }} />
+                  }
+                </IconButton>
+
+              </Box>
             </Box>
           </Box>
         </Box>

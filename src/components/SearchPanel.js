@@ -176,7 +176,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     if (!regexStr.trim()) return;
     const settings = loadAiSettings();
     // 未配置 AI 则静默跳过，不打扰用户
-    if (!settings.baseUrl || !settings.apiKey || !settings.modelName) return;
+    if (!settings.baseUrl || !settings.apiKey || (!settings.explainModelName && !settings.regexModelName)) return;
 
     setIsExplaining(true);
     setRegexExplanation('');
@@ -187,7 +187,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
         system_prompt: settings.explainPrompt || DEFAULT_AI_EXPLAIN_PROMPT,
         api_key: settings.apiKey,
         base_url: settings.baseUrl,
-        model_name: settings.modelName,
+        model_name: settings.explainModelName || settings.regexModelName,
       });
       if (explainAbortedRef.current) return;
       const explanation = response?.regex?.trim();
@@ -281,7 +281,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     if (!intent || files.length === 0) return;
 
     const settings = loadAiSettings();
-    if (!settings.baseUrl || !settings.apiKey || !settings.modelName) {
+    if (!settings.baseUrl || !settings.apiKey || !settings.regexModelName) {
       showSnackbar(`请进入「关于与帮助」填写「大模型接入配置」`, 'warning');
       return;
     }
@@ -294,7 +294,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
         system_prompt: settings.regexPrompt || DEFAULT_AI_REGEX_PROMPT,
         api_key: settings.apiKey,
         base_url: settings.baseUrl,
-        model_name: settings.modelName,
+        model_name: settings.regexModelName,
       });
       if (regexAbortedRef.current) return;
       const regex = response?.regex?.trim();

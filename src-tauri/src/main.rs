@@ -83,6 +83,9 @@ struct AiChatMessage {
     role: String,
     content: String,
 }
+fn default_enable_thinking() -> bool { false }
+
+fn default_thinking_budget() -> u16 { 4096 }
 
 #[derive(Deserialize)]
 struct AiChatStreamRequest {
@@ -91,6 +94,10 @@ struct AiChatStreamRequest {
     base_url: String,
     model_name: String,
     request_id: String,
+    #[serde(default = "default_enable_thinking")]
+    enable_thinking: bool,
+    #[serde(default = "default_thinking_budget")]
+    thinking_budget: u16,
 }
 
 #[derive(Serialize)]
@@ -644,7 +651,9 @@ async fn stream_ai_chat_internal(window: tauri::Window, request: AiChatStreamReq
         "model": request.model_name,
         "messages": messages,
         "stream": true,
-        "stream_options": { "include_usage": true }
+        "stream_options": { "include_usage": true },
+        "enable_thinking": request.enable_thinking,
+        "thinking_budget": request.thinking_budget,
     });
 
     let client = create_stream_http_client()?;

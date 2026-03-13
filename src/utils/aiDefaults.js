@@ -274,7 +274,9 @@ export const loadAiSettings = () => {
     return {
       baseUrl: '',
       apiKey: '',
-      modelName: '',
+      regexModelName: '',
+      chatModelName: '',
+      explainModelName: '',
       regexPrompt: DEFAULT_AI_REGEX_PROMPT,
       chatPrompt: DEFAULT_AI_CHAT_PROMPT,  // ← 加
       explainPrompt: DEFAULT_AI_EXPLAIN_PROMPT,  // ← 加
@@ -286,7 +288,9 @@ export const loadAiSettings = () => {
     return {
       baseUrl: parsed.baseUrl || '',
       apiKey: parsed.apiKey || '',
-      modelName: parsed.modelName || '',
+      regexModelName: parsed.regexModelName || '',
+      chatModelName: parsed.chatModelName || '',
+      explainModelName: parsed.explainModelName || '',
       regexPrompt: parsed.regexPrompt || DEFAULT_AI_REGEX_PROMPT,
       chatPrompt: parsed.chatPrompt || DEFAULT_AI_CHAT_PROMPT,  // ← 加
       explainPrompt: parsed.explainPrompt || DEFAULT_AI_EXPLAIN_PROMPT,  // ← 加
@@ -295,7 +299,9 @@ export const loadAiSettings = () => {
     return {
       baseUrl: '',
       apiKey: '',
-      modelName: '',
+      regexModelName: '',
+      chatModelName: '',
+      explainModelName: '',
       regexPrompt: DEFAULT_AI_REGEX_PROMPT,
       chatPrompt: DEFAULT_AI_CHAT_PROMPT,  // ← 加
       explainPrompt: DEFAULT_AI_EXPLAIN_PROMPT,  // ← 加
