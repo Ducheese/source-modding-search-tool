@@ -195,7 +195,7 @@ const HelpDialog = ({ open, onClose }) => {
         <Box sx={{ mb: 3, px: 1, display: 'flex', alignItems: 'flex-start', gap: 3 }}>
           <Box
             component="img"
-            src="/icons/ChatGPT Image 2026-03-12.png"
+            src="/logos/ChatGPT Image 2026-03-12.png"
             alt="应用图标"
             sx={{ width: 72, height: 72, borderRadius: 2, flexShrink: 0, mt: 0.5 }}
           />
