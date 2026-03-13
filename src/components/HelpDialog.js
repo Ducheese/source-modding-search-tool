@@ -254,6 +254,7 @@ const HelpDialog = ({ open, onClose }) => {
                 onChange={(e) => handleAiSettingChange('baseUrl', e.target.value)}
                 placeholder="https://api.siliconflow.cn/v1"
                 size="small"
+                inputProps={{ style: { textOverflow: 'ellipsis' } }}
               />
               <TextField
                 label="API Key"
@@ -262,6 +263,7 @@ const HelpDialog = ({ open, onClose }) => {
                 type="password"
                 placeholder="sk-xxx"
                 size="small"
+                inputProps={{ style: { textOverflow: 'ellipsis' } }}
               />
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
@@ -271,6 +273,7 @@ const HelpDialog = ({ open, onClose }) => {
                   placeholder="Qwen/Qwen3-8B"
                   size="small"
                   sx={{ flex: 1 }}
+                  inputProps={{ style: { textOverflow: 'ellipsis' } }}
                 />
                 <TextField
                   label="用于 AI 对话的模型"
@@ -279,6 +282,7 @@ const HelpDialog = ({ open, onClose }) => {
                   placeholder="留空则使用最左边模型"
                   size="small"
                   sx={{ flex: 1 }}
+                  inputProps={{ style: { textOverflow: 'ellipsis' } }}
                 />
                 <TextField
                   label="用于 AI 解释正则的模型"
@@ -287,6 +291,7 @@ const HelpDialog = ({ open, onClose }) => {
                   placeholder="留空则使用最左边模型"
                   size="small"
                   sx={{ flex: 1 }}
+                  inputProps={{ style: { textOverflow: 'ellipsis' } }}
                 />
               </Box>
               <TextField

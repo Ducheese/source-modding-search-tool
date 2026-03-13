@@ -1,3 +1,5 @@
+export const SEARCH_HISTORY_STORAGE_KEY = 'searchHistory';
+
 import React, {
   useState,
   useRef,
@@ -226,7 +228,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
   // 从 localStorage 加载搜索历史
   useEffect(() => {
-    const savedHistory = localStorage.getItem('searchHistory');
+    const savedHistory = localStorage.getItem(SEARCH_HISTORY_STORAGE_KEY);
     if (savedHistory) {
       try {
         setSearchHistory(JSON.parse(savedHistory));
@@ -242,7 +244,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
     const newHistory = [query, ...searchHistory.filter(h => h !== query)].slice(0, 30);
     setSearchHistory(newHistory);
-    localStorage.setItem('searchHistory', JSON.stringify(newHistory));
+    localStorage.setItem(SEARCH_HISTORY_STORAGE_KEY, JSON.stringify(newHistory));
   };
 
   const handleSearch = async (overrideQuery, overrideUseRegex) => {
@@ -447,6 +449,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                 value={includePattern}
                 onChange={(e) => handleFieldChange('includePattern', e.target.value)}
                 helperText="逗号分隔，留空则包含所有"
+                inputProps={{ style: { textOverflow: 'ellipsis' } }}
               />
               <TextField
                 label="排除 (如: *metal*, **/cfg/*)"
@@ -456,6 +459,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                 value={excludePattern}
                 onChange={(e) => handleFieldChange('excludePattern', e.target.value)}
                 helperText="逗号分隔，注意“排除”优先于“包含”"
+                inputProps={{ style: { textOverflow: 'ellipsis' } }}
               />
             </Box>
           </Grid>
