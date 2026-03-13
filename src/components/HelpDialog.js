@@ -203,6 +203,12 @@ const HelpDialog = ({ open, onClose }) => {
           <Typography>在左上角“虚线框区域”完成文件提交，在左下角“文件列表区域”进行检查和初筛，在右上角“搜索配置区域”填上要检索的字符、正则或过滤通配符，在右下角“搜索结果区域”查看或导出结果。</Typography>
         </Box>
 
+        {/* 配置存储 */}
+        <Box sx={{ mb: 2, px: 1 }}>
+          <Typography variant="h6" gutterBottom>配置存储</Typography>
+          <Typography>本工具的配置（含 API Key）会以明文存储在 <code>C:\Users\用户名\AppData\Local\com.sourcemodding.searchtool</code> 路径下，该路径同时包含 WebView2 运行时缓存，不会上传至任何服务器，但也要注意本机的访问安全。</Typography>
+        </Box>
+
         {/* ── Tabs ── */}
         <Box>
 
@@ -245,7 +251,7 @@ const HelpDialog = ({ open, onClose }) => {
 
               {/* 说明文字 */}
               <Typography variant="body2" color="text.secondary">
-                AI 写正则和解释正则需要模型的快速响应，不推荐使用参数量大、或固定开启思考的模型。
+                AI 写正则和 AI 解释正则需要模型的快速响应，不推荐使用参数量大、或固定开启思考的模型。
               </Typography>
 
               <TextField
@@ -253,6 +259,7 @@ const HelpDialog = ({ open, onClose }) => {
                 value={aiSettings.baseUrl}
                 onChange={(e) => handleAiSettingChange('baseUrl', e.target.value)}
                 placeholder="https://api.siliconflow.cn/v1"
+                helperText="/v1 或 /v1/chat/completions 结尾均可"
                 size="small"
                 inputProps={{ style: { textOverflow: 'ellipsis' } }}
               />
@@ -262,6 +269,7 @@ const HelpDialog = ({ open, onClose }) => {
                 onChange={(e) => handleAiSettingChange('apiKey', e.target.value)}
                 type="password"
                 placeholder="sk-xxx"
+                helperText="注意，此 API Key 会在本地明文存储"
                 size="small"
                 inputProps={{ style: { textOverflow: 'ellipsis' } }}
               />
@@ -271,6 +279,7 @@ const HelpDialog = ({ open, onClose }) => {
                   value={aiSettings.regexModelName}
                   onChange={(e) => handleAiSettingChange('regexModelName', e.target.value)}
                   placeholder="Qwen/Qwen3-8B"
+                  helperText="不启用思考，没有备用模型"
                   size="small"
                   sx={{ flex: 1 }}
                   inputProps={{ style: { textOverflow: 'ellipsis' } }}
@@ -279,7 +288,8 @@ const HelpDialog = ({ open, onClose }) => {
                   label="用于 AI 对话的模型"
                   value={aiSettings.chatModelName}
                   onChange={(e) => handleAiSettingChange('chatModelName', e.target.value)}
-                  placeholder="留空则使用最左边模型"
+                  placeholder="deepseek-ai/DeepSeek-V3.2"
+                  helperText="支持显示思维链，留空则使用最左边模型"
                   size="small"
                   sx={{ flex: 1 }}
                   inputProps={{ style: { textOverflow: 'ellipsis' } }}
@@ -288,7 +298,8 @@ const HelpDialog = ({ open, onClose }) => {
                   label="用于 AI 解释正则的模型"
                   value={aiSettings.explainModelName}
                   onChange={(e) => handleAiSettingChange('explainModelName', e.target.value)}
-                  placeholder="留空则使用最左边模型"
+                  placeholder="Qwen/Qwen3-8B"
+                  helperText="不启用思考，留空则使用最左边模型"
                   size="small"
                   sx={{ flex: 1 }}
                   inputProps={{ style: { textOverflow: 'ellipsis' } }}
@@ -298,7 +309,7 @@ const HelpDialog = ({ open, onClose }) => {
                 label="AI 写正则的提示词"
                 value={aiSettings.regexPrompt}
                 onChange={(e) => handleAiSettingChange('regexPrompt', e.target.value)}
-                placeholder="注意，本工具所使用的正则引擎不支持断言（look around）"
+                helperText="注意，本工具所使用的正则引擎不支持断言（look around）"
                 multiline
                 minRows={6}
                 maxRows={18}
@@ -307,7 +318,7 @@ const HelpDialog = ({ open, onClose }) => {
                 label="AI 对话的提示词"
                 value={aiSettings.chatPrompt}
                 onChange={(e) => handleAiSettingChange('chatPrompt', e.target.value)}
-                placeholder="用{{context}}表示搜索结果"
+                helperText="注意，必须提及{{context}}，才能把搜索结果挂载进上下文"
                 multiline
                 minRows={6}
                 maxRows={18}
@@ -316,7 +327,7 @@ const HelpDialog = ({ open, onClose }) => {
                 label="AI 解释正则的提示词"
                 value={aiSettings.explainPrompt}
                 onChange={(e) => handleAiSettingChange('explainPrompt', e.target.value)}
-                placeholder="建议输出简单文本，不支持换行符和富文本渲染"
+                helperText="建议输出简单文本，不支持换行符和富文本渲染"
                 multiline
                 minRows={6}
                 maxRows={18}
