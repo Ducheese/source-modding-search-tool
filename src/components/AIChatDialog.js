@@ -673,7 +673,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
                       <Lightbulb sx={{ fontSize: 18 }} />
                     </IconButton>
 
-                    {/* 预算输入：仅开启时显示 */}
+ {/* 预算输入：仅开启时显示 */}
                     {enableThinking && !isStreaming && (
                       <Box sx={{
                         display: 'flex',
@@ -687,8 +687,8 @@ const AIChatDialog = ({ open, onClose, results }) => {
                       }}>
                         <IconButton
                           size="small"
-                          disabled={isStreaming || thinkingBudget >= 32768}
-                          onClick={() => setThinkingBudget(v => Math.min(32768, v * 2))}
+                          disabled={isStreaming}
+                          onClick={() => setThinkingBudget(v => v >= 32768 ? 128 : v * 2)}
                           sx={{ width: '100%', height: 10, borderRadius: 0, py: 0 }}
                         >
                           <ExpandLess sx={{ fontSize: 14 }} />
@@ -701,8 +701,8 @@ const AIChatDialog = ({ open, onClose, results }) => {
                         </Typography>
                         <IconButton
                           size="small"
-                          disabled={isStreaming || thinkingBudget <= 128}
-                          onClick={() => setThinkingBudget(v => Math.max(128, v / 2))}
+                          disabled={isStreaming}
+                          onClick={() => setThinkingBudget(v => v <= 128 ? 32768 : v / 2)}
                           sx={{ width: '100%', height: 10, borderRadius: 0, py: 0 }}
                         >
                           <ExpandMore sx={{ fontSize: 14 }} />
