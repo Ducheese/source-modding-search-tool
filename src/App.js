@@ -447,8 +447,9 @@ function App() {
           <CssBaseline />
 
           {/* 深浅色模式切换按钮，纵深次序1301 */}
-          <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 1301 }}>
+          <div style={{ position: 'fixed', top: 24, right: 24, zIndex: 1301 }}>
             <IconButton
+              // size="medium"  // 默认就是 medium
               color="inherit"
               onClick={() => {
                 const newMode = !darkMode;

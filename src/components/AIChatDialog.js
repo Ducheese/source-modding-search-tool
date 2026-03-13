@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Box,
+  Fab,
   CircularProgress,
   Collapse,
   Dialog,
@@ -13,7 +14,7 @@ import {
   alpha,
   useTheme,
 } from '@mui/material';
-import { Close, ExpandLess, ExpandMore, Lightbulb, Send, SmartToy } from '@mui/icons-material';
+import { Close, ExpandLess, ExpandMore, Lightbulb, Remove, Send, SmartToy } from '@mui/icons-material';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useSnackbar } from '../App';
@@ -184,6 +185,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [enableThinking, setEnableThinking] = useState(false);
   const [thinkingBudget, setThinkingBudget] = useState(4096);
+  const [minimized, setMinimized] = useState(false);
 
   // ── Refs（用于事件回调中访问最新值，避免 stale closure）──
   const messagesRef       = useRef([]);   // 消息列表的 source of truth
@@ -326,8 +328,10 @@ const AIChatDialog = ({ open, onClose, results }) => {
   // 打开/关闭对话框时的副作用
   useEffect(() => {
     if (open) {
+      setMinimized(false);
       resetDialogState();
     } else {
+      setMinimized(false);
       activeRequestRef.current = null;
       setIsStreaming(false);
     }
@@ -575,7 +579,8 @@ const AIChatDialog = ({ open, onClose, results }) => {
   const canSend = !!inputValue.trim() && !isStreaming;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <>  {/* React Fragment 不能删 */}
+    <Dialog open={open && !minimized} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           {/* 标题部分 */}
@@ -583,10 +588,19 @@ const AIChatDialog = ({ open, onClose, results }) => {
             <SmartToy sx={{ color: 'primary.main' }} />
             发给 AI 分析
           </Typography>
-          {/* 关闭按钮部分 */}
-          <IconButton onClick={onClose}>
-            <Close />
-          </IconButton>
+          {/* 按钮区 */}
+          <Box sx={{ display: 'flex', gap: 0.5 }}>
+            <Tooltip title="最小化至右下角">
+              <IconButton onClick={() => setMinimized(true)}>
+                <Remove />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="结束对话">
+              <IconButton onClick={onClose}>
+                <Close />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
       </DialogTitle>
 
@@ -744,6 +758,26 @@ const AIChatDialog = ({ open, onClose, results }) => {
         </Box>
       </DialogContent>
     </Dialog>
+
+    {/* 最小化时的悬浮按钮 */}
+    {open && minimized && (
+      <Tooltip title="恢复 AI 对话" placement="left">
+        <Fab
+          color="secondary"
+          size="medium"
+          onClick={() => setMinimized(false)}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 1301,
+          }}
+        >
+          <SmartToy />
+        </Fab>
+      </Tooltip>
+    )}
+    </>
   );
 };
 

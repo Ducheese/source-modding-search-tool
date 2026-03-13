@@ -65,7 +65,7 @@ const MainLayout = () => {
       {/* 1. 标题栏 (固定高度) */}
       <Box
         sx={{
-          py: 1.5, px: 3,   // 更紧凑一点
+          py: 1, px: 3,   // 更紧凑一点
           bgcolor: 'primary.main',
           color: 'primary.contrastText',
           boxShadow: 3,
@@ -84,7 +84,7 @@ const MainLayout = () => {
             </IconButton>
           </Tooltip>
         </Box>
-        <Typography variant="body2" sx={{ opacity: 0.9 }}>
+        <Typography variant="body2" sx={{ opacity: 0.9, mb: 1.25 }}>
           为 Valve Source 1 引擎 Mod 开发者提供的高性能本地文本检索工具
         </Typography>
       </Box>
