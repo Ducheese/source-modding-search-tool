@@ -192,8 +192,14 @@ const HelpDialog = ({ open, onClose }) => {
 
       <DialogContent dividers>
         {/* 介绍 */}
-        <Box sx={{ mb: 3, px: 1 }}>
-          <Typography>本工具旨在为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的<b>跨文本</b>检索工具，因此支持提交和检索的文本文件格式只包括：.sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut。</Typography>
+        <Box sx={{ mb: 3, px: 1, display: 'flex', alignItems: 'flex-start', gap: 3 }}>
+          <Box
+            component="img"
+            src="/icons/ChatGPT Image 2026-03-12.png"
+            alt="应用图标"
+            sx={{ width: 72, height: 72, borderRadius: 2, flexShrink: 0, mt: 0.5 }}
+          />
+          <Typography>本工具旨在为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的<b>跨文本检索</b>工具，因此支持提交和检索的文本文件格式只包括：.sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut。</Typography>
         </Box>
 
         {/* 说明 */}
