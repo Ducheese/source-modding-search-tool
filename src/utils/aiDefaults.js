@@ -1,4 +1,4 @@
-export const AI_SETTINGS_STORAGE_KEY = 'aiRegexSettings';
+export const AI_SETTINGS_STORAGE_KEY = 'aiSettings';
 
 export const DOMAIN_KNOWLEDGE_BASE = String.raw`
 【文件类型速览】

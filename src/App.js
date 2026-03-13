@@ -15,7 +15,7 @@ import MainLayout from './components/MainLayout';
 
 const COLOR_SCHEME_STORAGE_KEY = 'colorScheme';
 
-// ── 方案 0：经典紫（MD2 Deep Purple 500 / Teal 200）──────────
+// ── 方案 0：极光紫（MD2 Deep Purple 500 / Teal 200）──────────
 const scheme0Light = createTheme({
   palette: {
     mode: 'light',
@@ -147,7 +147,7 @@ const scheme3Dark = createTheme({
   },
 });
 
-// ── 方案 4：古木翠（Brown 500 / Light Green 500）───────
+// ── 方案 4：古木萌（Brown 500 / Light Green 500）───────
 const scheme4Light = createTheme({
   palette: {
     mode: 'light',
@@ -213,7 +213,7 @@ const scheme5Dark = createTheme({
   },
 });
 
-// ── 方案 6：藤萝紫（Green 600 / Deep Purple 400）反向撞色 ───
+// ── 方案 6：翠藤萝（Green 600 / Deep Purple 400）反向撞色 ───
 const scheme6Light = createTheme({
   palette: {
     mode: 'light',
@@ -286,7 +286,7 @@ const scheme7Dark = createTheme({
 export const COLOR_SCHEMES = [
   {
     id: 0,
-    label: '经典紫',
+    label: '极光紫',
     desc: 'Deep Purple 500 / Teal 200',
     lightPrimary:  '#6200EE',
     lightSecondary:'#03DAC6',
@@ -322,7 +322,7 @@ export const COLOR_SCHEMES = [
   },
   {
     id: 4,
-    label: '古木翠',
+    label: '古木萌',
     desc: 'Brown 500 / Light Green 500',
     lightPrimary:  '#795548',
     lightSecondary:'#8BC34A',
@@ -340,7 +340,7 @@ export const COLOR_SCHEMES = [
   },
   {
     id: 6,
-    label: '藤萝紫',
+    label: '翠藤萝',
     desc: 'Green 600 / Deep Purple 400',
     lightPrimary:  '#43A047',
     lightSecondary:'#7E57C2',
