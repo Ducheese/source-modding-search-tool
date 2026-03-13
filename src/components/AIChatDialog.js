@@ -299,10 +299,12 @@ const AIChatDialog = ({ open, onClose, results }) => {
 
   /** 打开对话框时：重置所有状态，准备好上下文 */
   const resetDialogState = useCallback(() => {
+    const settings = loadAiSettings(); // 添加这一行
+    const hasContext = (settings.chatPrompt || DEFAULT_AI_CHAT_PROMPT).includes('{{context}}');
     const contextNotice = {
       id: `context-${Date.now()}`,
       role: 'info',
-      content: '已挂载搜索结果上下文',
+      content: hasContext ? '已挂载搜索结果上下文' : '未挂载搜索结果',
       createdAt: formatTimestamp(new Date()),
     };
     messagesRef.current = [contextNotice];
@@ -673,7 +675,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
                       <Lightbulb sx={{ fontSize: 18 }} />
                     </IconButton>
 
- {/* 预算输入：仅开启时显示 */}
+                    {/* 预算输入：仅开启时显示 */}
                     {enableThinking && !isStreaming && (
                       <Box sx={{
                         display: 'flex',

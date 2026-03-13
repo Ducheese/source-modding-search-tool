@@ -193,20 +193,17 @@ const HelpDialog = ({ open, onClose }) => {
       <DialogContent dividers>
         {/* 介绍 */}
         <Box sx={{ mb: 3, px: 1 }}>
-          <Typography variant="h6" gutterBottom>这是什么</Typography>
           <Typography>本工具旨在为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的<b>跨文本</b>检索工具，因此支持提交和检索的文本文件格式只包括：.sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut。</Typography>
         </Box>
 
         {/* 说明 */}
-        <Box sx={{ mb: 2, px: 1 }}>
-          <Typography variant="h6" gutterBottom>如何使用</Typography>
-          <Typography>在左上角“虚线框区域”完成文件提交，在左下角“文件列表区域”进行检查和初筛，在右上角“搜索配置区域”填上要检索的字符、正则或过滤通配符，在右下角“搜索结果区域”查看或导出结果。</Typography>
+        <Box sx={{ mb: 3, px: 1 }}>
+          <Typography>食用方法是：在左上角“虚线框区域”完成文件提交，在左下角“文件列表区域”进行检查和初筛，在右上角“搜索配置区域”填上要检索的字符、正则或过滤通配符，在右下角“搜索结果区域”查看或导出结果，或把结果发给 AI 进行分析和讨论。</Typography>
         </Box>
 
         {/* 配置存储 */}
         <Box sx={{ mb: 2, px: 1 }}>
-          <Typography variant="h6" gutterBottom>配置存储</Typography>
-          <Typography>本工具的配置（含 API Key）会以明文存储在 <code>C:\Users\用户名\AppData\Local\com.sourcemodding.searchtool</code> 路径下，该路径同时包含 WebView2 运行时缓存，不会上传至任何服务器，但也要注意本机的访问安全。</Typography>
+          <Typography>本工具的配置信息（含 API Key）会以明文存储在 <code>C:\Users\用户名\AppData\Local\com.sourcemodding.searchtool</code> 路径下，该路径同时包含 WebView2 运行时缓存。手动清空该路径可确保本工具的完全卸载，也可通过此方式解决新版本破坏性更新导致的各种稀奇古怪的Bug。</Typography>
         </Box>
 
         {/* ── Tabs ── */}
