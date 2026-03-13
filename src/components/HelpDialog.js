@@ -242,6 +242,12 @@ const HelpDialog = ({ open, onClose }) => {
           {/* Tab 2 — 大模型接入配置 */}
           <TabPanel value={tabValue} index={2}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+              {/* 说明文字 */}
+              <Typography variant="body2" color="text.secondary">
+                AI 写正则和解释正则需要模型的快速响应，不推荐使用参数量大、或固定开启思考的模型。
+              </Typography>
+
               <TextField
                 label="API Base Url"
                 value={aiSettings.baseUrl}
