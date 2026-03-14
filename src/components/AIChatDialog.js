@@ -176,7 +176,7 @@ const MessageMetrics = React.memo(({ metrics }) => {
 
 // ─── 主组件 ──────────────────────────────────────────────────────────────────
 
-const AIChatDialog = ({ open, onClose, results }) => {
+const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) => {
   const theme       = useTheme();
   const showSnackbar = useSnackbar();
 
@@ -186,7 +186,6 @@ const AIChatDialog = ({ open, onClose, results }) => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [enableThinking, setEnableThinking] = useState(false);
   const [thinkingBudget, setThinkingBudget] = useState(4096);
-  const [minimized, setMinimized] = useState(false);
 
   // ── Refs（用于事件回调中访问最新值，避免 stale closure）──
   const messagesRef       = useRef([]);   // 消息列表的 source of truth
@@ -248,10 +247,10 @@ const AIChatDialog = ({ open, onClose, results }) => {
   // 打开/关闭对话框时的副作用
   useEffect(() => {
     if (open) {
-      setMinimized(false);
+      onMinimizedChange(false);
       resetDialogState();
     } else {
-      setMinimized(false);
+      onMinimizedChange(false);
       activeRequestRef.current = null;
       setIsStreaming(false);
     }
@@ -511,7 +510,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
           {/* 按钮区 */}
           <Box sx={{ display: 'flex', gap: 0.5 }}>
             <Tooltip title="最小化至右下角">
-              <IconButton onClick={() => setMinimized(true)}>
+              <IconButton onClick={() => onMinimizedChange(true)}>
                 <Remove />
               </IconButton>
             </Tooltip>
@@ -685,7 +684,7 @@ const AIChatDialog = ({ open, onClose, results }) => {
         <Fab
           color="secondary"
           size="medium"
-          onClick={() => setMinimized(false)}
+          onClick={() => onMinimizedChange(false)}
           sx={{
             position: 'fixed',
             bottom: 24,
