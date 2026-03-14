@@ -499,7 +499,18 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
 
   return (
     <>  {/* React Fragment 不能删 */}
-    <Dialog open={open && !minimized} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open && !minimized}
+      onClose={(event, reason) => {
+        if (reason === 'backdropClick') {
+          onMinimizedChange(true);
+        } else {
+          onClose();
+        }
+      }}
+      maxWidth="md"
+      fullWidth
+    >
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           {/* 标题部分 */}
