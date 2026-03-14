@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Chip, Button, Menu, MenuItem, useTheme, alpha, CircularProgress, Alert } from '@mui/material';
 import { Download, SmartToy } from '@mui/icons-material';
 import { exportResults } from '../utils/searchEngine';
@@ -11,6 +11,11 @@ const SearchResults = ({ results, isSearching }) => {
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [aiMinimized, setAiMinimized] = useState(false);
   const [chatResults, setChatResults] = useState(null); // 对话绑定的结果快照
+
+  // 解决红字报错：isSearching 或 results 变化时关掉 Menu
+  useEffect(() => {
+    setAnchorEl(null);
+  }, [isSearching, results]);
 
   const handleExportClick = (event) => setAnchorEl(event.currentTarget);
   const handleExportClose = () => setAnchorEl(null);

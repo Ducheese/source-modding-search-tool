@@ -19,14 +19,21 @@ import {
   alpha,
 } from '@mui/material';
 import { Close, Help, CheckCircle, ExpandMore, ExpandLess, Error } from '@mui/icons-material';
-import { useSnackbar } from '../App';
-import { useThemeScheme, COLOR_SCHEMES } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
-import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_CHAT_PROMPT, DEFAULT_AI_EXPLAIN_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getVersion } from '@tauri-apps/api/app';
+
+import { useSnackbar, useThemeScheme } from '../App';
+import { COLOR_SCHEMES } from '../utils/themeConfig';
 import { getMarkdownStyles } from '../utils/markdownStyles';
+import { 
+  DEFAULT_AI_REGEX_PROMPT, 
+  DEFAULT_AI_CHAT_PROMPT, 
+  DEFAULT_AI_EXPLAIN_PROMPT, 
+  loadAiSettings, 
+  AI_SETTINGS_STORAGE_KEY 
+} from '../utils/aiDefaults';
 
 // ─────────────────────────────────────────────────────────────
 // TabPanel
@@ -491,7 +498,7 @@ const HelpDialog = ({ open, onClose }) => {
                     darkMode={isDark}
                     onClick={() => {
                       setSchemeId(scheme.id);
-                      showSnackbar(`已切换到「${scheme.label}」配色`, 'success');
+                      showSnackbar(`已切换到「${scheme.label}」配色`, 'info');
                     }}
                   />
                 ))}

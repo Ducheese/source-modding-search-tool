@@ -577,6 +577,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
                     placement="left"
                     arrow
                   >
+                    <span>     {/* 解决红字报错：某个 <Tooltip> 包裹了一个 disabled 的按钮，disabled 元素不触发鼠标事件，Tooltip 监听不到所以无法显示。 */}
                     <IconButton
                       size="small"
                       disabled={isStreaming}
@@ -607,6 +608,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
                     >
                       <Lightbulb sx={{ fontSize: 18 }} />
                     </IconButton>
+                    </span>
                   </Tooltip>
 
                   {/* 预算输入：仅开启时显示 */}
