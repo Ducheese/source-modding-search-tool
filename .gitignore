@@ -43,3 +43,5 @@ package-lock.json
 src-tauri/target/
 src-tauri/Cargo.lock
 null
+clean_data_final.json
+readldb.js

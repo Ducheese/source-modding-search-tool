@@ -191,6 +191,8 @@ const HelpDialog = ({ open, onClose }) => {
       </DialogTitle>
 
       <DialogContent dividers>
+        {/* 介绍 / 说明 / 配置存储：选中大模型接入配置 Tab 时隐藏 */}
+        {tabValue !== 2 && <>
         {/* 介绍 */}
         <Box sx={{ mb: 3, px: 1, display: 'flex', alignItems: 'flex-start', gap: 3 }}>
           <Box
@@ -211,6 +213,8 @@ const HelpDialog = ({ open, onClose }) => {
         <Box sx={{ mb: 2, px: 1 }}>
           <Typography>本工具的配置信息（含 API Key）会以明文存储在 <code>C:\Users\用户名\AppData\Local\com.sourcemodding.searchtool</code> 路径下，该路径同时包含 WebView2 运行时缓存。手动清空该路径可确保本工具的完全卸载，也可通过此方式解决新版本破坏性更新导致的各种稀奇古怪的Bug。</Typography>
         </Box>
+
+        </>}
 
         {/* ── Tabs ── */}
         <Box>
