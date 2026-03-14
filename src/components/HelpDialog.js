@@ -18,13 +18,14 @@ import {
   useTheme,
   alpha,
 } from '@mui/material';
-import { Close, Help, CheckCircle, ExpandMore, ExpandLess } from '@mui/icons-material';
+import { Close, Help, CheckCircle, ExpandMore, ExpandLess, Error } from '@mui/icons-material';
 import { useSnackbar } from '../App';
 import { useThemeScheme, COLOR_SCHEMES } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
 import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_CHAT_PROMPT, DEFAULT_AI_EXPLAIN_PROMPT, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { getVersion } from '@tauri-apps/api/app';
 import { getMarkdownStyles } from '../utils/markdownStyles';
 
 // ─────────────────────────────────────────────────────────────
@@ -131,8 +132,9 @@ const SchemeCard = ({ scheme, selected, darkMode, onClick }) => {
 // ─────────────────────────────────────────────────────────────
 // ReleaseEntry — 单条更新日志（折叠/展开）
 // ─────────────────────────────────────────────────────────────
-const ReleaseEntry = ({ tag, name, body, date , markdownStyles, defaultExpanded = false }) => {
+const ReleaseEntry = ({ tag, name, body, date, markdownStyles, defaultExpanded = false, isLatest = false, isCurrent = false, isUpToDate = false }) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
+  useEffect(() => { setExpanded(defaultExpanded); }, [defaultExpanded]);
   const theme = useTheme();
   return (
     <Box sx={{ borderBottom: `1px solid ${alpha(theme.palette.divider, 0.15)}` }}>
@@ -153,6 +155,15 @@ const ReleaseEntry = ({ tag, name, body, date , markdownStyles, defaultExpanded 
           <Typography variant="body2" fontWeight={700}>{name}</Typography>
           {name !== tag && (
             <Chip label={tag} size="small" color="secondary" variant="outlined" sx={{ height: 20, fontSize: '0.68rem' }} />
+          )}
+          {isLatest && (
+            <Chip label="新版本" size="small" color="error" sx={{ height: 20, fontSize: '0.68rem' }} />
+          )}
+          {isCurrent && (
+            <Chip label="当前版本" size="small" color="info" sx={{ height: 20, fontSize: '0.68rem' }} />
+          )}
+          {isUpToDate && (
+            <Chip label="已是最新" size="small" color="success" sx={{ height: 20, fontSize: '0.68rem' }} />
           )}
         </Box>
         {expanded ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
@@ -178,6 +189,8 @@ const HelpDialog = ({ open, onClose }) => {
   const handleTabChange = (_, newValue) => setTabValue(newValue);
 
   const [changelog, setChangelog] = useState(null);   // null=未加载, 'loading', 'error', [{tag, body}]
+  const [currentVersion, setCurrentVersion] = useState(null);
+  const [hasUpdate, setHasUpdate] = useState(false);
 
   const showSnackbar = useSnackbar();
 
@@ -191,30 +204,39 @@ const HelpDialog = ({ open, onClose }) => {
   useEffect(() => {
     if (!open) return;
     setAiSettings(loadAiSettings());
-  }, [open]);
+    if (changelog !== null) return;
 
-  useEffect(() => {
-    if (tabValue !== 4 || changelog !== null) return;
     setChangelog('loading');
-    fetch('https://api.github.com/repos/Ducheese/source-modding-search-tool/releases')
-      .then(r => r.json())
-      .then(data => {
-        if (!Array.isArray(data)) {
-          const isRateLimit = data?.message?.toLowerCase().includes('rate limit');
-          setChangelog(isRateLimit ? 'ratelimit' : 'error');
-          return;
-        }
-        setChangelog(data.map(r => ({
-          tag: r.tag_name,
-          name: r.name || r.tag_name,
-          body: (r.body || '（无说明）')
-            .replace(/<img\b[^>]*>/gi, '')   // HTML img 标签（含 GitHub 的非自闭合形式）
-            .trim(),
-          date: r.published_at ? r.published_at.slice(0, 10) : null,  // 只取 yyyy-mm-dd
-        })));
-      })
-      .catch(() => setChangelog('error'));
-  }, [tabValue, changelog]);
+    getVersion().catch(() => null).then(v => {
+      setCurrentVersion(v);
+      fetch('https://api.github.com/repos/Ducheese/source-modding-search-tool/releases')
+        .then(r => r.json())
+        .then(data => {
+          if (!Array.isArray(data)) {
+            const isRateLimit = data?.message?.toLowerCase().includes('rate limit');
+            setChangelog(isRateLimit ? 'ratelimit' : 'error');
+            return;
+          }
+          const parsed = data.map(r => ({
+            tag: r.tag_name,
+            name: r.name || r.tag_name,
+            body: (r.body || '（无说明）')
+              .replace(/<img\b[^>]*>/gi, '')   // HTML img 标签（含 GitHub 的非自闭合形式）
+              .trim(),
+            date: r.published_at ? r.published_at.slice(0, 10) : null,  // 只取 yyyy-mm-dd
+          }));
+          setChangelog(parsed);
+          // 检查更新：找到当前版本对应的 release 日期，和最新 release 日期比较
+          const latestDate = parsed[0]?.date;
+          const currentRelease = parsed.find(r => r.tag.replace(/^v/, '') === v);
+          const currentDate = currentRelease?.date;
+          if (latestDate && currentDate && latestDate > currentDate) {
+            setHasUpdate(true);
+          }
+        })
+        .catch(() => setChangelog('error'));
+    });
+  }, [open]);
 
   const handleAiSettingChange = (field, value) => {
     setAiSettings(prev => {
@@ -300,7 +322,12 @@ const HelpDialog = ({ open, onClose }) => {
               <Tab label="正则使用建议" />
               <Tab label="大模型接入配置" />
               <Tab label="色彩方案" />
-              <Tab label="更新日志" />
+              <Tab label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  更新日志
+                  {hasUpdate && <Error sx={{ fontSize: 16, color: 'error.main' }} />}
+                </Box>
+              } />
             </Tabs>
           </Box>
 
@@ -538,7 +565,13 @@ const HelpDialog = ({ open, onClose }) => {
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {changelog.map(({ tag, name, body, date }, index) => (
-                  <ReleaseEntry key={tag} tag={tag} name={name} body={body} date={date} markdownStyles={markdownStyles} defaultExpanded={index === 0} />
+                  <ReleaseEntry
+                    key={tag} tag={tag} name={name} body={body} date={date}
+                    markdownStyles={markdownStyles} defaultExpanded={index === 0 && hasUpdate}
+                    isLatest={index === 0 && hasUpdate}
+                    isCurrent={!!(currentVersion && tag.replace(/^v/, '') === currentVersion && hasUpdate)}
+                    isUpToDate={!!(currentVersion && tag.replace(/^v/, '') === currentVersion && !hasUpdate)}
+                  />
                 ))}
               </Box>
             )}
