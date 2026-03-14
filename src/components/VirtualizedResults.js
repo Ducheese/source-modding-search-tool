@@ -225,49 +225,61 @@ const VirtualizedResults = ({ results }) => {
     }
   };
 
-  // --- 数据展平 (Flattening) ---
-  // 将层级结构 (Files -> Matches) 展平成一维数组 (Rows) 以供 React-window 使用
-  const flatRows = useMemo(() => {
-    const rows = [];
-    if (!results || !results.files) return rows;
+  // --- 数据展平：第一层 ---
+  // 只依赖 results，缓存每个文件的 match/context/separator 行
+  // toggle 展开折叠不会触发此层重建
+  const matchRowsMap = useMemo(() => {
+    if (!results?.files) return new Map();
+    const map = new Map();
+    results.files.forEach(file => {
+      const rows = [];
+      file.matches.forEach(match => {
+        // 上下文 (Before)
+        if (match.context.before?.length > 0) {
+          const startLine = match.line_number - match.context.before.length;
+          match.context.before.forEach((content, idx) => {
+            rows.push({ type: 'context', content, lineNumber: startLine + idx });
+          });
+        }
 
-    results.files.forEach((file, index) => {
+        // 匹配本身 (Match)
+        rows.push({ type: 'match', content: match.segments, lineNumber: match.line_number });
 
-      // 2. 文件头
-      rows.push({
-        type: 'header', file, isExpanded: expandedFiles.has(file.path),
-        isLast: index === results.files.length - 1,
-        isFirst: index === 0
+        // 上下文 (After)
+        if (match.context.after?.length > 0) {
+          match.context.after.forEach((content, idx) => {
+            rows.push({ type: 'context', content, lineNumber: match.line_number + 1 + idx });
+          });
+        }
+
+        // ⭐️ 注入分隔区域 (Separator)
+        rows.push({ type: 'separator' });
       });
+      map.set(file.path, rows);
+    });
+    return map;
+  }, [results]); // ← 不依赖 expandedFiles
 
-      // 3. 匹配内容
+  // --- 数据展平：第二层 ---
+  // 只做 header 组装 + 引用拼接，match 行直接取上层缓存
+  // toggle 时只重跑 O(N files) 的遍历，不重建任何 match 行对象
+  const flatRows = useMemo(() => {
+    if (!results?.files) return [];
+    const rows = [];
+    results.files.forEach((file, index) => {
+      rows.push({
+        type: 'header', file,
+        isExpanded: expandedFiles.has(file.path),
+        isFirst: index === 0,
+        isLast: index === results.files.length - 1,
+      });
       if (expandedFiles.has(file.path)) {
-        file.matches.forEach(match => {
-          // 上下文 (Before)
-          if (match.context.before && match.context.before.length > 0) {
-            const startLine = match.line_number - match.context.before.length;
-            match.context.before.forEach((content, idx) => {
-              rows.push({ type: 'context', content, lineNumber: startLine + idx });
-            });
-          }
-
-          // 匹配本身 (Match)
-          rows.push({ type: 'match', content: match.segments, lineNumber: match.line_number });
-
-          // 上下文 (After)
-          if (match.context.after && match.context.after.length > 0) {
-            match.context.after.forEach((content, idx) => {
-              rows.push({ type: 'context', content, lineNumber: match.line_number + 1 + idx });
-            });
-          }
-
-          // ⭐️ 注入分隔区域 (Separator) ，姑且是每组都加
-          rows.push({ type: 'separator' });
-        });
+        const cached = matchRowsMap.get(file.path);
+        if (cached) rows.push(...cached);
       }
     });
     return rows;
-  }, [results, expandedFiles]);
+  }, [results, expandedFiles, matchRowsMap]);
 
   // --- 根据type决定行高 ---
   const getItemSize = (index) => {

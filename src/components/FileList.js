@@ -140,6 +140,55 @@ const FileRow = memo(({ data, index, style }) => {
   );
 }, areEqual);
 
+// 辅助函数
+const formatFileSize = (bytes) => {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+};
+
+const truncatePath = (path, maxLength = 40) => {
+  if (!path || path.length <= maxLength) return path;
+  const parts = path.split(/[\\/]/);
+  if (parts.length <= 2) return path;
+  return '…\\' + parts[parts.length - 2] + '\\' + parts[parts.length - 1];
+};
+
+const getEncodingColor = (encoding) => {
+  // 1. 预处理：确保是小写，并移除可能干扰精确匹配的常见后缀（如 ' with BOM'）
+  const cleanEncoding = encoding?.toLowerCase().replace(/ with bom/i, '');
+
+  switch (cleanEncoding) {
+    // 通用/推荐编码 (Success)
+    case 'utf-8':
+    case 'utf8': // 兼容 utf8 (无连字符)
+    case 'ascii':
+      return 'success';
+
+    // 区域/遗留编码 (Warning)
+    case 'gbk':
+    case 'gb2312':
+    case 'gb18030': // 增加对更现代的国标支持
+      return 'warning';
+
+    // 特殊/复杂编码 (Info)
+    case 'utf-16':
+    case 'utf-16le':
+    case 'utf-16be':
+      return 'info';
+
+    default:
+      // 如果后端能返回更广泛的编码，且想将它们都标记为 Warning (潜在乱码风险)
+      // 可以增加一个兜底的包含判断，例如将所有 'windows-' 或 'shift-jis' 归为 warning
+      if (cleanEncoding && (cleanEncoding.includes('windows-') || cleanEncoding.includes('shift-jis'))) {
+        return 'warning';
+      }
+      return 'default';
+  }
+};
+
 // --- 主组件 ---
 const FileList = ({ files, onFileRemoved, onClearFiles }) => {
   const showSnackbar = useSnackbar();
@@ -199,54 +248,6 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
     fetchFileStats();
   }, [files]);
 
-  // 辅助函数
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-  };
-
-  const truncatePath = (path, maxLength = 40) => {
-    if (!path || path.length <= maxLength) return path;
-    const parts = path.split(/[\\/]/);
-    if (parts.length <= 2) return path;
-    return '…\\' + parts[parts.length - 2] + '\\' + parts[parts.length - 1];
-  };
-
-  const getEncodingColor = (encoding) => {
-    // 1. 预处理：确保是小写，并移除可能干扰精确匹配的常见后缀（如 ' with BOM'）
-    const cleanEncoding = encoding?.toLowerCase().replace(/ with bom/i, '');
-
-    switch (cleanEncoding) {
-      // 通用/推荐编码 (Success)
-      case 'utf-8':
-      case 'utf8': // 兼容 utf8 (无连字符)
-      case 'ascii':
-        return 'success';
-
-      // 区域/遗留编码 (Warning)
-      case 'gbk':
-      case 'gb2312':
-      case 'gb18030': // 增加对更现代的国标支持
-        return 'warning';
-
-      // 特殊/复杂编码 (Info)
-      case 'utf-16':
-      case 'utf-16le':
-      case 'utf-16be':
-        return 'info';
-
-      default:
-        // 如果后端能返回更广泛的编码，且想将它们都标记为 Warning (潜在乱码风险)
-        // 可以增加一个兜底的包含判断，例如将所有 'windows-' 或 'shift-jis' 归为 warning
-        if (cleanEncoding && (cleanEncoding.includes('windows-') || cleanEncoding.includes('shift-jis'))) {
-          return 'warning';
-        }
-        return 'default';
-    }
-  };
 
   // 过滤逻辑：使用 deferredQuery 而不是直接的 searchQuery
   const filteredFiles = useMemo(() => {
@@ -257,6 +258,17 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
 
   const totalSize = files.reduce((sum, file) => sum + (fileStats[file.path]?.size || 0), 0);
   const totalLines = files.reduce((sum, file) => sum + (fileStats[file.path]?.lines || 0), 0);
+
+  const itemData = useMemo(() => ({
+    files: filteredFiles,
+    fileStats,
+    onFileRemoved,
+    truncatePath,
+    getEncodingColor,
+    formatFileSize,
+    theme
+  }), [filteredFiles, fileStats, onFileRemoved, theme]); 
+  // 确保这些依赖项本身也是稳定的
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -400,15 +412,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
                   width={width}
                   itemCount={filteredFiles.length}
                   itemSize={80} // ListItem 的高度，需要和 CSS 一致
-                  itemData={{
-                    files: filteredFiles, // 传入过滤后的文件
-                    fileStats,
-                    onFileRemoved,
-                    truncatePath,
-                    getEncodingColor,
-                    formatFileSize,
-                    theme
-                  }}
+                  itemData={itemData}
                 >
                   {FileRow}
                 </List>
