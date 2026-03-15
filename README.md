@@ -8,7 +8,7 @@
 1. iFlow CLI + GLM-4.6/4.7（从0开始创造雏形，初见agent神力）
 2. Gemini 3 Flash/Pro 无agent（主贡献是技术栈更换和前后端性能优化，高级选项面板是锦上添花）
 3. OMO Hephaestus + GPT 5.2 Codex（重拾“屎山”代码，实现更多上下文开关，实现大模型接入雏形）
-4. Claude Sonnet 4.6 无agent（大模型接入功能优化）
+4. Claude Sonnet 4.6 无agent（大模型接入功能优化，“屎山”代码审查，色彩方案标签页，更新日志标签页，深度思考控件，更多上下文控件，聊天窗最小化）
 
 ## 开发环境设置
 
@@ -84,6 +84,8 @@ npm run tauri build
 ```
 source-modding-search-tool/
 ├── public/
+│   ├── fonts/
+│   ├── logos/
 │   └── index.html        # HTML 模板
 ├── src/
 │   ├── components/       # React 前端
@@ -98,8 +100,10 @@ source-modding-search-tool/
 │   │   └── VirtualizedResults.js
 │   ├── utils/            # 工具函数
 │   │   ├── aiDefaults.js
+│   │   ├── markdownStyles.js
 │   │   ├── searchEngine.js
-│   │   └── tauriBridge.js
+│   │   ├── tauriBridge.js
+│   │   └── themeConfig.js
 │   ├── App.js            # 主应用组件
 │   ├── index.css         # 全局样式
 │   └── index.js          # 应用入口
