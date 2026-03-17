@@ -15,10 +15,12 @@ import SearchPanel from './SearchPanel';
 import SearchResults from './SearchResults';
 
 import { HelpOutline } from '@mui/icons-material';
-import HelpDialog from './HelpDialog'; // 我们将要创建的画卷
+import HelpDialog from './HelpDialog';
+import { useLanguage } from '../utils/i18n';
 
 const MainLayout = () => {
   const theme = useTheme();
+  const { t } = useLanguage();
 
   const [files, setFiles] = useState([]);
   const [searchResults, setSearchResults] = useState(null);
@@ -75,17 +77,17 @@ const MainLayout = () => {
       >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
           <Typography variant="h6" component="h1" fontWeight="700">
-            Source Modding Search Tool
+            {t('layout.title')}
           </Typography>
 
-          <Tooltip title="关于与帮助">
+          <Tooltip title={t('layout.helpTooltip')}>
             <IconButton onClick={() => setHelpOpen(true)} sx={{ color: 'primary.contrastText' }}>
               <HelpOutline />
             </IconButton>
           </Tooltip>
         </Box>
         <Typography variant="body2" sx={{ opacity: 0.9, mb: 1.25 }}>
-          为 Valve Source 1 引擎 Mod 开发者提供的高性能本地文本检索工具
+          {t('layout.subtitle')}
         </Typography>
       </Box>
 

@@ -25,7 +25,8 @@ import {
   Clear,
 } from '@mui/icons-material';
 import { useSnackbar } from '../App';
-import { tauriAPI } from '../utils/tauriBridge'; // 使用新的 Bridge
+import { tauriAPI } from '../utils/tauriBridge';
+import { useLanguage } from '../utils/i18n';
 
 // --- 子组件：单独的文件行 (Memo化以极致性能) ---
 const FileRow = memo(({ data, index, style }) => {
@@ -33,7 +34,7 @@ const FileRow = memo(({ data, index, style }) => {
 
   const showSnackbar = useSnackbar();
 
-  const { files, fileStats, onFileRemoved, truncatePath, getEncodingColor, formatFileSize, theme } = data;
+  const { files, fileStats, onFileRemoved, truncatePath, getEncodingColor, formatFileSize, theme, t } = data;
   const file = files[index];
 
   // 防御性编程：防止索引越界
@@ -109,7 +110,7 @@ const FileRow = memo(({ data, index, style }) => {
                   {formatFileSize(stats.size || 0)}
                 </Typography>
                 <Typography variant="caption" color={theme.palette.text.secondary}>
-                  {stats.lines || 0} 行
+                  {t('fileList.lines', { lines: stats.lines || 0 })}
                 </Typography>
               </Box>
             </Box>
@@ -117,13 +118,13 @@ const FileRow = memo(({ data, index, style }) => {
         />
 
         <ListItemSecondaryAction sx={{ right: 16 }}>
-          <Tooltip title="移除此文件">
+          <Tooltip title={t('fileList.removeTooltip')}>
             <IconButton
               edge="end"
               size="small"
               onClick={() => {
                 onFileRemoved(file.path);
-                showSnackbar(`已移除 ${file.name}`, 'warning');
+                showSnackbar(t('fileList.removed', { name: file.name }), 'warning');
               }}
               sx={{
                 color: theme.palette.text.secondary,
@@ -193,6 +194,7 @@ const getEncodingColor = (encoding) => {
 const FileList = ({ files, onFileRemoved, onClearFiles }) => {
   const showSnackbar = useSnackbar();
   const theme = useTheme();
+  const { t } = useLanguage();
 
   // 状态管理
   const [fileStats, setFileStats] = useState({});
@@ -266,9 +268,9 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
     truncatePath,
     getEncodingColor,
     formatFileSize,
-    theme
-  }), [filteredFiles, fileStats, onFileRemoved, theme]); 
-  // 确保这些依赖项本身也是稳定的
+    theme,
+    t,
+  }), [filteredFiles, fileStats, onFileRemoved, theme, t]);
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -277,7 +279,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="h6" fontWeight="700">
-              文件列表 ({files.length})
+              {t('fileList.title', { count: files.length })}
             </Typography>
             {loadingStats && <CircularProgress size={16} />}
           </Box>
@@ -289,12 +291,12 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
               startIcon={<ClearAll />}
               onClick={() => {
                 onClearFiles();
-                setFileStats({}); // 清空统计
-                showSnackbar('已清空所有文件', 'warning');
+                setFileStats({});
+                showSnackbar(t('fileList.cleared'), 'warning');
               }}
               sx={{ minWidth: 'auto', px: 1 }}
             >
-              清空
+              {t('fileList.clear')}
             </Button>
           )}
         </Box>
@@ -303,15 +305,15 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               {/* 统计信息 */}
-              <Chip size="small" label={`总大小: ${formatFileSize(totalSize)}`} />
-              <Chip size="small" label={`总行数: ${totalLines.toLocaleString()}`} />
+              <Chip size="small" label={t('fileList.totalSize', { size: formatFileSize(totalSize) })} />
+              <Chip size="small" label={t('fileList.totalLines', { lines: totalLines.toLocaleString() })} />
 
               {/* 未聚焦时显示的搜索框 */}
               {!isSearchFocused && (
                 <Chip
                   size="small"
                   icon={<Search sx={{ fontSize: 16 }} />}
-                  label={searchQuery || '搜索文件'}
+                  label={searchQuery || t('fileList.searchChip')}
                   onClick={() => {
                     setIsSearchFocused(true);
                     // 延迟聚焦，等待 UI 渲染
@@ -331,7 +333,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
             {isSearchFocused && (
               <TextField
                 inputRef={searchInputRef}
-                placeholder="输入文件名..."
+                placeholder={t('fileList.searchPlaceholder')}
                 variant="outlined"
                 size="small"
                 fullWidth
@@ -366,7 +368,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
             {/* 显示过滤结果数量，作为反馈 */}
             {searchQuery && (
               <Typography fontSize="small" variant="caption" color={theme.palette.text.secondary} sx={{ ml: 0.5 }}>
-                筛选出 {filteredFiles.length} 个文件
+                {t('fileList.filtered', { count: filteredFiles.length })}
               </Typography>
             )}
           </Box>
@@ -388,14 +390,10 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
             }}
           >
             <Typography variant="h6">
-              {files.length === 0 ? "这里什么都没有" : "你的筛选条件过于苛刻"}
+              {files.length === 0 ? t('fileList.emptyTitle') : t('fileList.noMatchTitle')}
             </Typography>
-
             <Typography variant="body2">
-              {files.length === 0
-                ? "试着添加一些文件吧。"
-                : null
-              }
+              {files.length === 0 ? t('fileList.emptyHint') : null}
             </Typography>
           </Box>
         ) : (

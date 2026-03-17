@@ -278,6 +278,7 @@ export const COLOR_SCHEMES = [
   {
     id: 0,
     label: '极光紫',
+    labelKey: 'colorScheme.0.label',
     desc: 'Deep Purple 500 / Teal 200',
     lightPrimary:  '#6200EE',
     lightSecondary:'#03DAC6',
@@ -287,6 +288,7 @@ export const COLOR_SCHEMES = [
   {
     id: 1,
     label: '落樱粉',
+    labelKey: 'colorScheme.1.label',
     desc: 'Pink 400 / Cyan 400',
     lightPrimary:  '#EC407A',
     lightSecondary:'#26C6DA',
@@ -296,6 +298,7 @@ export const COLOR_SCHEMES = [
   {
     id: 2,
     label: '水鸭青',
+    labelKey: 'colorScheme.2.label',
     desc: 'Teal 500 / Deep Orange 500',
     lightPrimary:  '#009688',
     lightSecondary:'#FF5722',
@@ -305,6 +308,7 @@ export const COLOR_SCHEMES = [
   {
     id: 3,
     label: '寒烟绯',
+    labelKey: 'colorScheme.3.label',
     desc: 'Blue Grey 500 / Red 500',
     lightPrimary:  '#607D8B',
     lightSecondary:'#F44336',
@@ -314,6 +318,7 @@ export const COLOR_SCHEMES = [
   {
     id: 4,
     label: '古木萌',
+    labelKey: 'colorScheme.4.label',
     desc: 'Brown 500 / Light Green 500',
     lightPrimary:  '#795548',
     lightSecondary:'#8BC34A',
@@ -323,6 +328,7 @@ export const COLOR_SCHEMES = [
   {
     id: 5,
     label: '宵靛金',
+    labelKey: 'colorScheme.5.label',
     desc: 'Indigo 500 / Orange 500',
     lightPrimary:  '#3F51B5',
     lightSecondary:'#FF9800',
@@ -332,6 +338,7 @@ export const COLOR_SCHEMES = [
   {
     id: 6,
     label: '翠藤萝',
+    labelKey: 'colorScheme.6.label',
     desc: 'Green 600 / Deep Purple 400',
     lightPrimary:  '#43A047',
     lightSecondary:'#7E57C2',
@@ -341,6 +348,7 @@ export const COLOR_SCHEMES = [
   {
     id: 7,
     label: '苍海珀',
+    labelKey: 'colorScheme.7.label',
     desc: 'Cyan 700 / Amber 500',
     lightPrimary:  '#0097A7',
     lightSecondary:'#FFC107',

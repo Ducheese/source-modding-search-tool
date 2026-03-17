@@ -5,7 +5,8 @@ import { VariableSizeList as List, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { useSnackbar } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
-import ResultLine from './ResultLine';   // 引入原子组件
+import ResultLine from './ResultLine';
+import { useLanguage } from '../utils/i18n';
 
 // 注入跑马灯动画样式
 // 技巧：移动 -50% 距离，前提是内容也是双倍的
@@ -23,8 +24,7 @@ const marqueeStyles = `
 // 技巧：使用负的 animation-delay 基于 Date.now() 进行全局同步
 // 这样无论组件何时挂载，它们的动画位置都相对于"绝对时间"是同步的，不会重置
 const FileMarquee = memo(({ path, onCopy }) => {
-  // 计算全局同步延迟：当前时间(秒) % 周期(10秒)
-  // 取负值，让动画直接跳到对应进度
+  const { t } = useLanguage();
   const getSyncedDelay = () => {
     const duration = 10;
     const now = Date.now() / 1000;
@@ -43,7 +43,7 @@ const FileMarquee = memo(({ path, onCopy }) => {
         opacity: 0.7,
         '&:hover': { opacity: 1 },
       }}
-      title="复制路径"
+      title={t('result.copyPath')}
       onClick={onCopy}
     >
       {/* ⭐️ 跑马灯 Wrapper：包含两份内容，宽度 fit-content */}
@@ -72,7 +72,7 @@ const FileMarquee = memo(({ path, onCopy }) => {
 // --- 提取出的行组件：Row ---
 // 必须定义在主组件外部，保证引用稳定
 const Row = memo(({ data, index, style }) => {
-  const { flatRows, toggleFile, theme, showSnackbar } = data;
+  const { flatRows, toggleFile, theme, showSnackbar, t } = data;
   const row = flatRows[index];
 
   // 1. 分隔区域
@@ -103,17 +103,17 @@ const Row = memo(({ data, index, style }) => {
     // 辅助动作
     const handleCopyPath = () => {
       navigator.clipboard.writeText(file.path);
-      showSnackbar('文件路径已复制', 'success');
+      showSnackbar(t('result.pathCopied'), 'success');
     };
 
     const handleCopyContent = async () => {
       try {
         const { content } = await tauriAPI.readFile(file.path);
         navigator.clipboard.writeText(content);
-        showSnackbar('文件内容已复制', 'success');
+        showSnackbar(t('result.contentCopied'), 'success');
       } catch (error) {
         console.error('Failed to copy file content:', error);
-        showSnackbar('文件内容复制失败', 'error');
+        showSnackbar(t('result.contentCopyFailed'), 'error');
       }
     };
 
@@ -144,10 +144,10 @@ const Row = memo(({ data, index, style }) => {
         <Chip size="small" label={`${file.matches.length}`} color="primary" sx={{ height: 20, mr: 2, userSelect: 'none' }} />
 
         {/* 工具栏 */}
-        <IconButton size="small" title="复制完整内容" onClick={handleCopyContent}>
+        <IconButton size="small" title={t('result.copyContent')} onClick={handleCopyContent}>
           <CopyAll fontSize="small" />
         </IconButton>
-        <IconButton size="small" title="用默认应用打开" onClick={() => tauriAPI.openFileExternally(file.path)}>
+        <IconButton size="small" title={t('result.openExternal')} onClick={() => tauriAPI.openFileExternally(file.path)}>
           <FileOpen fontSize="small" />
         </IconButton>
       </Box>
@@ -172,7 +172,7 @@ const Row = memo(({ data, index, style }) => {
         isMatch={isMatch}
         onCopy={() => {
           navigator.clipboard.writeText(getRawText());
-          showSnackbar('行内容已复制', 'success');
+          showSnackbar(t('result.lineCopied'), 'success');
         }}
       />
     </div>
@@ -184,6 +184,7 @@ const Row = memo(({ data, index, style }) => {
 const VirtualizedResults = ({ results }) => {
   const theme = useTheme();
   const showSnackbar = useSnackbar();
+  const { t } = useLanguage();
   const listRef = useRef(null);
 
   // 常量定义
@@ -295,8 +296,9 @@ const VirtualizedResults = ({ results }) => {
     flatRows,
     toggleFile,
     theme,
-    showSnackbar
-  }), [flatRows, theme, showSnackbar]);
+    showSnackbar,
+    t,
+  }), [flatRows, theme, showSnackbar, t]);
 
   return (
     <Box sx={{ flex: 1, height: '100%' }}>

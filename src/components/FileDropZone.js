@@ -16,10 +16,12 @@ import {
 } from '@mui/icons-material';
 import { tauriAPI } from '../utils/tauriBridge';
 import { listen } from '@tauri-apps/api/event';
+import { useLanguage } from '../utils/i18n';
 
 const FileDropZone = ({ onFilesAdded }) => {
   // 允许你在任何函数组件中，无需通过 Prop 层层传递，就能直接访问最近的 ThemeProvider 组件提供的主题对象。
   const theme = useTheme();
+  const { t } = useLanguage();
 
   // 状态变量
   const [isDragOver, setIsDragOver] = useState(false);
@@ -110,10 +112,7 @@ const FileDropZone = ({ onFilesAdded }) => {
         });
 
         if (invalidFiles.length > 0) {
-          const message = `以下文件因格式不受支持被拒绝导入：
-${invalidFiles.join(', ')}
-
-支持的文件类型：${supportedExtensions.join(', ')}`;
+          const message = `${t('dropzone.errorTitle')}\n${invalidFiles.join(', ')}\n\n${t('dropzone.errorSupportedTypes')} ${supportedExtensions.join(', ')}`;
           showErrorAlert(message);
         }
 
@@ -148,17 +147,14 @@ ${invalidFiles.join(', ')}
         });
 
         if (invalidFiles.length > 0) {
-          const message = `文件夹中以下文件因格式不受支持被拒绝导入：
-${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
-
-支持的文件类型：${supportedExtensions.join(', ')}`;
+          const message = `${t('dropzone.errorFolderTitle')}\n${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}\n\n${t('dropzone.errorSupportedTypes')} ${supportedExtensions.join(', ')}`;
           showErrorAlert(message);
         }
 
         if (validFiles.length > 0) {
           onFilesAdded(validFiles);
         } else {
-          showErrorAlert('所选文件夹中没有找到支持的文件类型。');
+          showErrorAlert(t('dropzone.errorNoFiles'));
         }
       }
     } catch (error) {
@@ -219,10 +215,10 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
 
         <Box>
           <Typography variant="h6" gutterBottom>
-            拖拽文件到此处
+            {t('dropzone.dragHint')}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            支持 .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut 文件
+            {t('dropzone.supportHint')}
           </Typography>
         </Box>
 
@@ -240,7 +236,7 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
             onClick={handleSelectFiles}
             size="small"
           >
-            选择文件
+            {t('dropzone.selectFiles')}
           </Button>
           <Button
             variant="outlined"
@@ -248,7 +244,7 @@ ${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}
             onClick={handleSelectFolder}
             size="small"
           >
-            选择文件夹
+            {t('dropzone.selectFolder')}
           </Button>
         </Box>
       </Box>

@@ -5,6 +5,7 @@ import React, {
   useRef,
   useEffect,
   useReducer,
+  useMemo,
 } from 'react';
 import {
   Box,
@@ -36,76 +37,7 @@ import { searchInFiles } from '../utils/searchEngine';
 import { useSnackbar } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
 import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_EXPLAIN_PROMPT, loadAiSettings } from '../utils/aiDefaults';
-
-// 正则快捷片段
-// 按类别分组的正则片段
-const REGEX_CATEGORIES = [
-  {
-    title: '锚定符',
-    items: [
-      { label: '行首', value: '^' },
-      { label: '行尾 (CRLF/LF)', value: '\\r?$' },
-      { label: '单词边界', value: '\\b' },
-      { label: '非单词边界', value: '\\B' },
-    ]
-  },
-  {
-    title: '通配字符',
-    items: [
-      { label: '任意字符', value: '.' },
-      { label: '制表符', value: '\\t' },
-      { label: '换行符 (CRLF/LF)', value: '\\r?\\n' },
-      { label: '空格、制表或换行符', value: '\\s' },    // 空格 、制表符\t、换行符\r\n
-      { label: '字母、数字或下划线', value: '\\w' },
-      { label: '纯数字字符', value: '\\d' },
-    ]
-  },
-  {
-    title: '指定前面元素的出现次数',
-    items: [
-      { label: '0或1个 (?)', value: '?' },
-      { label: '0或多个 (*)', value: '*' },
-      { label: '1或多个 (+)', value: '+' },
-      { label: '非贪婪 (*?)', value: '*?' },
-      { label: '指定数量 {}', value: '{}' },
-    ]
-  },
-  {
-    title: '字符集的使用例',
-    items: [
-      { label: '十六进制颜色代码', value: '#[0-9a-fA-F]{6}' },
-      { label: '指定数量中文字符', value: '[\\u4e00-\\u9fa5]{}' },
-    ]
-  },
-  {
-    title: '必须转义才能匹配其本身的字符',
-    items: [
-      { label: '(', value: '\\(' },
-      { label: ')', value: '\\)' },
-      { label: '[', value: '\\[' },
-      { label: ']', value: '\\]' },
-      { label: '{', value: '\\{' },
-      { label: '}', value: '\\}' },
-      { label: '.', value: '\\.' },
-      { label: '?', value: '\\?' },
-      { label: '*', value: '\\*' },
-      { label: '+', value: '\\+' },
-      { label: '^', value: '\\^' },
-      { label: '$', value: '\\$' },
-      { label: '\\', value: '\\\\' },
-      { label: '-', value: '\\-' },
-      { label: '|', value: '\\|' },
-    ]
-  },
-  {
-    title: '适用于CS起源的使用例',
-    items: [
-      { label: '匹配所有"weapon_xxx.single"', value: '^[ ]*"Weapon_[^\\.\\r\\n]+\\.Single"' },
-      { label: '匹配所有武器脚本里的子弹数和种类定义', value: '"(clip_size|primary_ammo)"\\s+"[^"]+?"' },
-      { label: '匹配所有用PropData的GetEntProp', value: 'GetEntProp\\s*\\(\\s*[^,)]+?\\s*,\\s*Prop_Data\\s*,\\s*"[^"]+?"\\s*\\)' }
-    ]
-  }
-];
+import { useLanguage } from '../utils/i18n';
 
 // 使用 useReducer 整合所有状态配置
 const initialState = {
@@ -162,6 +94,68 @@ function searchReducer(state, action) {
 const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
   const theme = useTheme();
+  const { t } = useLanguage();
+
+  const REGEX_CATEGORIES = useMemo(() => [
+    {
+      title: t('regexCat.anchors'),
+      items: [
+        { label: t('regexSnippet.lineStart'),        value: '^' },
+        { label: t('regexSnippet.lineEnd'),           value: '\\r?$' },
+        { label: t('regexSnippet.wordBoundary'),      value: '\\b' },
+        { label: t('regexSnippet.nonWordBoundary'),   value: '\\B' },
+      ]
+    },
+    {
+      title: t('regexCat.wildcards'),
+      items: [
+        { label: t('regexSnippet.anyChar'),    value: '.' },
+        { label: t('regexSnippet.tab'),        value: '\\t' },
+        { label: t('regexSnippet.newline'),    value: '\\r?\\n' },
+        { label: t('regexSnippet.whitespace'), value: '\\s' },
+        { label: t('regexSnippet.word'),       value: '\\w' },
+        { label: t('regexSnippet.digit'),      value: '\\d' },
+      ]
+    },
+    {
+      title: t('regexCat.quantifiers'),
+      items: [
+        { label: t('regexSnippet.optional'),    value: '?' },
+        { label: t('regexSnippet.zeroOrMore'),  value: '*' },
+        { label: t('regexSnippet.oneOrMore'),   value: '+' },
+        { label: t('regexSnippet.lazy'),        value: '*?' },
+        { label: t('regexSnippet.count'),       value: '{}' },
+      ]
+    },
+    {
+      title: t('regexCat.charsets'),
+      items: [
+        { label: t('regexSnippet.hexColor'),  value: '#[0-9a-fA-F]{6}' },
+        { label: t('regexSnippet.cjkChars'),  value: '[\\u4e00-\\u9fa5]{}' },
+      ]
+    },
+    {
+      title: t('regexCat.escape'),
+      items: [
+        { label: '(', value: '\\(' }, { label: ')', value: '\\)' },
+        { label: '[', value: '\\[' }, { label: ']', value: '\\]' },
+        { label: '{', value: '\\{' }, { label: '}', value: '\\}' },
+        { label: '.', value: '\\.' }, { label: '?', value: '\\?' },
+        { label: '*', value: '\\*' }, { label: '+', value: '\\+' },
+        { label: '^', value: '\\^' }, { label: '$', value: '\\$' },
+        { label: '\\', value: '\\\\' }, { label: '-', value: '\\-' },
+        { label: '|', value: '\\|' },
+      ]
+    },
+    {
+      title: t('regexCat.csExamples'),
+      items: [
+        { label: t('regexSnippet.csWeapon'),   value: '^[ ]*"Weapon_[^\\.\\r\\n]+\\.Single"' },
+        { label: t('regexSnippet.csAmmo'),     value: '"(clip_size|primary_ammo)"\\s+"[^"]+?"' },
+        { label: t('regexSnippet.csPropData'), value: 'GetEntProp\\s*\\(\\s*[^,)]+?\\s*,\\s*Prop_Data\\s*,\\s*"[^"]+?"\\s*\\)' },
+      ]
+    },
+  ], [t]);
 
   // 使用 useReducer 统一管理搜索配置（initialState），避免了大量 useState 的堆砌
   const [state, dispatch] = useReducer(searchReducer, initialState);
@@ -225,7 +219,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       explainAbortedRef.current = true;
       setIsExplaining(false);
       setRegexExplanation('');
-      showSnackbar('已中断请求', 'warning');
+      showSnackbar(t('search.aborted'), 'warning');
     }
   }, [useRegex, aiRegex]);
 
@@ -287,7 +281,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
     const settings = loadAiSettings();
     if (!settings.baseUrl || !settings.apiKey || !settings.regexModelName) {
-      showSnackbar(`请进入「关于与帮助」填写「大模型接入配置」`, 'warning');
+      showSnackbar(t('search.aiConfigHint'), 'warning');
       return;
     }
 
@@ -304,12 +298,12 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       if (regexAbortedRef.current) return;
       const regex = response?.regex?.trim();
       if (!regex) {
-        throw new Error('未返回有效的正则表达式');
+        throw new Error(t('search.noRegex'));
       }
       dispatch({ type: 'SET_FIELD', field: 'searchQuery', value: regex });
       await handleSearch(regex, true);
     } catch (error) {
-      showSnackbar('已超时', 'error');
+      showSnackbar(t('search.timeout'), 'error');
     } finally {
       setIsAiGenerating(false);
     }
@@ -347,7 +341,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       <Box sx={{ flex: 1 }} />
 
       <Typography variant="h6" gutterBottom fontWeight="700">
-        搜索配置
+        {t('search.title')}
       </Typography>
 
       {/* --- 核心搜索区 --- */}
@@ -362,7 +356,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
             if (reason === 'clear' && isAiGenerating) {
               regexAbortedRef.current = true;
               setIsAiGenerating(false);
-              showSnackbar('已中断请求', 'warning');
+              showSnackbar(t('search.aborted'), 'warning');
             }
             else // 只中断不清空
               handleFieldChange('searchQuery', value);
@@ -371,7 +365,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
             <TextField
               {...params}
               inputRef={searchInputRef}
-              placeholder={aiRegex ? '输入您的意图...' : '输入搜索内容...'}
+              placeholder={aiRegex ? t('search.aiPlaceholder') : t('search.placeholder')}
               variant="outlined"
               size="small"
               onKeyPress={handleKeyPress}
@@ -381,7 +375,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                   ? isExplaining
                     ? <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
                         <CircularProgress size={10} thickness={5} />
-                        AI 解释正则中…
+                        {t('search.aiExplaining')}
                       </Box>
                     : regexExplanation || undefined
                   : undefined
@@ -421,7 +415,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           }}
         />
         {/* “印章”在此处，与搜索框并列，不再受其内部干扰 */}
-        <Tooltip title="高级选项">
+        <Tooltip title={t('search.advancedTooltip')}>
           <IconButton
             onClick={() => setShowAdvanced(!showAdvanced)}
             color={showAdvanced ? 'primary' : 'default'}
@@ -441,27 +435,27 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           {/* 左侧：文件过滤器 */}
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle2" gutterBottom color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <FilterList fontSize="small" /> 路径过滤通配符
+              <FilterList fontSize="small" /> {t('search.pathFilterTitle')}
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <TextField
-                label="包含 (如: *.qc, **/weapon_*)"
+                label={t('search.includeLabel')}
                 variant="outlined"
                 size="small"
                 fullWidth
                 value={includePattern}
                 onChange={(e) => handleFieldChange('includePattern', e.target.value)}
-                helperText="逗号分隔，留空则包含所有"
+                helperText={t('search.includeHelper')}
                 inputProps={{ style: { textOverflow: 'ellipsis' } }}
               />
               <TextField
-                label="排除 (如: *metal*, **/cfg/*)"
+                label={t('search.excludeLabel')}
                 variant="outlined"
                 size="small"
                 fullWidth
                 value={excludePattern}
                 onChange={(e) => handleFieldChange('excludePattern', e.target.value)}
-                helperText="逗号分隔，注意“排除”优先于“包含”"
+                helperText={t('search.excludeHelper')}
                 inputProps={{ style: { textOverflow: 'ellipsis' } }}
               />
             </Box>
@@ -471,7 +465,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           <Grid item xs={12} md={6}>
             <Box sx={{ opacity: useRegex ? 1 : 0.6, transition: 'opacity 0.2s ease-in-out' }}>
               <Typography variant="subtitle2" gutterBottom color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Code fontSize="small" /> 正则快捷方式
+                <Code fontSize="small" /> {t('search.regexShortcutsTitle')}
               </Typography>
 
               {/* --- 修改开始：分类渲染 --- */}
@@ -503,7 +497,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                     {/* 分类下的 Chips */}
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {category.items.map((snippet) => (
-                        <Tooltip key={snippet.label + snippet.value} title={`插入 ${snippet.value}`}>
+                        <Tooltip key={snippet.label + snippet.value} title={t('search.insertSnippet', { value: snippet.value })}>
                           <Chip
                             label={snippet.label}
                             size="small"
@@ -534,7 +528,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
               {!useRegex && (
                 <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 1 }}>
-                  * 请先开启“正则表达式”开关以使用
+                  {t('search.regexHint')}
                 </Typography>
               )}
             </Box>
@@ -544,7 +538,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
       {/* 开关组：放在输入框正下方 */}
       <Box sx={{ pt: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
-        <Tooltip title={aiRegex ? "AI 写正则模式已接管，请手动使用 (?i)" : "仅在非 AI 写正则模式下可用"}>
+        <Tooltip title={aiRegex ? t('search.caseSensitiveTooltipAi') : t('search.caseSensitiveTooltip')}>
           <Box>
             <FormControlLabel
               disabled={isSearching || aiRegex}
@@ -555,13 +549,13 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                   onChange={(e) => handleFieldChange('caseSensitive', e.target.checked)}
                 />
               }
-              label={<Typography variant="body2">区分大小写</Typography>}
+              label={<Typography variant="body2">{t('search.caseSensitive')}</Typography>}
             />
           </Box>
         </Tooltip>
 
         {/* 【敕令核心】让仆从学会回避！ */}
-        <Tooltip title={useRegex ? "正则表达式模式已接管，请手动使用 \\b" : "仅在非正则模式下可用"}>
+        <Tooltip title={useRegex ? t('search.wholeWordTooltipRegex') : t('search.wholeWordTooltip')}>
           {/* 当帝王亲政时，这个开关必须被禁用，且呈现出“不可用”的卑微姿态 */}
           <Box> {/* Tooltip 需要一个非 disabled 的子元素来包裹 */}
             <FormControlLabel
@@ -573,7 +567,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                   onChange={(e) => handleFieldChange('wholeWord', e.target.checked)}
                 />
               }
-              label={<Typography variant="body2">全词匹配</Typography>}
+              label={<Typography variant="body2">{t('search.wholeWord')}</Typography>}
             />
           </Box>
         </Tooltip>
@@ -587,7 +581,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                   disabled={isSearching || aiRegex}
                 />
               }
-              label={<Typography variant="body2">正则表达式</Typography>}
+              label={<Typography variant="body2">{t('search.useRegex')}</Typography>}
             />
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <FormControlLabel
@@ -602,7 +596,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                 label={
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
                     <Typography variant="body2">
-                      更多上下文{moreContext ? ` · ${contextLines} 行` : ''}
+                      {moreContext ? t('search.moreContextLines', { lines: contextLines }) : t('search.moreContext')}
                     </Typography>
                     {moreContext && (
                       <Box sx={{ display: 'flex', flexDirection: 'column', ml: 0.25 }}>
@@ -631,7 +625,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                   disabled={isSearching || isAiGenerating}
                 />
               }
-              label={<Typography variant="body2">AI 写正则</Typography>}
+              label={<Typography variant="body2">{t('search.aiRegex')}</Typography>}
             />
           </Box>
 
@@ -658,7 +652,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
               boxShadow: theme.shadows[4]
             }}
           >
-            开始搜索
+            {t('search.start')}
           </Button>
         ) : (
           <Button
@@ -670,7 +664,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
             fullWidth
             sx={{ height: 48 }}
           >
-            停止
+            {t('search.stop')}
           </Button>
         )}
       </Box>
@@ -681,7 +675,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       {/* 底部统计 */}
       <Box sx={{ pt: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography variant="caption" color="text.secondary">
-          {files.length > 0 ? `将在 ${files.length} 个文件中搜索` : '请先添加文件'}
+          {files.length > 0 ? t('search.fileCount', { count: files.length }) : t('search.noFiles')}
         </Typography>
       </Box>
 

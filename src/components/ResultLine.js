@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { Box, Typography, IconButton, alpha, useTheme } from '@mui/material';
 import { ContentCopy } from '@mui/icons-material';
+import { useLanguage } from '../utils/i18n';
 
 // 原子组件：渲染一行代码（包含行号、内容、复制行按钮）
 const ResultLine = memo(({
@@ -10,6 +11,7 @@ const ResultLine = memo(({
   onCopy,
 }) => {
   const theme = useTheme();
+  const { t } = useLanguage();
 
   // 严格控制高度
   const ROW_HEIGHT = 32;
@@ -143,7 +145,7 @@ const ResultLine = memo(({
               padding: 0.5,
               color: theme.palette.text.secondary,
             }}
-            title="复制此行"
+            title={t('result.copyLine')}
           >
             <ContentCopy sx={{ fontSize: 16 }} />
           </IconButton>

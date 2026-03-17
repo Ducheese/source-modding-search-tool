@@ -23,6 +23,7 @@ import { formatResultsForExport } from '../utils/searchEngine';
 import { tauriAPI } from '../utils/tauriBridge';
 import { listen } from '@tauri-apps/api/event';
 import { getMarkdownStyles } from '../utils/markdownStyles';
+import { useLanguage } from '../utils/i18n';
 
 // ─── 常量 ────────────────────────────────────────────────────────────────────
 
@@ -120,6 +121,7 @@ const MarkdownContent = React.memo(({ content, styles }) => (
  * 思考过程折叠块。
  */
 const ThinkBlock = React.memo(({ thinkText, collapsed, onToggle }) => {
+  const { t } = useLanguage();
   if (!thinkText) return null;
   return (
     <Box sx={{ mb: 1 }}>
@@ -135,7 +137,7 @@ const ThinkBlock = React.memo(({ thinkText, collapsed, onToggle }) => {
         }}
       >
         {collapsed ? <ExpandMore fontSize="small" /> : <ExpandLess fontSize="small" />}
-        <Typography variant="caption">思考过程</Typography>
+        <Typography variant="caption">{t('aiChat.thinkProcess')}</Typography>
       </Box>
       <Collapse in={!collapsed} timeout="auto" unmountOnExit>
         <Box
@@ -162,14 +164,16 @@ const ThinkBlock = React.memo(({ thinkText, collapsed, onToggle }) => {
  * Token 用量与速度指标行。
  */
 const MessageMetrics = React.memo(({ metrics }) => {
+  const { t } = useLanguage();
   if (!metrics) return null;
   const { promptTokens, cachedTokens, completionTokens, tokenSpeed, duration } = metrics;
+  const cachedSuffix = cachedTokens ? t('aiChat.cachedSuffix', { n: cachedTokens }) : '';
   return (
     <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 0.5 }}>
-      {`输入 ${promptTokens}${cachedTokens ? ` (缓存 ${cachedTokens})` : ''} tok`
-      + ` | 输出 ${completionTokens} tok`
-      + ` | ${tokenSpeed.toFixed(1)} tok/s`
-      + ` | ${duration.toFixed(1)}s`}
+      {t('aiChat.inputTok', { prompt: promptTokens, cached: cachedSuffix })}
+      {' | '}{t('aiChat.outputTok', { n: completionTokens })}
+      {' | '}{t('aiChat.speed', { speed: tokenSpeed.toFixed(1) })}
+      {' | '}{t('aiChat.duration', { duration: duration.toFixed(1) })}
     </Typography>
   );
 });
@@ -179,6 +183,7 @@ const MessageMetrics = React.memo(({ metrics }) => {
 const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) => {
   const theme       = useTheme();
   const showSnackbar = useSnackbar();
+  const { t } = useLanguage();
 
   // ── State ──
   const [messages,   setMessages]   = useState([]);
@@ -225,7 +230,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
     const contextNotice = {
       id: `context-${Date.now()}`,
       role: 'info',
-      content: hasContext ? '已挂载搜索结果上下文' : '未挂载搜索结果',
+      content: hasContext ? t('aiChat.contextMounted') : t('aiChat.noContext'),
       createdAt: formatTimestamp(new Date()),
     };
     messagesRef.current = [contextNotice];
@@ -238,7 +243,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
     try {
       contextPromptRef.current = formatResultsForExport(results, 'md');
     } catch {
-      contextPromptRef.current = '搜索结果为空或无法导出。';
+      contextPromptRef.current = '';
     }
   }, [results]);
 
@@ -343,7 +348,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
 
     const settings = loadAiSettings();
     if (!settings.baseUrl || !settings.apiKey || (!settings.chatModelName && !settings.regexModelName)) {
-      showSnackbar('请进入「关于与帮助」填写「大模型接入配置」', 'warning');
+      showSnackbar(t('aiChat.aiConfigHint'), 'warning');
       return;
     }
 
@@ -404,7 +409,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
         thinking_budget: thinkingBudget,
       });
     } catch {
-      showSnackbar('AI 请求启动失败', 'error');
+      showSnackbar(t('aiChat.startFailed'), 'error');
       setIsStreaming(false);
     }
   };
@@ -440,7 +445,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
     }
 
     const isUser     = message.role === 'user';
-    const header     = isUser ? '用户' : (message.modelName || 'AI');
+    const header     = isUser ? t('aiChat.user') : (message.modelName || 'AI');
     const mergedThink = `${message.reasoningRaw || ''}${message.thinkContent || ''}`.trim();
 
     return (
@@ -516,16 +521,16 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
           {/* 标题部分 */}
           <Typography variant="h6" component="h1" fontWeight="700" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <SmartToy sx={{ color: 'primary.main' }} />
-            发给 AI 分析
+            {t('aiChat.title')}
           </Typography>
           {/* 按钮区 */}
           <Box sx={{ display: 'flex', gap: 0.5 }}>
-            <Tooltip title="最小化至右下角">
+            <Tooltip title={t('aiChat.minimize')}>
               <IconButton onClick={() => onMinimizedChange(true)}>
                 <Remove />
               </IconButton>
             </Tooltip>
-            <Tooltip title="结束对话">
+            <Tooltip title={t('aiChat.close')}>
               <IconButton onClick={onClose}>
                 <Close />
               </IconButton>
@@ -570,7 +575,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
                 multiline
                 minRows={enableThinking && !isStreaming ? 5 : 3}
                 maxRows={8}
-                placeholder="输入你的问题 · Enter 发送 · Shift+Enter 换行"
+                placeholder={t('aiChat.placeholder')}
                 fullWidth
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
@@ -584,7 +589,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
                 {/* 思考按钮 + 预算输入（开启时显示） */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
                   <Tooltip
-                    title={enableThinking ? '点击关闭深度思考' : '点击开启深度思考，设置思考预算'}
+                    title={enableThinking ? t('aiChat.thinkingOff') : t('aiChat.thinkingOn')}
                     placement="left"
                     arrow
                   >
@@ -693,7 +698,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
 
     {/* 最小化时的悬浮按钮 */}
     {open && minimized && (
-      <Tooltip title="恢复 AI 对话" placement="left">
+      <Tooltip title={t('aiChat.restore')} placement="left">
         <Fab
           color="secondary"
           size="medium"

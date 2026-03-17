@@ -25,6 +25,7 @@ import remarkGfm from 'remark-gfm';
 import { getVersion } from '@tauri-apps/api/app';
 
 import { useSnackbar, useThemeScheme } from '../App';
+import { useLanguage } from '../utils/i18n';
 import { COLOR_SCHEMES } from '../utils/themeConfig';
 import { getMarkdownStyles } from '../utils/markdownStyles';
 import { 
@@ -52,6 +53,7 @@ const TabPanel = (props) => {
 // ─────────────────────────────────────────────────────────────
 const SchemeCard = ({ scheme, selected, darkMode, onClick }) => {
   const theme = useTheme();
+  const { t } = useLanguage();
   const primary   = darkMode ? scheme.darkPrimary   : scheme.lightPrimary;
   const secondary = darkMode ? scheme.darkSecondary : scheme.lightSecondary;
 
@@ -72,7 +74,7 @@ const SchemeCard = ({ scheme, selected, darkMode, onClick }) => {
             ? `2px solid ${theme.palette.primary.main}`
             : `2px solid ${theme.palette.divider}`,
           bgcolor: selected
-            ? (t) => `${t.palette.primary.main}14`   // 8% tint
+            ? (t) => `${t.palette.primary.main}14`
             : 'background.paper',
           transition: 'border-color 0.2s, background-color 0.2s, transform 0.15s',
           '&:hover': {
@@ -116,7 +118,7 @@ const SchemeCard = ({ scheme, selected, darkMode, onClick }) => {
           fontWeight={selected ? 700 : 400}
           sx={{ color: selected ? 'primary.main' : 'text.secondary', lineHeight: 1.2, textAlign: 'center' }}
         >
-          {scheme.label}
+          {t(scheme.labelKey)}
         </Typography>
 
         {/* 已选中角标 */}
@@ -139,7 +141,7 @@ const SchemeCard = ({ scheme, selected, darkMode, onClick }) => {
 // ─────────────────────────────────────────────────────────────
 // ReleaseEntry — 单条更新日志（折叠/展开）
 // ─────────────────────────────────────────────────────────────
-const ReleaseEntry = ({ tag, name, body, date, markdownStyles, defaultExpanded = false, isLatest = false, isCurrent = false, isUpToDate = false }) => {
+const ReleaseEntry = ({ tag, name, body, date, markdownStyles, defaultExpanded = false, isLatest = false, isCurrent = false, isUpToDate = false, t }) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
   useEffect(() => { setExpanded(defaultExpanded); }, [defaultExpanded]);
   const theme = useTheme();
@@ -164,13 +166,13 @@ const ReleaseEntry = ({ tag, name, body, date, markdownStyles, defaultExpanded =
             <Chip label={tag} size="small" color="secondary" variant="outlined" sx={{ height: 20, fontSize: '0.68rem' }} />
           )}
           {isLatest && (
-            <Chip label="新版本" size="small" color="error" sx={{ height: 20, fontSize: '0.68rem' }} />
+            <Chip label={t('help.changelog.latest')} size="small" color="error" sx={{ height: 20, fontSize: '0.68rem' }} />
           )}
           {isCurrent && (
-            <Chip label="当前版本" size="small" color="info" sx={{ height: 20, fontSize: '0.68rem' }} />
+            <Chip label={t('help.changelog.current')} size="small" color="info" sx={{ height: 20, fontSize: '0.68rem' }} />
           )}
           {isUpToDate && (
-            <Chip label="已是最新" size="small" color="success" sx={{ height: 20, fontSize: '0.68rem' }} />
+            <Chip label={t('help.changelog.upToDate')} size="small" color="success" sx={{ height: 20, fontSize: '0.68rem' }} />
           )}
         </Box>
         {expanded ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
@@ -200,6 +202,7 @@ const HelpDialog = ({ open, onClose }) => {
   const [hasUpdate, setHasUpdate] = useState(false);
 
   const showSnackbar = useSnackbar();
+  const { t } = useLanguage();
 
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -227,7 +230,7 @@ const HelpDialog = ({ open, onClose }) => {
           const parsed = data.map(r => ({
             tag: r.tag_name,
             name: r.name || r.tag_name,
-            body: (r.body || '（无说明）')
+            body: (r.body || t('help.changelog.noBody'))
               .replace(/<img\b[^>]*>/gi, '')   // HTML img 标签（含 GitHub 的非自闭合形式）
               .trim(),
             date: r.published_at ? r.published_at.slice(0, 10) : null,  // 只取 yyyy-mm-dd
@@ -256,22 +259,22 @@ const HelpDialog = ({ open, onClose }) => {
   const handleTestConnection = async () => {
     if (!aiSettings.baseUrl.trim() || !aiSettings.apiKey.trim() || 
     (!aiSettings.regexModelName.trim() && !aiSettings.chatModelName.trim() && !aiSettings.explainModelName.trim())) {
-      showSnackbar('请填写API Base Url、API Key和模型名称', 'warning');
+      showSnackbar(t('help.fillRequired'), 'warning');
       return;
     }
 
     setIsTesting(true);
     try {
       await tauriAPI.testAiConnection({
-        user_prompt: '请只回复 OK',
-        system_prompt: '你是一个测试助手。请直接回复用户请求的内容，不要添加任何额外信息。',
+        user_prompt: 'Reply with OK only',
+        system_prompt: 'You are a test assistant. Reply directly with what the user requests, no extra information.',
         api_key: aiSettings.apiKey,
         base_url: aiSettings.baseUrl,
         model_name: aiSettings.regexModelName || aiSettings.chatModelName || aiSettings.explainModelName,
       });
-      showSnackbar('连接成功', 'success');
+      showSnackbar(t('help.connectionSuccess'), 'success');
     } catch (error) {
-      showSnackbar('连接超时', 'error');
+      showSnackbar(t('help.connectionFailed'), 'error');
     } finally {
       setIsTesting(false);
     }
@@ -285,7 +288,7 @@ const HelpDialog = ({ open, onClose }) => {
           {/* 标题部分 */}
           <Typography variant="h6" component="h1" fontWeight="700" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Help sx={{ color: 'primary.main' }} />
-            关于 &amp; 帮助
+            {t('help.title')}
           </Typography>
           {/* 关闭按钮部分 */}
           <IconButton onClick={onClose}>
@@ -302,20 +305,20 @@ const HelpDialog = ({ open, onClose }) => {
           <Box
             component="img"
             src="/logos/ChatGPT Image 2026-03-12.png"
-            alt="应用图标"
+            alt={t('help.appIconAlt')}
             sx={{ width: 72, height: 72, borderRadius: 2, flexShrink: 0, mt: 0.5 }}
           />
-          <Typography>本工具旨在为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的<b>跨文本检索</b>工具，因此支持提交和检索的文本文件格式只包括：.sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut。</Typography>
+          <Typography>{t('help.introPre')}<b>{t('help.introBold')}</b>{t('help.introPost')}</Typography>
         </Box>
 
         {/* 说明 */}
         <Box sx={{ mb: 3, px: 1 }}>
-          <Typography>食用方法是：在左上角“虚线框区域”完成文件提交，在左下角“文件列表区域”进行检查和初筛，在右上角“搜索配置区域”填上要检索的字符、正则或过滤通配符，在右下角“搜索结果区域”查看或导出结果，或把结果发给 AI 进行分析和讨论。</Typography>
+          <Typography>{t('help.usage')}</Typography>
         </Box>
 
         {/* 配置存储 */}
         <Box sx={{ mb: 2, px: 1 }}>
-          <Typography>本工具的配置信息（含 API Key）会以明文存储在 <code>C:\Users\用户名\AppData\Local\com.sourcemodding.searchtool</code> 路径下，该路径同时包含 WebView2 运行时缓存。手动清空该路径可确保本工具的完全卸载，也可通过此方式解决新版本破坏性更新导致的各种稀奇古怪的Bug。</Typography>
+          <Typography>{t('help.storagePre')}<code>C:\Users\{t('help.storagePathUser')}\AppData\Local\com.sourcemodding.searchtool</code>{t('help.storagePost')}</Typography>
         </Box>
 
         </>}
@@ -325,39 +328,39 @@ const HelpDialog = ({ open, onClose }) => {
 
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
-              <Tab label="路径过滤通配符" />
-              <Tab label="正则使用建议" />
-              <Tab label="大模型接入配置" />
-              <Tab label="色彩方案" />
+              <Tab label={t('help.tab.pathFilter')} />
+              <Tab label={t('help.tab.regex')} />
+              <Tab label={t('help.tab.aiConfig')} />
+              <Tab label={t('help.tab.colorScheme')} />
               <Tab label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  更新日志
+                  {t('help.tab.changelog')}
                   {hasUpdate && <Error sx={{ fontSize: 16, color: 'error.main' }} />}
                 </Box>
               } />
             </Tabs>
           </Box>
 
-          {/* Tab 0 — 路径过滤通配符 */}
+          {/* Tab 0 — path filter */}
           <TabPanel value={tabValue} index={0}>
             <Typography component="div">
-              本工具使用 Unix Shell 风格通配符进行路径筛选。它比正则表达式更简单，更专注于文件路径匹配。为简化输入，还有以下自动处理规则：
+              {t('help.pathFilter.intro')}
               <ul>
-                <li>纯目录路径自动在两侧添加 <code>**</code> ，例如 <code>materials/models</code> 会被自动处理成 <code>**/materials/models/**</code></li>
-                <li>纯后缀或文件名自动在前侧添加 <code>**</code> ，例如 <code>*.qc</code> 会被自动处理成 <code>**/*.qc</code></li>
-                <li>字母大小写不敏感</li>
-                <li><code>\</code> 和 <code>/</code> 均被视为路径分隔符，混用也能识别</li>
+                <li>{t('help.pathFilter.rule1pre')}<code>**</code>{t('help.pathFilter.rule1mid')}<code>materials/models</code>{t('help.pathFilter.rule1becomes')}<code>**/materials/models/**</code></li>
+                <li>{t('help.pathFilter.rule2pre')}<code>**</code>{t('help.pathFilter.rule2mid')}<code>*.qc</code>{t('help.pathFilter.rule2becomes')}<code>**/*.qc</code></li>
+                <li>{t('help.pathFilter.rule3')}</li>
+                <li><code>\</code> {t('help.pathFilter.rule4')}</li>
               </ul>
             </Typography>
           </TabPanel>
 
-          {/* Tab 1 — 正则使用建议 */}
+          {/* Tab 1 — regex tips */}
           <TabPanel value={tabValue} index={1}>
             <Typography component="div">
-              本工具搜索结果的最小显示单位是行，也支持行首行尾的正则锚定，但站在程序后台的视角，整个文本文件并没有分行的概念，而是一个包含换行符的“单行文本”。因此有如下建议：
+              {t('help.regex.intro')}
               <ul>
-                <li>当你需要匹配行首、行尾的“空白”时，请养成使用 <code>[ \t]*</code> 代替 <code>\s*</code> 的习惯，避免跨行匹配导致显示错误</li>
-                <li>字节正则引擎不支持断言（look around），如 <code>(?=...)</code>、<code>(?!...)</code>、<code>(?&lt;=...)</code>、<code>(?&lt;!...)</code> 等语法将无法正常工作</li>
+                <li>{t('help.regex.rule1pre')}<code>{t('help.regex.rule1code')}</code>{t('help.regex.rule1post')}<code>{t('help.regex.rule1alt')}</code>{t('help.regex.rule1end')}</li>
+                <li>{t('help.regex.rule2pre')}<code>{t('help.regex.rule2code')}</code>{t('help.regex.rule2end')}</li>
               </ul>
             </Typography>
           </TabPanel>
@@ -368,7 +371,7 @@ const HelpDialog = ({ open, onClose }) => {
 
               {/* 说明文字 */}
               <Typography variant="body2" color="text.secondary">
-                AI 写正则和 AI 解释正则需要模型的快速响应，不推荐使用参数量大、或固定开启思考的模型。
+                {t('help.aiConfig.desc')}
               </Typography>
 
               <TextField
@@ -376,7 +379,7 @@ const HelpDialog = ({ open, onClose }) => {
                 value={aiSettings.baseUrl}
                 onChange={(e) => handleAiSettingChange('baseUrl', e.target.value)}
                 placeholder="https://api.siliconflow.cn/v1"
-                helperText="/v1 或 /v1/chat/completions 结尾均可"
+                helperText={t('help.apiBaseUrlHelper')}
                 size="small"
                 inputProps={{ style: { textOverflow: 'ellipsis' } }}
               />
@@ -386,65 +389,65 @@ const HelpDialog = ({ open, onClose }) => {
                 onChange={(e) => handleAiSettingChange('apiKey', e.target.value)}
                 type="password"
                 placeholder="sk-xxx"
-                helperText="注意，此 API Key 会在本地明文存储"
+                helperText={t('help.apiKeyHelper')}
                 size="small"
                 inputProps={{ style: { textOverflow: 'ellipsis' } }}
               />
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
-                  label="用于 AI 写正则的模型"
+                  label={t('help.regexModel')}
                   value={aiSettings.regexModelName}
                   onChange={(e) => handleAiSettingChange('regexModelName', e.target.value)}
                   placeholder="Qwen/Qwen3-8B"
-                  helperText="不启用思考，没有备用模型"
+                  helperText={t('help.regexModelHelper')}
                   size="small"
                   sx={{ flex: 1 }}
                   inputProps={{ style: { textOverflow: 'ellipsis' } }}
                 />
                 <TextField
-                  label="用于 AI 对话的模型"
+                  label={t('help.chatModel')}
                   value={aiSettings.chatModelName}
                   onChange={(e) => handleAiSettingChange('chatModelName', e.target.value)}
                   placeholder="deepseek-ai/DeepSeek-V3.2"
-                  helperText="支持显示思维链，留空则使用最左边模型"
+                  helperText={t('help.chatModelHelper')}
                   size="small"
                   sx={{ flex: 1 }}
                   inputProps={{ style: { textOverflow: 'ellipsis' } }}
                 />
                 <TextField
-                  label="用于 AI 解释正则的模型"
+                  label={t('help.explainModel')}
                   value={aiSettings.explainModelName}
                   onChange={(e) => handleAiSettingChange('explainModelName', e.target.value)}
                   placeholder="Qwen/Qwen3-8B"
-                  helperText="不启用思考，留空则使用最左边模型"
+                  helperText={t('help.explainModelHelper')}
                   size="small"
                   sx={{ flex: 1 }}
                   inputProps={{ style: { textOverflow: 'ellipsis' } }}
                 />
               </Box>
               <TextField
-                label="AI 写正则的提示词"
+                label={t('help.regexPromptLabel')}
                 value={aiSettings.regexPrompt}
                 onChange={(e) => handleAiSettingChange('regexPrompt', e.target.value)}
-                helperText="注意，本工具所使用的正则引擎不支持断言（look around）"
+                helperText={t('help.regexPromptHelper')}
                 multiline
                 minRows={6}
                 maxRows={18}
               />
               <TextField
-                label="AI 对话的提示词"
+                label={t('help.chatPromptLabel')}
                 value={aiSettings.chatPrompt}
                 onChange={(e) => handleAiSettingChange('chatPrompt', e.target.value)}
-                helperText="注意，必须提及{{context}}，才能把搜索结果挂载进上下文"
+                helperText={t('help.chatPromptHelper')}
                 multiline
                 minRows={6}
                 maxRows={18}
               />
               <TextField
-                label="AI 解释正则的提示词"
+                label={t('help.explainPromptLabel')}
                 value={aiSettings.explainPrompt}
                 onChange={(e) => handleAiSettingChange('explainPrompt', e.target.value)}
-                helperText="建议输出简单文本，不支持换行符和富文本渲染"
+                helperText={t('help.explainPromptHelper')}
                 multiline
                 minRows={6}
                 maxRows={18}
@@ -459,14 +462,14 @@ const HelpDialog = ({ open, onClose }) => {
                     }
                   }
                 >
-                  重置所有提示词
+                  {t('help.resetPrompts')}
                 </Button>
                 <Button
                   variant="contained"
                   onClick={handleTestConnection}
                   disabled={isTesting}
                 >
-                  {isTesting ? '测试中...' : '测试连接'}
+                  {isTesting ? t('help.testing') : t('help.testConnection')}
                 </Button>
               </Box>
             </Box>
@@ -478,7 +481,7 @@ const HelpDialog = ({ open, onClose }) => {
 
               {/* 说明文字 */}
               <Typography variant="body2" color="text.secondary">
-                以下是符合 Material Design 2 规范的界面配色方案：
+                {t('help.colorScheme.desc')}
               </Typography>
 
               {/* 配色卡片行 */}
@@ -498,7 +501,7 @@ const HelpDialog = ({ open, onClose }) => {
                     darkMode={isDark}
                     onClick={() => {
                       setSchemeId(scheme.id);
-                      showSnackbar(`已切换到「${scheme.label}」配色`, 'info');
+                      showSnackbar(t('help.schemeSwitched', { label: t(scheme.labelKey) }), 'info');
                     }}
                   />
                 ))}
@@ -515,7 +518,7 @@ const HelpDialog = ({ open, onClose }) => {
                 }}
               >
                 <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
-                  当前方案：{COLOR_SCHEMES[schemeId].label} — {COLOR_SCHEMES[schemeId].desc}
+                  {t('help.colorScheme.current', { label: t(COLOR_SCHEMES[schemeId].labelKey), desc: COLOR_SCHEMES[schemeId].desc })}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                   {[
@@ -559,22 +562,22 @@ const HelpDialog = ({ open, onClose }) => {
               </Box>
             ) : changelog === 'ratelimit' ? (
               <Alert severity="info">
-                GitHub API 请求次数已达上限，请稍后再试，或直接访问
-                {' '}<a href="https://github.com/Ducheese/source-modding-search-tool/releases" target="_blank" rel="noopener noreferrer">Release 页面</a>
+                {t('help.changelog.rateLimit')}
+                {' '}<a href="https://github.com/Ducheese/source-modding-search-tool/releases" target="_blank" rel="noopener noreferrer">{t('help.changelog.rateLimitLink')}</a>
               </Alert>
             ) : changelog === 'error' ? (
               <Alert
                 severity="warning"
-                action={<Button size="small" onClick={() => setChangelog(null)}>重试</Button>}
+                action={<Button size="small" onClick={() => setChangelog(null)}>{t('help.changelog.retry')}</Button>}
               >
-                加载失败，请检查网络连接
+                {t('help.changelog.error')}
               </Alert>
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {changelog.map(({ tag, name, body, date }, index) => (
                   <ReleaseEntry
                     key={tag} tag={tag} name={name} body={body} date={date}
-                    markdownStyles={markdownStyles} defaultExpanded={index === 0 && hasUpdate}
+                    markdownStyles={markdownStyles} t={t} defaultExpanded={index === 0 && hasUpdate}
                     isLatest={index === 0 && hasUpdate}
                     isCurrent={!!(currentVersion && tag.replace(/^v/, '') === currentVersion && hasUpdate)}
                     isUpToDate={!!(currentVersion && tag.replace(/^v/, '') === currentVersion && !hasUpdate)}
@@ -589,11 +592,11 @@ const HelpDialog = ({ open, onClose }) => {
         {/* 超链接 */}
         <Box sx={{ textAlign: 'center', color: 'text.secondary' }}>
           <Typography variant="caption">
-            <a href="https://github.com/Ducheese/source-modding-search-tool" target="_blank" rel="noopener noreferrer" >
-              Github仓库
+            <a href="https://github.com/Ducheese/source-modding-search-tool" target="_blank" rel="noopener noreferrer">
+              {t('help.github')}
             </a>
             <a href="https://space.bilibili.com/1889622121" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '8px' }}>
-              B站主页
+              {t('help.bilibili')}
             </a>
           </Typography>
         </Box>
