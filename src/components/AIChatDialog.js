@@ -241,7 +241,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
     requestMetaRef.current.clear();
 
     try {
-      contextPromptRef.current = formatResultsForExport(results, 'md');
+      contextPromptRef.current = formatResultsForExport(results, 'md', t);
     } catch {
       contextPromptRef.current = '';
     }

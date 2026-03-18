@@ -3,7 +3,7 @@ import { alpha } from '@mui/material';
 // ── Memo ──
 // markdownStyles 依赖 theme，只在 theme 切换时重建，不随每次渲染重建
 export const getMarkdownStyles = (theme) => ({
-  fontFamily: '"Roboto", "Helvetica", "Arial", "Noto Sans SC", sans-serif',
+  fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   lineHeight: 1.75,
   color: theme.palette.text.primary,
   maxWidth: '100%',
@@ -52,7 +52,7 @@ export const getMarkdownStyles = (theme) => ({
   },
   // 行内代码
   '& code': {
-    fontFamily: '"JetBrains Mono", "Noto Sans SC", monospace',
+    fontFamily: '"JetBrains Mono", Consolas, Monaco, "Courier New", monospace',
     fontSize: '0.85em',
     color: theme.palette.mode === 'dark' ? '#ff7b72' : '#d73a49',
     backgroundColor: alpha(theme.palette.text.primary, 0.06),

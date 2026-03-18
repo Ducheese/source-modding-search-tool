@@ -67,7 +67,7 @@ const ResultLine = memo(({
           display: 'flex',
           alignItems: 'center',
           px: 1,   // 水平方向上的内边距（Padding on the X-axis）
-          fontFamily: '"JetBrains Mono", "Noto Sans SC", monospace',   // 等宽字体是必须的
+          fontFamily: '"JetBrains Mono", Consolas, Monaco, "Courier New", monospace',   // 等宽字体是必须的
           fontSize: '0.875rem',
           color: isMatch ? theme.palette.text.primary : alpha(theme.palette.text.secondary, 0.3),
           // 美化滚动条

@@ -11,7 +11,7 @@ export const searchInFiles = async (files, searchOptions) => {
     rustResults = await tauriAPI.searchInFiles(files, searchOptions);
   } catch (error) {
     console.error("Rust search error:", error);
-    throw new Error(`搜索失败: ${error}`);
+    throw new Error(`Search failed: ${error}`);
   }
 
   // 转换结果格式以适配现有的 UI
@@ -31,9 +31,11 @@ export const searchInFiles = async (files, searchOptions) => {
 };
 
 // 导出功能逻辑保持不变，因为这只是纯文本处理，不涉及繁重计算
-export const formatResultsForExport = (results, format = 'txt') => {
+export const formatResultsForExport = (results, format = 'txt', t = null) => {
+  // Helper: use t() if available, otherwise use the fallback string
+  const s = (key, fallback) => (t ? t(key) : fallback);
   if (!results || results.files.length === 0) {
-    throw new Error('没有可导出的搜索结果');
+    throw new Error(s('export.noResults', 'No search results to export'));
   }
 
   // --- 新增辅助函数：把 segments 还原回纯文本 ---
@@ -43,26 +45,26 @@ export const formatResultsForExport = (results, format = 'txt') => {
   };
 
   let content = '';
-  const timestamp = new Date().toLocaleString('zh-CN');
+  const timestamp = new Date().toLocaleString();
 
   if (format === 'txt') {
-    content = `搜索结果导出\n`;
+    content = `${s('export.title', 'Search Results Export')}\n`;
     content += `================\n\n`;
-    content += `搜索内容: ${results.query}\n`;
-    content += `搜索选项: ${JSON.stringify(results.options, null, 2)}\n`;
-    content += `导出时间: ${timestamp}\n\n`;
-    content += `统计信息:\n`;
-    content += `- 总文件数: ${results.totalFiles}\n`;
-    content += `- 匹配文件数: ${results.matchedFiles}\n`;
-    content += `- 匹配行数: ${results.totalMatches}\n`;
-    content += `- 耗时: ${results.executionTime}ms\n\n`;
+    content += `${s('export.query', 'Query')}: ${results.query}\n`;
+    content += `${s('export.options', 'Options')}: ${JSON.stringify(results.options, null, 2)}\n`;
+    content += `${s('export.time', 'Exported at')}: ${timestamp}\n\n`;
+    content += `${s('export.stats', 'Statistics')}:\n`;
+    content += `- ${s('export.totalFiles', 'Total files')}: ${results.totalFiles}\n`;
+    content += `- ${s('export.matchedFiles', 'Matched files')}: ${results.matchedFiles}\n`;
+    content += `- ${s('export.totalMatches', 'Matched lines')}: ${results.totalMatches}\n`;
+    content += `- ${s('export.execTime', 'Time')}: ${results.executionTime}ms\n\n`;
 
     results.files.forEach(file => {
-      content += `文件: ${file.path}\n`;
+      content += `${s('export.file', 'File')}: ${file.path}\n`;
       content += `${'='.repeat(file.path.length + 4)}\n\n`;
 
       file.matches.forEach(match => {
-        content += `行 ${match.line_number}:\n`; // 注意：Rust返回的是 snake_case
+        content += `${s('export.line', 'Line')} ${match.line_number}:\n`; // 注意：Rust返回的是 snake_case
         if (match.context.before && match.context.before.length > 0) {
           const startLine = match.line_number - match.context.before.length;
           match.context.before.forEach((line, idx) => {
@@ -82,22 +84,22 @@ export const formatResultsForExport = (results, format = 'txt') => {
       content += '\n';
     });
   } else if (format === 'md') {
-    content = `# 搜索结果导出\n\n`;
-    content += `**搜索内容:** \`${results.query}\`\n\n`;
-    content += `**搜索选项:**\n\`\`\`json\n${JSON.stringify(results.options, null, 2)}\n\`\`\`\n\n`;
-    content += `**导出时间:** ${timestamp}\n\n`;
-    content += `## 统计信息\n\n`;
-    content += `- 总文件数: ${results.totalFiles}\n`;
-    content += `- 匹配文件数: ${results.matchedFiles}\n`;
-    content += `- 匹配行数: ${results.totalMatches}\n`;
-    content += `- 耗时: ${results.executionTime}ms\n\n`;
+    content = `# ${s('export.title', 'Search Results Export')}\n\n`;
+    content += `**${s('export.query', 'Query')}:** \`${results.query}\`\n\n`;
+    content += `**${s('export.options', 'Options')}:**\n\`\`\`json\n${JSON.stringify(results.options, null, 2)}\n\`\`\`\n\n`;
+    content += `**${s('export.time', 'Exported at')}:** ${timestamp}\n\n`;
+    content += `## ${s('export.stats', 'Statistics')}\n\n`;
+    content += `- ${s('export.totalFiles', 'Total files')}: ${results.totalFiles}\n`;
+    content += `- ${s('export.matchedFiles', 'Matched files')}: ${results.matchedFiles}\n`;
+    content += `- ${s('export.totalMatches', 'Matched lines')}: ${results.totalMatches}\n`;
+    content += `- ${s('export.execTime', 'Time')}: ${results.executionTime}ms\n\n`;
 
     results.files.forEach(file => {
       content += `## ${file.name}\n\n`;
-      content += `**路径:** \`${file.path}\`\n\n`;
+      content += `**${s('export.path', 'Path')}:** \`${file.path}\`\n\n`;
 
       file.matches.forEach(match => {
-        content += `### 行 ${match.line_number}\n\n`;
+        content += `### ${s('export.line', 'Line')} ${match.line_number}\n\n`;
         content += '```text\n';
         if (match.context.before && match.context.before.length > 0) {
           const startLine = match.line_number - match.context.before.length;
@@ -120,12 +122,10 @@ export const formatResultsForExport = (results, format = 'txt') => {
   return content;
 };
 
-export const exportResults = (results, format = 'txt') => {
-  // ... (保持原有的 exportResults 代码不变，这部分性能瓶颈不大)
-  // 为了节省篇幅，这里复用你之前的代码逻辑即可，因为数据结构已经对齐。
-  const content = formatResultsForExport(results, format);
+export const exportResults = (results, format = 'txt', t = null) => {
+  const content = formatResultsForExport(results, format, t);
   if (!content) {
-    throw new Error('没有可导出的搜索结果');
+    throw new Error(s('export.noResults', 'No search results to export'));
   }
 
   const blob = new Blob([content], {

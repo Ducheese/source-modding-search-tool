@@ -63,7 +63,7 @@
 		"search.wholeWordTooltip"	"Only available when regex mode is off"
 		"search.useRegex"	"Regex"
 		"search.moreContext"	"More context"
-		"search.moreContextLines"	"More context \u00b7 {lines} lines"
+		"search.moreContextLines"	"More context · {lines} lines"
 		"search.aiRegex"	"AI regex"
 		"search.start"	"Search"
 		"search.stop"	"Stop"
@@ -134,7 +134,7 @@
 		"aiChat.title"	"Send to AI"
 		"aiChat.minimize"	"Minimize to corner"
 		"aiChat.close"	"End conversation"
-		"aiChat.placeholder"	"Enter your question \u00b7 Enter to send \u00b7 Shift+Enter for new line"
+		"aiChat.placeholder"	"Enter your question · Enter to send · Shift+Enter for new line"
 		"aiChat.thinkProcess"	"Thinking process"
 		"aiChat.contextMounted"	"Search result context mounted"
 		"aiChat.noContext"	"No search results mounted"
@@ -235,5 +235,34 @@
 		// ── HelpDialog — footer links ─────────────────────────────────────
 		"help.github"	"GitHub Repository"
 		"help.bilibili"	"Bilibili"
+
+		// ── Color scheme labels ─────────────────────────────────────────
+		"colorScheme.0.label"	"Aurora Purple"
+		"colorScheme.1.label"	"Falling Cherry Pink"
+		"colorScheme.2.label"	"Teal"
+		"colorScheme.3.label"	"Cold Ash Red"
+		"colorScheme.4.label"	"Old Wood"
+		"colorScheme.5.label"	"Night Indigo"
+		"colorScheme.6.label"	"Emerald Vine"
+		"colorScheme.7.label"	"Ocean Amber"
+
+		// ── AIChatDialog — thinking ──────────────────────────────────────
+		"aiChat.thinkingOn"	"Click to enable deep thinking and set the thinking budget"
+		"aiChat.thinkingOff"	"Click to disable deep thinking"
+
+		// ── searchEngine export ──────────────────────────────────────────
+		"export.noResults"	"No search results to export"
+		"export.title"	"Search Results Export"
+		"export.query"	"Query"
+		"export.options"	"Options"
+		"export.time"	"Exported at"
+		"export.stats"	"Statistics"
+		"export.totalFiles"	"Total files"
+		"export.matchedFiles"	"Matched files"
+		"export.totalMatches"	"Matched lines"
+		"export.execTime"	"Time"
+		"export.file"	"File"
+		"export.path"	"Path"
+		"export.line"	"Line"
 	}
 }

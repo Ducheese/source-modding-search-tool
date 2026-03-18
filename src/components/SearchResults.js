@@ -23,7 +23,7 @@ const SearchResults = ({ results, isSearching }) => {
   const handleExportClose = () => setAnchorEl(null);
   const handleExport = (format) => {
     try {
-      exportResults(results, format);
+      exportResults(results, format, t);
     } catch (error) {
       console.error('Export failed:', error);
     }

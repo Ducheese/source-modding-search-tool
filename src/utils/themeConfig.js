@@ -16,7 +16,7 @@ const scheme0Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
@@ -32,7 +32,7 @@ const scheme0Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
@@ -49,7 +49,7 @@ const scheme1Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
@@ -65,7 +65,7 @@ const scheme1Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
@@ -82,7 +82,7 @@ const scheme2Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
@@ -98,7 +98,7 @@ const scheme2Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
@@ -115,7 +115,7 @@ const scheme3Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
@@ -131,7 +131,7 @@ const scheme3Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
@@ -148,7 +148,7 @@ const scheme4Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
@@ -164,7 +164,7 @@ const scheme4Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
@@ -181,7 +181,7 @@ const scheme5Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
@@ -197,7 +197,7 @@ const scheme5Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
@@ -214,7 +214,7 @@ const scheme6Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
@@ -230,7 +230,7 @@ const scheme6Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
@@ -247,7 +247,7 @@ const scheme7Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
@@ -263,7 +263,7 @@ const scheme7Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: '"Roboto","Helvetica","Arial","Noto Sans SC",sans-serif' },
+  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
   components: {
     MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
     MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
