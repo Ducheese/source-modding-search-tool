@@ -142,6 +142,8 @@
 		"aiChat.aiConfigHint"	"Go to \"About & Help\" to fill in the AI model configuration"
 		"aiChat.startFailed"	"AI request failed to start"
 		"aiChat.restore"	"Restore AI chat"
+		"aiChat.thinkingOn"	"Click to enable deep thinking and set the thinking budget"
+		"aiChat.thinkingOff"	"Click to disable deep thinking"
 		"aiChat.inputTok"	"Input {prompt}{cached} tok"
 		"aiChat.cachedSuffix"	" (cached {n})"
 		"aiChat.outputTok"	"Output {n} tok"
@@ -157,44 +159,24 @@
 		"help.tab.colorScheme"	"Color Scheme"
 		"help.tab.changelog"	"Changelog"
 
-		// ── HelpDialog — intro section ────────────────────────────────────
-		"help.introPre"	"This tool is designed to provide a lightweight, high-performance "
-		"help.introBold"	"cross-file text search"
-		"help.introPost"	" tool for Valve Source 1 engine (CS:S, CS:GO, L4D2, GMod, etc.) mod developers. Supported file types: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
-
-		// ── HelpDialog — usage section ────────────────────────────────────
+		// ── HelpDialog — intro & usage & storage ───────────────────────────
+		"help.intro"	"This tool is designed to provide a lightweight, high-performance <b>cross-file text search</b> tool for Valve Source 1 engine (CS:S, CS:GO, L4D2, GMod, etc.) mod developers. Supported file types: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
 		"help.usage"	"Usage: drop files into the dashed box (top-left), review them in the file list (bottom-left), enter a search term, regex, or path wildcard in the search panel (top-right), and view or export the results in the result panel (bottom-right) \u2014 or send them to AI for analysis."
+		"help.storage"	"Configuration (including API Key) is stored in plain text at <code>{path}</code>. This path also contains the WebView2 runtime cache. Manually deleting it fully uninstalls the tool and can resolve strange bugs after breaking updates."
 
-		// ── HelpDialog — storage section ─────────────────────────────────
-		"help.storagePathUser"	"YourName"
-		"help.storagePre"	"Configuration (including API Key) is stored in plain text at "
-		"help.storagePost"	". This path also contains the WebView2 runtime cache. Manually deleting it fully uninstalls the tool and can resolve strange bugs after breaking updates."
-
-		// ── HelpDialog — path filter tab ─────────────────────────────────
+		// ── HelpDialog — path filter tab ───────────────────────────────────
 		"help.pathFilter.intro"	"This tool uses Unix shell-style wildcards for path filtering \u2014 simpler than regex and focused on file paths. The following auto-processing rules apply:"
-		"help.pathFilter.rule1pre"	"A bare directory path is wrapped with "
-		"help.pathFilter.rule1mid"	" on both sides, e.g. "
-		"help.pathFilter.rule1becomes"	" becomes "
-		"help.pathFilter.rule1result"	""
-		"help.pathFilter.rule2pre"	"A bare extension or filename gets "
-		"help.pathFilter.rule2mid"	" prepended, e.g. "
-		"help.pathFilter.rule2becomes"	" becomes "
-		"help.pathFilter.rule2result"	""
+		"help.pathFilter.rule1"	"A bare directory path is wrapped with <code>**</code> on both sides, e.g. <code>materials/models</code> becomes <code>**/materials/models/**</code>"
+		"help.pathFilter.rule2"	"A bare extension or filename gets <code>**</code> prepended, e.g. <code>*.qc</code> becomes <code>**/*.qc</code>"
 		"help.pathFilter.rule3"	"Case-insensitive"
-		"help.pathFilter.rule4"	"Both \\ and / are treated as path separators and can be mixed"
+		"help.pathFilter.rule4"	"Both <code>\\</code> and <code>/</code> are treated as path separators and can be mixed"
 
-		// ── HelpDialog — regex tips tab ───────────────────────────────────
+		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"The minimum display unit is a single line, and line-start/end anchors are supported. However, from the backend's perspective, the entire file is treated as one long string with embedded newlines. Recommendations:"
-		"help.regex.rule1pre"	"Use "
-		"help.regex.rule1code"	"[ \\t]*"
-		"help.regex.rule1post"	" instead of "
-		"help.regex.rule1alt"	"\\s*"
-		"help.regex.rule1end"	" when matching whitespace at line boundaries, to avoid unintended cross-line matches"
-		"help.regex.rule2pre"	"The byte-regex engine does not support look-around assertions: "
-		"help.regex.rule2code"	"(?=...), (?!...), (?<=...), (?<!...)"
-		"help.regex.rule2end"	" will not work"
+		"help.regex.rule1"	"Use <code>[ \\t]*</code> instead of <code>\\s*</code> when matching whitespace at line boundaries, to avoid unintended cross-line matches"
+		"help.regex.rule2"	"The byte-regex engine does not support look-around assertions: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> will not work"
 
-		// ── HelpDialog — AI config tab ────────────────────────────────────
+		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"AI regex and AI regex-explanation require fast model responses. Avoid large models or models with always-on reasoning."
 		"help.apiBaseUrlHelper"	"Ending with /v1 or /v1/chat/completions both work"
 		"help.apiKeyHelper"	"Note: this API Key is stored in plain text locally"
@@ -218,11 +200,11 @@
 		"help.fillRequired"	"Please fill in API Base URL, API Key, and at least one model name"
 		"help.schemeSwitched"	"Switched to \"{label}\" color scheme"
 
-		// ── HelpDialog — color scheme tab ─────────────────────────────────
+		// ── HelpDialog — color scheme tab ───────────────────────────────────
 		"help.colorScheme.desc"	"Color schemes conforming to Material Design 2 guidelines:"
 		"help.colorScheme.current"	"Current scheme: {label} \u2014 {desc}"
 
-		// ── HelpDialog — changelog tab ────────────────────────────────────
+		// ── HelpDialog — changelog tab ──────────────────────────────────────
 		"help.changelog.rateLimit"	"GitHub API rate limit reached. Try again later, or visit the"
 		"help.changelog.rateLimitLink"	"Releases page"
 		"help.changelog.error"	"Failed to load. Please check your network connection."
@@ -232,11 +214,11 @@
 		"help.changelog.current"	"Current"
 		"help.changelog.upToDate"	"Up to date"
 
-		// ── HelpDialog — footer links ─────────────────────────────────────
+		// ── HelpDialog — footer links ───────────────────────────────────────
 		"help.github"	"GitHub Repository"
 		"help.bilibili"	"Bilibili"
 
-		// ── Color scheme labels ─────────────────────────────────────────
+		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"Aurora Purple"
 		"colorScheme.1.label"	"Falling Cherry Pink"
 		"colorScheme.2.label"	"Teal"
@@ -246,11 +228,7 @@
 		"colorScheme.6.label"	"Emerald Vine"
 		"colorScheme.7.label"	"Ocean Amber"
 
-		// ── AIChatDialog — thinking ──────────────────────────────────────
-		"aiChat.thinkingOn"	"Click to enable deep thinking and set the thinking budget"
-		"aiChat.thinkingOff"	"Click to disable deep thinking"
-
-		// ── searchEngine export ──────────────────────────────────────────
+		// ── searchEngine export ─────────────────────────────────────────────
 		"export.noResults"	"No search results to export"
 		"export.title"	"Search Results Export"
 		"export.query"	"Query"
@@ -264,5 +242,6 @@
 		"export.file"	"File"
 		"export.path"	"Path"
 		"export.line"	"Line"
+
 	}
 }

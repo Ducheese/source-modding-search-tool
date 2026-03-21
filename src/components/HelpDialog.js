@@ -308,7 +308,7 @@ const HelpDialog = ({ open, onClose }) => {
             alt={t('help.appIconAlt')}
             sx={{ width: 72, height: 72, borderRadius: 2, flexShrink: 0, mt: 0.5 }}
           />
-          <Typography>{t('help.introPre')}<b>{t('help.introBold')}</b>{t('help.introPost')}</Typography>
+          <Typography dangerouslySetInnerHTML={{ __html: t('help.intro') }} />
         </Box>
 
         {/* 说明 */}
@@ -318,7 +318,7 @@ const HelpDialog = ({ open, onClose }) => {
 
         {/* 配置存储 */}
         <Box sx={{ mb: 2, px: 1 }}>
-          <Typography>{t('help.storagePre')}<code>C:\Users\{t('help.storagePathUser')}\AppData\Local\com.sourcemodding.searchtool</code>{t('help.storagePost')}</Typography>
+          <Typography dangerouslySetInnerHTML={{ __html: t('help.storage', { path: 'C:\\Users\\YourName\\AppData\\Local\\com.sourcemodding.searchtool' }) }} />
         </Box>
 
         </>}
@@ -346,10 +346,10 @@ const HelpDialog = ({ open, onClose }) => {
             <Typography component="div">
               {t('help.pathFilter.intro')}
               <ul>
-                <li>{t('help.pathFilter.rule1pre')}<code>**</code>{t('help.pathFilter.rule1mid')}<code>materials/models</code>{t('help.pathFilter.rule1becomes')}<code>**/materials/models/**</code></li>
-                <li>{t('help.pathFilter.rule2pre')}<code>**</code>{t('help.pathFilter.rule2mid')}<code>*.qc</code>{t('help.pathFilter.rule2becomes')}<code>**/*.qc</code></li>
+                <li dangerouslySetInnerHTML={{ __html: t('help.pathFilter.rule1') }} />
+                <li dangerouslySetInnerHTML={{ __html: t('help.pathFilter.rule2') }} />
                 <li>{t('help.pathFilter.rule3')}</li>
-                <li><code>\</code> {t('help.pathFilter.rule4')}</li>
+                <li dangerouslySetInnerHTML={{ __html: t('help.pathFilter.rule4') }} />
               </ul>
             </Typography>
           </TabPanel>
@@ -359,8 +359,8 @@ const HelpDialog = ({ open, onClose }) => {
             <Typography component="div">
               {t('help.regex.intro')}
               <ul>
-                <li>{t('help.regex.rule1pre')}<code>{t('help.regex.rule1code')}</code>{t('help.regex.rule1post')}<code>{t('help.regex.rule1alt')}</code>{t('help.regex.rule1end')}</li>
-                <li>{t('help.regex.rule2pre')}<code>{t('help.regex.rule2code')}</code>{t('help.regex.rule2end')}</li>
+                <li dangerouslySetInnerHTML={{ __html: t('help.regex.rule1') }} />
+                <li dangerouslySetInnerHTML={{ __html: t('help.regex.rule2') }} />
               </ul>
             </Typography>
           </TabPanel>

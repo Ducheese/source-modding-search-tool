@@ -142,6 +142,8 @@
 		"aiChat.aiConfigHint"	"请进入「关于与帮助」填写「大模型接入配置」"
 		"aiChat.startFailed"	"AI 请求启动失败"
 		"aiChat.restore"	"恢复 AI 对话"
+		"aiChat.thinkingOn"	"点击开启深度思考，设置思考预算"
+		"aiChat.thinkingOff"	"点击关闭深度思考"
 		"aiChat.inputTok"	"输入 {prompt}{cached} tok"
 		"aiChat.cachedSuffix"	" (缓存 {n})"
 		"aiChat.outputTok"	"输出 {n} tok"
@@ -157,44 +159,24 @@
 		"help.tab.colorScheme"	"色彩方案"
 		"help.tab.changelog"	"更新日志"
 
-		// ── HelpDialog — intro section ────────────────────────────────────
-		"help.introPre"	"本工具旨在为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的"
-		"help.introBold"	"跨文本检索"
-		"help.introPost"	"工具，因此支持提交和检索的文本文件格式只包括：.sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut。"
-
-		// ── HelpDialog — usage section ────────────────────────────────────
+		// ── HelpDialog — intro & usage & storage ───────────────────────────
+		"help.intro"	"本工具旨在为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的<b>跨文本检索</b>工具，因此支持提交和检索的文本文件格式只包括：.sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut。"
 		"help.usage"	"食用方法是：在左上角「虚线框区域」完成文件提交，在左下角「文件列表区域」进行检查和初筛，在右上角「搜索配置区域」填上要检索的字符、正则或过滤通配符，在右下角「搜索结果区域」查看或导出结果，或把结果发给 AI 进行分析和讨论。"
+		"help.storage"	"本工具的配置信息（含 API Key）会以明文存储在 <code>{path}</code> 路径下，该路径同时包含 WebView2 运行时缓存。手动清空该路径可确保本工具的完全卸载，也可通过此方式解决新版本破坏性更新导致的各种稀奇古怪的Bug。"
 
-		// ── HelpDialog — storage section ─────────────────────────────────
-		"help.storagePathUser"	"用户名"
-		"help.storagePre"	"本工具的配置信息（含 API Key）会以明文存储在 "
-		"help.storagePost"	" 路径下，该路径同时包含 WebView2 运行时缓存。手动清空该路径可确保本工具的完全卸载，也可通过此方式解决新版本破坏性更新导致的各种稀奇古怪的Bug。"
-
-		// ── HelpDialog — path filter tab ─────────────────────────────────
+		// ── HelpDialog — path filter tab ───────────────────────────────────
 		"help.pathFilter.intro"	"本工具使用 Unix Shell 风格通配符进行路径筛选。它比正则表达式更简单，更专注于文件路径匹配。为简化输入，还有以下自动处理规则："
-		"help.pathFilter.rule1pre"	"纯目录路径自动在两侧添加 "
-		"help.pathFilter.rule1mid"	"，例如 "
-		"help.pathFilter.rule1becomes"	" 会被自动处理成 "
-		"help.pathFilter.rule1result"	""
-		"help.pathFilter.rule2pre"	"纯后缀或文件名自动在前侧添加 "
-		"help.pathFilter.rule2mid"	"，例如 "
-		"help.pathFilter.rule2becomes"	" 会被自动处理成 "
-		"help.pathFilter.rule2result"	""
+		"help.pathFilter.rule1"	"纯目录路径自动在两侧添加 <code>**</code>，例如 <code>materials/models</code> 会被自动处理成 <code>**/materials/models/**</code>"
+		"help.pathFilter.rule2"	"纯后缀或文件名自动在前侧添加 <code>**</code>，例如 <code>*.qc</code> 会被自动处理成 <code>**/*.qc</code>"
 		"help.pathFilter.rule3"	"字母大小写不敏感"
-		"help.pathFilter.rule4"	"\\ 和 / 均被视为路径分隔符，混用也能识别"
+		"help.pathFilter.rule4"	"<code>\\</code> 和 <code>/</code> 均被视为路径分隔符，混用也能识别"
 
-		// ── HelpDialog — regex tips tab ───────────────────────────────────
+		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"本工具搜索结果的最小显示单位是行，也支持行首行尾的正则锚定，但站在程序后台的视角，整个文本文件并没有分行的概念，而是一个包含换行符的「单行文本」。因此有如下建议："
-		"help.regex.rule1pre"	"当你需要匹配行首、行尾的「空白」时，请养成使用 "
-		"help.regex.rule1code"	"[ \\t]*"
-		"help.regex.rule1post"	" 代替 "
-		"help.regex.rule1alt"	"\\s*"
-		"help.regex.rule1end"	" 的习惯，避免跨行匹配导致显示错误"
-		"help.regex.rule2pre"	"字节正则引擎不支持断言（look around），如 "
-		"help.regex.rule2code"	"(?=...)、(?!...)、(?<=...)、(?<!...)"
-		"help.regex.rule2end"	" 等语法将无法正常工作"
+		"help.regex.rule1"	"当你需要匹配行首、行尾的「空白」时，请养成使用 <code>[ \\t]*</code> 代替 <code>\\s*</code> 的习惯，避免跨行匹配导致显示错误"
+		"help.regex.rule2"	"字节正则引擎不支持断言（look around），如 <code>(?=...)、(?!...)、(?&lt;=...)、(?&lt;!...)</code> 等语法将无法正常工作"
 
-		// ── HelpDialog — AI config tab ────────────────────────────────────
+		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"AI 写正则和 AI 解释正则需要模型的快速响应，不推荐使用参数量大、或固定开启思考的模型。"
 		"help.apiBaseUrlHelper"	"/v1 或 /v1/chat/completions 结尾均可"
 		"help.apiKeyHelper"	"注意，此 API Key 会在本地明文存储"
@@ -218,11 +200,11 @@
 		"help.fillRequired"	"请填写API Base Url、API Key和模型名称"
 		"help.schemeSwitched"	"已切换到「{label}」配色"
 
-		// ── HelpDialog — color scheme tab ─────────────────────────────────
+		// ── HelpDialog — color scheme tab ───────────────────────────────────
 		"help.colorScheme.desc"	"以下是符合 Material Design 2 规范的界面配色方案："
 		"help.colorScheme.current"	"当前方案：{label} — {desc}"
 
-		// ── HelpDialog — changelog tab ────────────────────────────────────
+		// ── HelpDialog — changelog tab ──────────────────────────────────────
 		"help.changelog.rateLimit"	"GitHub API 请求次数已达上限，请稍后再试，或直接访问"
 		"help.changelog.rateLimitLink"	"Release 页面"
 		"help.changelog.error"	"加载失败，请检查网络连接"
@@ -232,11 +214,11 @@
 		"help.changelog.current"	"当前版本"
 		"help.changelog.upToDate"	"已是最新"
 
-		// ── HelpDialog — footer links ─────────────────────────────────────
+		// ── HelpDialog — footer links ───────────────────────────────────────
 		"help.github"	"Github仓库"
 		"help.bilibili"	"B站主页"
 
-		// ── 配色方案名称 ────────────────────────────────────────────────
+		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"极光紫"
 		"colorScheme.1.label"	"落樱粉"
 		"colorScheme.2.label"	"水鸭青"
@@ -246,11 +228,7 @@
 		"colorScheme.6.label"	"翠藤萝"
 		"colorScheme.7.label"	"苍海珀"
 
-		// ── AIChatDialog — thinking ──────────────────────────────────────
-		"aiChat.thinkingOn"	"点击开启深度思考，设置思考预算"
-		"aiChat.thinkingOff"	"点击关闭深度思考"
-
-		// ── 导出内容字符串 ───────────────────────────────────────────────
+		// ── searchEngine export ─────────────────────────────────────────────
 		"export.noResults"	"没有可导出的搜索结果"
 		"export.title"	"搜索结果导出"
 		"export.query"	"搜索内容"
@@ -264,5 +242,6 @@
 		"export.file"	"文件"
 		"export.path"	"路径"
 		"export.line"	"行"
+
 	}
 }
