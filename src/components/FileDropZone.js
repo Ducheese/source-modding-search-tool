@@ -123,7 +123,7 @@ const FileDropZone = ({ onFilesAdded }) => {
     } catch (error) {
       console.error('Failed to select files:', error);
     }
-  }, [onFilesAdded]);
+  }, [onFilesAdded, t]);
 
   const handleSelectFolder = useCallback(async () => {
     try {
@@ -160,7 +160,7 @@ const FileDropZone = ({ onFilesAdded }) => {
     } catch (error) {
       console.error('Failed to select folder:', error);
     }
-  }, [onFilesAdded]);
+  }, [onFilesAdded, t]);
 
   // 文件拖放（Drag and Drop）操作的事件处理函数
   const handleDragOver = useCallback((e) => {

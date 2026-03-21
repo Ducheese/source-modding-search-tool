@@ -71,7 +71,7 @@
 		"search.noFiles"	"Add files first"
 		"search.aborted"	"Request aborted"
 		"search.timeout"	"Request timed out"
-		"search.aiExplaining"	"AI explaining regex\u2026"
+		"search.aiExplaining"	"AI explaining regex..."
 		"search.noRegex"	"No valid regex returned"
 		"search.aiConfigHint"	"Go to \"About & Help\" to fill in the AI model configuration"
 
@@ -161,11 +161,11 @@
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
 		"help.intro"	"This tool is designed to provide a lightweight, high-performance <b>cross-file text search</b> tool for Valve Source 1 engine (CS:S, CS:GO, L4D2, GMod, etc.) mod developers. Supported file types: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
-		"help.usage"	"Usage: drop files into the dashed box (top-left), review them in the file list (bottom-left), enter a search term, regex, or path wildcard in the search panel (top-right), and view or export the results in the result panel (bottom-right) \u2014 or send them to AI for analysis."
-		"help.storage"	"Configuration (including API Key) is stored in plain text at <code>{path}</code>. This path also contains the WebView2 runtime cache. Manually deleting it fully uninstalls the tool and can resolve strange bugs after breaking updates."
+		"help.usage"	"Drop files into the dashed box (top-left) and review them in the file list below. Then, enter your search criteria (top-right) to view, export, or analyze the results in the bottom-right panel."
+		"help.storage"	"Configuration (including API Key) is stored unencrypted at <code>{path}</code>. This path also contains the WebView2 runtime cache. Manually deleting it fully uninstalls the tool and can resolve strange bugs after breaking updates."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
-		"help.pathFilter.intro"	"This tool uses Unix shell-style wildcards for path filtering \u2014 simpler than regex and focused on file paths. The following auto-processing rules apply:"
+		"help.pathFilter.intro"	"This tool uses Unix shell-style wildcards for path filtering -- simpler than regex and focused on file paths. The following auto-processing rules apply:"
 		"help.pathFilter.rule1"	"A bare directory path is wrapped with <code>**</code> on both sides, e.g. <code>materials/models</code> becomes <code>**/materials/models/**</code>"
 		"help.pathFilter.rule2"	"A bare extension or filename gets <code>**</code> prepended, e.g. <code>*.qc</code> becomes <code>**/*.qc</code>"
 		"help.pathFilter.rule3"	"Case-insensitive"
@@ -202,7 +202,7 @@
 
 		// ── HelpDialog — color scheme tab ───────────────────────────────────
 		"help.colorScheme.desc"	"Color schemes conforming to Material Design 2 guidelines:"
-		"help.colorScheme.current"	"Current scheme: {label} \u2014 {desc}"
+		"help.colorScheme.current"	"Current scheme: {label} -- {desc}"
 
 		// ── HelpDialog — changelog tab ──────────────────────────────────────
 		"help.changelog.rateLimit"	"GitHub API rate limit reached. Try again later, or visit the"
@@ -220,9 +220,9 @@
 
 		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"Aurora Purple"
-		"colorScheme.1.label"	"Falling Cherry Pink"
+		"colorScheme.1.label"	"Falling Sakura"
 		"colorScheme.2.label"	"Teal"
-		"colorScheme.3.label"	"Cold Ash Red"
+		"colorScheme.3.label"	"Ash Ember"
 		"colorScheme.4.label"	"Old Wood"
 		"colorScheme.5.label"	"Night Indigo"
 		"colorScheme.6.label"	"Emerald Vine"

@@ -230,7 +230,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
     const contextNotice = {
       id: `context-${Date.now()}`,
       role: 'info',
-      content: hasContext ? t('aiChat.contextMounted') : t('aiChat.noContext'),
+      content: hasContext ? 'aiChat.contextMounted' : 'aiChat.noContext',  // stored as key, translated at render time
       createdAt: formatTimestamp(new Date()),
     };
     messagesRef.current = [contextNotice];
@@ -245,7 +245,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
     } catch {
       contextPromptRef.current = '';
     }
-  }, [results]);
+  }, [results, t]);
 
   // ─── Effects ───────────────────────────────────────────────────────────────
 
@@ -438,7 +438,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
       return (
         <Box key={message.id} sx={{ pb: 1 }}>
           <Typography variant="caption" color="text.secondary">
-            {message.content}
+            {t(message.content)}
           </Typography>
         </Box>
       );
