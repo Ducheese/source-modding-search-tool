@@ -215,8 +215,9 @@
 		"help.changelog.upToDate"	"Up to date"
 
 		// ── HelpDialog — footer links ───────────────────────────────────────
-		"help.github"	"GitHub Repository"
+		"help.github"	"GitHub"
 		"help.bilibili"	"Bilibili"
+		"help.youtube"	"YouTube"
 
 		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"Aurora Purple"

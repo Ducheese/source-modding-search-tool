@@ -217,6 +217,7 @@
 		// ── HelpDialog — footer links ───────────────────────────────────────
 		"help.github"	"GitHub 儲存庫"
 		"help.bilibili"	"Bilibili 主頁"
+		"help.youtube"	"YouTube 頻道"
 
 		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"極光紫"

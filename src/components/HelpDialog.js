@@ -595,8 +595,11 @@ const HelpDialog = ({ open, onClose }) => {
             <a href="https://github.com/Ducheese/source-modding-search-tool" target="_blank" rel="noopener noreferrer">
               {t('help.github')}
             </a>
-            <a href="https://space.bilibili.com/1889622121" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '8px' }}>
+            <a href="https://space.bilibili.com/1889622121" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '12px' }}>
               {t('help.bilibili')}
+            </a>
+            <a href="https://www.youtube.com/@ducheese251" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '12px' }}>
+              {t('help.youtube')}
             </a>
           </Typography>
         </Box>
