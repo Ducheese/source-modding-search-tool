@@ -592,7 +592,7 @@ const HelpDialog = ({ open, onClose }) => {
         {/* 超链接 */}
         <Box sx={{ textAlign: 'center', color: 'text.secondary' }}>
           <Typography variant="caption">
-            <a href="https://github.com/Ducheese/source-modding-search-tool" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/Ducheese/source-modding-search-tool/tree/feat/i18n" target="_blank" rel="noopener noreferrer">
               {t('help.github')}
             </a>
             <a href="https://space.bilibili.com/1889622121" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '12px' }}>
