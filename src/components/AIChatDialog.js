@@ -199,6 +199,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
   const activeRequestRef  = useRef(null); // 当前进行中的 requestId
   const requestMetaRef    = useRef(new Map()); // requestId → { messageId, startTime }
   const contextPromptRef  = useRef('');   // 搜索结果上下文文本（稳定引用）
+  const prevOpenRef       = useRef(open); // 跟踪 open 的前一个值，避免语言切换时重置 minimized
 
   const markdownStyles = useMemo(() => getMarkdownStyles(theme), [theme]);
 
@@ -250,16 +251,23 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
   // ─── Effects ───────────────────────────────────────────────────────────────
 
   // 打开/关闭对话框时的副作用
+  // 注意：只在 open 从 false 变为 true 时才重置状态，避免语言切换等导致的重渲染重置 minimized
   useEffect(() => {
-    if (open) {
+    const wasOpen = prevOpenRef.current;
+    prevOpenRef.current = open;
+
+    if (open && !wasOpen) {
+      // 对话框刚打开 → 重置状态
       onMinimizedChange(false);
       resetDialogState();
-    } else {
+    } else if (!open) {
+      // 对话框关闭 → 清理
       onMinimizedChange(false);
       activeRequestRef.current = null;
       setIsStreaming(false);
     }
-  }, [open, resetDialogState]);
+    // 如果 open 保持 true（如语言切换导致的重渲染），不做任何操作，保留 minimized 状态
+  }, [open, resetDialogState, onMinimizedChange]);
 
   // 监听来自 Rust 后端的 SSE 流式事件
   useEffect(() => {
