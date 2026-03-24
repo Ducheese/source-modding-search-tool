@@ -21,7 +21,7 @@ A lightweight, high-performance local text search tool for Valve Source 1 engine
 ### Configure Mirror Source
 
 ```toml
-# After installing Rust, find or create this file (C:\Users\Username\.cargo\config.toml) and add the following:
+# After installing Rust, find or create this file (C:\Users\YourName\.cargo\config.toml) and add the following:
 [source.crates-io]
 replace-with = 'rsproxy-sparse'
 

@@ -1,6 +1,6 @@
 [package]
 name = "source-modding-search-tool"
-version = "1.2.0"
+version = "v1.3.0-i18n.alpha"
 description = "Source Modding Local Search Tool"
 authors = ["Ducheese"]
 edition = "2021"
