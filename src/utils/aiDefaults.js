@@ -188,13 +188,13 @@ Accurately interpret the user's search intent and convert it into the most optim
 
 [Strict Constraints]
 1. Zero Fluff: Output ONLY a single line of raw regular expression. Absolutely NO explanations, code block formatting, Markdown tags, prefixes, suffixes, or greetings are allowed.
-2. Honest Inability: If a request is impossible to fulfill, output exactly this phrase and nothing else: "无法生成满足该请求的正则表达式。"
+2. Honest Inability: If a request is impossible to fulfill, output exactly this phrase and nothing else: "Unable to generate a regex that satisfies the request."
 3. Whitespace & Newlines: DO NOT use \s* or \s+ to handle whitespace between logic elements. You MUST use [ \t]* or [ \t]+ instead to strictly confine the match within a single line, forcing it to stop immediately upon hitting a newline character.
 4. Case Insensitivity: VDF, VMT, and QC files are inherently case-insensitive. Prepend (?i) to the regex when appropriate based on the context.
 5. Comment Filtering: When requested to match valid code (i.e., ignoring comments), you MUST use the prefix ^[ \t]* to ensure the match starts from the beginning of the line, thereby safely excluding lines starting with //, #, or --. Do NOT abuse ^[ \t]* if the user did not explicitly ask to exclude comments.
 6. Response Logic: If the user simply provides a regex, echo it back verbatim (this is the absolute highest priority). If the user provides a regex along with modification instructions, adjust that specific regex based on the requested logic.
 7. Statement Closures: For script files (.sp, .nut), prioritize using [^;]+?\);? to capture closed statements. For material/config files (.vmt, .vdf), strictly avoid semicolon anchors; you must rely on quote-pairing logic like "[^"]+".
-8. No Lookarounds: The execution environment does NOT support Look-aheads ((?=), (?!)) or Look-behinds ((?<=), (?<!)). NEVER use these syntaxes! If the user's request absolutely requires lookarounds, output: "无法生成满足该请求的正则表达式。"
+8. No Lookarounds: The execution environment does NOT support Look-aheads ((?=), (?!)) or Look-behinds ((?<=), (?<!)). NEVER use these syntaxes! If the user's request absolutely requires lookarounds, output: "Unable to generate a regex that satisfies the request."
 ${DOMAIN_KNOWLEDGE_BASE}
 [Example Library]
 Input: Match all "weapon_xxx.single"
@@ -278,8 +278,8 @@ export const loadAiSettings = () => {
       chatModelName: '',
       explainModelName: '',
       regexPrompt: DEFAULT_AI_REGEX_PROMPT,
-      chatPrompt: DEFAULT_AI_CHAT_PROMPT,  // ← 加
-      explainPrompt: DEFAULT_AI_EXPLAIN_PROMPT,  // ← 加
+      chatPrompt: DEFAULT_AI_CHAT_PROMPT,
+      explainPrompt: DEFAULT_AI_EXPLAIN_PROMPT,
     };
   }
 
@@ -292,8 +292,8 @@ export const loadAiSettings = () => {
       chatModelName: parsed.chatModelName || '',
       explainModelName: parsed.explainModelName || '',
       regexPrompt: parsed.regexPrompt || DEFAULT_AI_REGEX_PROMPT,
-      chatPrompt: parsed.chatPrompt || DEFAULT_AI_CHAT_PROMPT,  // ← 加
-      explainPrompt: parsed.explainPrompt || DEFAULT_AI_EXPLAIN_PROMPT,  // ← 加
+      chatPrompt: parsed.chatPrompt || DEFAULT_AI_CHAT_PROMPT,
+      explainPrompt: parsed.explainPrompt || DEFAULT_AI_EXPLAIN_PROMPT,
     };
   } catch (error) {
     return {
@@ -303,8 +303,8 @@ export const loadAiSettings = () => {
       chatModelName: '',
       explainModelName: '',
       regexPrompt: DEFAULT_AI_REGEX_PROMPT,
-      chatPrompt: DEFAULT_AI_CHAT_PROMPT,  // ← 加
-      explainPrompt: DEFAULT_AI_EXPLAIN_PROMPT,  // ← 加
+      chatPrompt: DEFAULT_AI_CHAT_PROMPT,
+      explainPrompt: DEFAULT_AI_EXPLAIN_PROMPT,
     };
   }
 };
