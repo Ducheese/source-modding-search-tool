@@ -1,27 +1,27 @@
 # Source Modding Search Tool
 
-<img src="public/logos/ChatGPT%20Image%202026-03-12.png" alt="应用图标" width="100">
+<img src="public/logos/ChatGPT%20Image%202026-03-12.png" alt="App icon" width="100">
 
-为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的本地文本检索工具。
+A lightweight, high-performance local text search tool for Valve Source 1 engine (CS:S, CS:GO, L4D2, GMod, etc.) mod developers.
 
-**代码基于以下方式开发**
-1. iFlow CLI + GLM-4.6/4.7（从0开始创造雏形，初见agent神力）
-2. Gemini 3 Flash/Pro 无agent（主贡献是技术栈更换和前后端性能优化，高级选项面板是锦上添花）
-3. OMO Hephaestus + GPT 5.2 Codex（重拾“屎山”代码，实现更多上下文开关，实现大模型接入雏形）
-4. Claude Sonnet 4.6 无agent（大模型接入功能优化，“屎山”代码审查，色彩方案标签页，更新日志标签页，深度思考控件，更多上下文控件，聊天窗最小化）
+**Code developed using the following methods**
+1. iFlow CLI + GLM-4.6/4.7 (Created the initial prototype from scratch, first experience with agent power)
+2. Gemini 3 Flash/Pro without agent (Main contributions: tech stack migration and frontend/backend performance optimization; advanced options panel as a bonus)
+3. OMO Hephaestus + GPT 5.2 Codex (Revived the "spaghetti" code, implemented more context toggles, implemented AI model integration prototype)
+4. Claude Sonnet 4.6 without agent (Optimized AI model integration, reviewed "spaghetti" code, color scheme tab, changelog tab, deep thinking control, more context control, chat window minimization, internationalization)
 
-## 开发环境设置
+## Development Environment Setup
 
-### 前置环境
+### Prerequisites
 
-1.   安装Node.js
-2.   安装Rustup
-3.   （Windows）下载Microsoft Visual Studio Build Tools，安装“使用C++的桌面开发”
+1. Install Node.js
+2. Install Rustup
+3. (Windows) Download Microsoft Visual Studio Build Tools and install "Desktop development with C++"
 
-### 设置镜像源
+### Configure Mirror Source
 
 ```toml
-# 安装好Rust后，找到或新建此文件（C:\Users\用户名\.cargo\config.toml），写入如下内容：
+# After installing Rust, find or create this file (C:\Users\Username\.cargo\config.toml) and add the following:
 [source.crates-io]
 replace-with = 'rsproxy-sparse'
 
@@ -38,57 +38,58 @@ index = "https://rsproxy.cn/crates.io-index"
 git-fetch-with-cli = true
 ```
 
-### 安装依赖包
+### Install Dependencies
 
 ```bash
-# 允许你编写的本地脚本运行
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUse
+# Allow running local scripts you write
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-# 依照package.json，进行依赖的下载和编译
+# Download and compile dependencies according to package.json
 npm install --verbose
 ```
 
-### 预览和构建应用
+### Preview and Build Application
 
 ```bash
-# 启动 Tauri 应用的开发模式
+# Start Tauri application in development mode
 npm run tauri dev
 
-# 构建为 Windows 可执行文件
+# Build as Windows executable
 npm run tauri build
 ```
 
-## 支持的文件格式
+## Supported File Formats
 
-- `.sp` - SourcePawn 脚本文件
-- `.cfg` - 配置文件
-- `.ini` - 初始化文件
-- `.txt` - 文本文件
-- `.vmt` - Valve Material 文件
-- `.qc` - 模型编译脚本
-- `.inc` - SourcePawn 包含文件
-- `.lua` - Lua 脚本文件
-- `.log` - 日志文件
-- `.vdf` - Valve Data Format 文件
-- `.scr` - 用户选项配置脚本
-- `.res` - VGUI 布局和文本
-- `.nut` - 求生之路地图脚本文件
+- `.sp` - SourcePawn script files
+- `.cfg` - Configuration files
+- `.ini` - Initialization files
+- `.txt` - Text files
+- `.vmt` - Valve Material files
+- `.qc` - Model compilation scripts
+- `.inc` - SourcePawn include files
+- `.lua` - Lua script files
+- `.log` - Log files
+- `.vdf` - Valve Data Format files
+- `.scr` - User options configuration scripts
+- `.res` - VGUI layout and text
+- `.nut` - Left 4 Dead map script files
 
-## 技术架构
+## Technical Architecture
 
-- **前端框架**：React + Material UI组件库
-- **后端框架**：Tauri + Rust
+- **Frontend Framework**: React + Material UI component library
+- **Backend Framework**: Tauri + Rust
 
-## 项目结构
+## Project Structure
 
 ```
 source-modding-search-tool/
 ├── public/
 │   ├── fonts/
+│   ├── lang/
 │   ├── logos/
-│   └── index.html        # HTML 模板
+│   └── index.html        # HTML template
 ├── src/
-│   ├── components/       # React 前端
+│   ├── components/       # React frontend
 │   │   ├── AIChatDialog.js
 │   │   ├── FileDropZone.js
 │   │   ├── FileList.js
@@ -98,16 +99,18 @@ source-modding-search-tool/
 │   │   ├── SearchPanel.js
 │   │   ├── SearchResults.js
 │   │   └── VirtualizedResults.js
-│   ├── utils/            # 工具函数
+│   ├── utils/            # Utility functions
 │   │   ├── aiDefaults.js
+│   │   ├── i18n.js
 │   │   ├── markdownStyles.js
 │   │   ├── searchEngine.js
 │   │   ├── tauriBridge.js
-│   │   └── themeConfig.js
-│   ├── App.js            # 主应用组件
-│   ├── index.css         # 全局样式
-│   └── index.js          # 应用入口
-├── src-tauri/            # Rust 后端
+│   │   ├── themeConfig.js
+│   │   └── vdfParser.js
+│   ├── App.js            # Main application component
+│   ├── index.css         # Global styles
+│   └── index.js          # Application entry point
+├── src-tauri/            # Rust backend
 │   ├── icons/
 │   │   └── icon.ico
 │   └── src/
@@ -115,7 +118,7 @@ source-modding-search-tool/
 │   ├── build.rs
 │   ├── Cargo.toml
 │   └── tauri.conf.json
-├── test/                 # 测试用文本生成脚本、现成文本
+├── test/                 # Test text generation scripts, ready-made text
 ├── package.json
 └── README.md
 ```
