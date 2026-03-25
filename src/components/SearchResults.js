@@ -6,7 +6,7 @@ import AIChatDialog from './AIChatDialog';
 import VirtualizedResults from './VirtualizedResults';
 import { useLanguage } from '../utils/i18n';
 
-const SearchResults = ({ results, isSearching }) => {
+const SearchResults = ({ results, isSearching, isAtBottom }) => {
   const theme = useTheme();
   const { t } = useLanguage();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -122,6 +122,7 @@ const SearchResults = ({ results, isSearching }) => {
         results={chatResults}
         minimized={aiMinimized}
         onMinimizedChange={setAiMinimized}
+        isAtBottom={isAtBottom}
       />
     </>
   );

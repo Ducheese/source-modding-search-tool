@@ -180,7 +180,7 @@ const MessageMetrics = React.memo(({ metrics }) => {
 
 // ─── 主组件 ──────────────────────────────────────────────────────────────────
 
-const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) => {
+const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, isAtBottom }) => {
   const theme       = useTheme();
   const showSnackbar = useSnackbar();
   const { t } = useLanguage();
@@ -713,9 +713,10 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange }) 
           onClick={() => onMinimizedChange(false)}
           sx={{
             position: 'fixed',
-            bottom: 24,
+            bottom: isAtBottom ? 24 : 'calc(100vh - 156px)',
             right: 24,
             zIndex: 1301,
+            transition: 'bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         >
           <SmartToy />

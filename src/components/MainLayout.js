@@ -25,6 +25,7 @@ const MainLayout = () => {
   const [files, setFiles] = useState([]);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(false);
 
   const [helpOpen, setHelpOpen] = useState(false); // 控制画卷的展开
 
@@ -52,6 +53,13 @@ const MainLayout = () => {
 
   const handleSearchStart = useCallback(() => {
     setIsSearching(true);
+  }, []);
+
+  const handleScroll = useCallback((e) => {
+    const el = e.currentTarget;
+    // 距底部 80px 以内视为"到底"
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+    setIsAtBottom(atBottom);
   }, []);
 
   return (
@@ -93,6 +101,7 @@ const MainLayout = () => {
 
       {/* 2. 主内容区 (Flex 1, 占满剩余所有高度) */}
       <Box
+        onScroll={handleScroll}
         sx={{
           flex: 1,
           display: 'flex',
@@ -167,6 +176,7 @@ const MainLayout = () => {
                 <SearchResults
                   results={searchResults}
                   isSearching={isSearching}
+                  isAtBottom={isAtBottom}
                 />
               </Paper>
             </Box>

@@ -5,13 +5,14 @@ import {
   Snackbar,
   Alert,
   Slide,
-  Select,
+  Menu,
   MenuItem,
 } from '@mui/material';
 import { ThemeProvider, alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import TranslateIcon from '@mui/icons-material/Translate';
 
 // 自定义组件
 import MainLayout from './components/MainLayout';
@@ -40,36 +41,62 @@ export const useSnackbar = () => useContext(SnackbarContext);
 
 const LangSwitcher = ({ showSnackbar }) => {
   const { lang, setLang, SUPPORTED_LANGS, t } = useLanguage();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
-  const handleChange = (e) => {
-    const newLang = e.target.value;
+  const handleToggle = (e) => setAnchorEl(prev => prev ? null : e.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+
+  const handleSelect = (newLang) => {
+    handleClose();
+    if (newLang === lang) return;
     const label = SUPPORTED_LANGS.find(l => l.id === newLang)?.label ?? newLang;
     setLang(newLang);
     showSnackbar(t('lang.switched', { name: label }), 'info');
   };
 
   return (
-    <Select
-      value={lang}
-      onChange={handleChange}
-      size="small"
-      variant="outlined"
-      sx={{
-        bgcolor: 'background.paper',
-        boxShadow: 2,
-        borderRadius: 1,
-        fontSize: '0.8rem',
-        height: 40,
-        '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-        '&:hover': { boxShadow: 4 },
-      }}
-    >
-      {SUPPORTED_LANGS.map(({ id, label }) => (
-        <MenuItem key={id} value={id} sx={{ fontSize: '0.85rem' }}>
-          {label}
-        </MenuItem>
-      ))}
-    </Select>
+    <>
+      <IconButton
+        color="inherit"
+        onClick={handleToggle}
+        sx={{
+          bgcolor: 'background.paper',
+          boxShadow: 2,
+          '&:hover': {
+            boxShadow: 4,
+            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.8),
+          },
+        }}
+      >
+        <TranslateIcon />
+      </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{
+          paper: {
+            elevation: 4,
+            sx: { mt: 0.5, minWidth: 130 },
+          },
+        }}
+      >
+        {SUPPORTED_LANGS.map(({ id, label }) => (
+          <MenuItem
+            key={id}
+            value={id}
+            selected={id === lang}
+            onClick={() => handleSelect(id)}
+            sx={{ fontSize: '0.875rem' }}
+          >
+            {label}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
   );
 };
 
