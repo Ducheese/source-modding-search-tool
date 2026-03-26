@@ -713,8 +713,8 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
           onClick={() => onMinimizedChange(false)}
           sx={{
             position: 'fixed',
-            bottom: isAtBottom ? 24 : 'calc(100vh - 156px)',
-            right: 24,
+            bottom: !isAtBottom ? 24 : 'calc(100vh - 156px)',
+            right: 18,
             zIndex: 1301,
             transition: 'bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
           }}

@@ -77,6 +77,7 @@ const LangSwitcher = ({ showSnackbar }) => {
         onClose={handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{ zIndex: 1301 }}
         slotProps={{
           paper: {
             elevation: 4,
@@ -130,12 +131,12 @@ function AppInner({ darkMode, setDarkMode, schemeId, handleSetScheme }) {
           <div
             style={{
               position: 'fixed',
-              top: 24,
-              right: 24,
+              top: 22,
+              right: 22,
               zIndex: 1301,
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
+              gap: 16,
             }}
           >
             {/* 语言切换下拉 */}
