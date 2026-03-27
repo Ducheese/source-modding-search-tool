@@ -412,11 +412,11 @@ const HelpDialog = ({ open, onClose }) => {
           {/* Tab 0 — path filter */}
           <TabPanel value={tabValue} index={0}>
             <Typography component="div">
-              {t('help.pathFilter.intro')}
+              <p dangerouslySetInnerHTML={{ __html: t('help.pathFilter.intro') }} style={{ margin: 0 }} />
               <ul>
                 <li dangerouslySetInnerHTML={{ __html: t('help.pathFilter.rule1') }} />
                 <li dangerouslySetInnerHTML={{ __html: t('help.pathFilter.rule2') }} />
-                <li>{t('help.pathFilter.rule3')}</li>
+                <li dangerouslySetInnerHTML={{ __html: t('help.pathFilter.rule3') }} />
                 <li dangerouslySetInnerHTML={{ __html: t('help.pathFilter.rule4') }} />
               </ul>
             </Typography>
@@ -425,7 +425,7 @@ const HelpDialog = ({ open, onClose }) => {
           {/* Tab 1 — regex tips */}
           <TabPanel value={tabValue} index={1}>
             <Typography component="div">
-              {t('help.regex.intro')}
+              <p dangerouslySetInnerHTML={{ __html: t('help.regex.intro') }} style={{ margin: 0 }} />
               <ul>
                 <li dangerouslySetInnerHTML={{ __html: t('help.regex.rule1') }} />
                 <li dangerouslySetInnerHTML={{ __html: t('help.regex.rule2') }} />
