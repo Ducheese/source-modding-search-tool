@@ -100,7 +100,7 @@
 		"regexSnippet.lazy"	"Lười biếng (*?)"
 		"regexSnippet.count"	"Số lượng chính xác {}"
 		"regexSnippet.hexColor"	"Mã màu thập lục phân"
-		"regexSnippet.cjkChars"	"Số lượng ký tự CJK"
+		"regexSnippet.chineseCharCount"	"Số lượng ký tự tiếng Trung"
 		"regexSnippet.csWeapon"	"Khớp tất cả \"weapon_xxx.single\""
 		"regexSnippet.csAmmo"	"Khớp định nghĩa số lượng & loại đạn trong script vũ khí"
 		"regexSnippet.csPropData"	"Khớp lời gọi GetEntProp sử dụng Prop_Data"

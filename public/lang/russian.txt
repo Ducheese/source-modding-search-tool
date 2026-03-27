@@ -100,7 +100,7 @@
 		"regexSnippet.lazy"	"Ленивый (*?)"
 		"regexSnippet.count"	"Точное количество {}"
 		"regexSnippet.hexColor"	"Шестнадцатеричный цвет"
-		"regexSnippet.cjkChars"	"Количество CJK-символов"
+		"regexSnippet.chineseCharCount"	"Количество китайских иероглифов"
 		"regexSnippet.csWeapon"	"Совпадение со всеми \"weapon_xxx.single\""
 		"regexSnippet.csAmmo"	"Совпадение с количеством патронов и типами в скриптах оружия"
 		"regexSnippet.csPropData"	"Совпадение с вызовами GetEntProp с Prop_Data"

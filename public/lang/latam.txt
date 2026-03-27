@@ -100,7 +100,7 @@
 		"regexSnippet.lazy"	"Perezoso (*?)"
 		"regexSnippet.count"	"Cantidad exacta {}"
 		"regexSnippet.hexColor"	"Código de color hexadecimal"
-		"regexSnippet.cjkChars"	"Conteo de caracteres CJK"
+		"regexSnippet.chineseCharCount"	"Cantidad de caracteres chinos"
 		"regexSnippet.csWeapon"	"Coincide con todos \"weapon_xxx.single\""
 		"regexSnippet.csAmmo"	"Coincide con defs de conteo y tipo de munición en scripts de armas"
 		"regexSnippet.csPropData"	"Coincide con llamadas GetEntProp usando Prop_Data"

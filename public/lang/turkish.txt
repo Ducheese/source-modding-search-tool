@@ -100,7 +100,7 @@
 		"regexSnippet.lazy"	"Tembel (*?)"
 		"regexSnippet.count"	"Kesin miktar {}"
 		"regexSnippet.hexColor"	"Onaltılık (Hex) renk kodu"
-		"regexSnippet.cjkChars"	"CJK karakter sayısı"
+		"regexSnippet.chineseCharCount"	"Çince karakter sayısı"
 		"regexSnippet.csWeapon"	"Tüm \"weapon_xxx.single\" eşleşmeleri"
 		"regexSnippet.csAmmo"	"Silah betiklerindeki mermi sayısı ve türü tanımları"
 		"regexSnippet.csPropData"	"Prop_Data kullanan GetEntProp çağrıları"

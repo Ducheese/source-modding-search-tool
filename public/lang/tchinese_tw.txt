@@ -1,6 +1,6 @@
 "lang"
 {
-	"Language"	"tchinese"
+	"Language"	"tchinese_tw"
 	"Tokens"
 	{
 		// ── App ──────────────────────────────────────────────────────────────
@@ -71,7 +71,7 @@
 		"search.noFiles"	"請先新增檔案"
 		"search.aborted"	"已中斷請求"
 		"search.timeout"	"已逾時"
-		"search.aiExplaining"	"AI 說明正規表示式中…"
+		"search.aiExplaining"	"AI 正規表示式解釋器運作中…"
 		"search.noRegex"	"未返回有效的正規表示式"
 		"search.aiConfigHint"	"請前往「關於與說明」填寫「大型模型接入設定」"
 
@@ -100,7 +100,7 @@
 		"regexSnippet.lazy"	"非貪婪 (*?)"
 		"regexSnippet.count"	"指定數量 {}"
 		"regexSnippet.hexColor"	"十六進位色碼"
-		"regexSnippet.cjkChars"	"指定數量中文字元"
+		"regexSnippet.chineseCharCount"	"指定數量中文字元"
 		"regexSnippet.csWeapon"	"比對所有 \"weapon_xxx.single\""
 		"regexSnippet.csAmmo"	"比對所有武器腳本中的彈藥數與種類定義"
 		"regexSnippet.csPropData"	"比對所有使用 PropData 的 GetEntProp"
@@ -177,20 +177,20 @@
 		"help.regex.rule2"	"位元組正規表示式引擎不支援斷言（look around），如 <code>(?=...)、(?!...)、(?&lt;=...)、(?&lt;!...)</code> 等語法將無法正常運作"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
-		"help.aiConfig.desc"	"AI 產生正規表示式和 AI 說明正規表示式需要模型的快速回應，不建議使用參數量大、或固定啟用思考的模型。"
+		"help.aiConfig.desc"	"AI 正規表示式產生器與解釋器需要快速的模型回應。請避免使用大型模型或始終開啟推理的模型。"
 		"help.apiBaseUrlHelper"	"/v1 或 /v1/chat/completions 結尾均可"
 		"help.apiKeyHelper"	"注意，此 API Key 將會以明文儲存於本機"
-		"help.regexModel"	"用於 AI 產生正規表示式的模型"
+		"help.regexModel"	"AI 正規表示式產生器模型"
 		"help.regexModelHelper"	"不啟用思考，無備用模型"
 		"help.chatModel"	"用於 AI 對話的模型"
 		"help.chatModelHelper"	"支援顯示思維鏈，留空則使用最左邊模型"
-		"help.explainModel"	"用於 AI 說明正規表示式的模型"
+		"help.explainModel"	"AI 正規表示式解釋器模型"
 		"help.explainModelHelper"	"不啟用思考，留空則使用最左邊模型"
-		"help.regexPromptLabel"	"AI 產生正規表示式的提示詞"
+		"help.regexPromptLabel"	"AI 正規表示式產生器提示詞"
 		"help.regexPromptHelper"	"注意，本工具使用的正規表示式引擎不支援斷言（look around）"
 		"help.chatPromptLabel"	"AI 對話的提示詞"
 		"help.chatPromptHelper"	"注意，必須提及{{context}}，才能將搜尋結果掛載進上下文"
-		"help.explainPromptLabel"	"AI 說明正規表示式的提示詞"
+		"help.explainPromptLabel"	"AI 正規表示式解釋器提示詞"
 		"help.explainPromptHelper"	"建議輸出純文字，不支援換行符與富文字渲染"
 		"help.resetPrompts"	"重設所有提示詞"
 		"help.testConnection"	"測試連線"

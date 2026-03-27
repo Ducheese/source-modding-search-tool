@@ -100,7 +100,7 @@
 		"regexSnippet.lazy"	"非贪婪 (*?)"
 		"regexSnippet.count"	"指定数量 {}"
 		"regexSnippet.hexColor"	"十六进制颜色代码"
-		"regexSnippet.cjkChars"	"指定数量中文字符"
+		"regexSnippet.chineseCharCount"	"指定数量中文字符"
 		"regexSnippet.csWeapon"	"匹配所有\"weapon_xxx.single\""
 		"regexSnippet.csAmmo"	"匹配所有武器脚本里的子弹数和种类定义"
 		"regexSnippet.csPropData"	"匹配所有用PropData的GetEntProp"

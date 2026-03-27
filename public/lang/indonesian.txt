@@ -100,7 +100,7 @@
 		"regexSnippet.lazy"	"Malas (*?)"
 		"regexSnippet.count"	"Jumlah tepat {}"
 		"regexSnippet.hexColor"	"Kode warna heksadesimal"
-		"regexSnippet.cjkChars"	"Jumlah karakter CJK"
+		"regexSnippet.chineseCharCount"	"Jumlah karakter Mandarin"
 		"regexSnippet.csWeapon"	"Cocokkan semua \"weapon_xxx.single\""
 		"regexSnippet.csAmmo"	"Cocokkan definisi jumlah amunisi & tipe dalam skrip senjata"
 		"regexSnippet.csPropData"	"Cocokkan panggilan GetEntProp menggunakan Prop_Data"

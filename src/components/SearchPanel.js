@@ -131,7 +131,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       title: t('regexCat.charsets'),
       items: [
         { label: t('regexSnippet.hexColor'),  value: '#[0-9a-fA-F]{6}' },
-        { label: t('regexSnippet.cjkChars'),  value: '[\\u4e00-\\u9fa5]{}' },
+        { label: t('regexSnippet.chineseCharCount'),  value: '[\\u4e00-\\u9fa5]{}' },
       ]
     },
     {

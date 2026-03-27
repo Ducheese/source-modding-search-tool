@@ -100,7 +100,7 @@
 		"regexSnippet.lazy"	"Lazy (*?)"
 		"regexSnippet.count"	"Exact count {}"
 		"regexSnippet.hexColor"	"Hex color code"
-		"regexSnippet.cjkChars"	"CJK character count"
+		"regexSnippet.chineseCharCount"	"Chinese characters count"
 		"regexSnippet.csWeapon"	"Match all \"weapon_xxx.single\""
 		"regexSnippet.csAmmo"	"Match ammo count & type defs in weapon scripts"
 		"regexSnippet.csPropData"	"Match GetEntProp calls using Prop_Data"
