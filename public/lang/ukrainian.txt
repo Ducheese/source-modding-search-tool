@@ -142,7 +142,7 @@
 		"aiChat.aiConfigHint"	"Перейдіть у \"Про програму та допомога\" для налаштування AI-моделі"
 		"aiChat.startFailed"	"Не вдалося запустити AI-запит"
 		"aiChat.restore"	"Відновити чат AI"
-		"aiChat.thinkingOn"	"Натисніть, щоб увімкнути глибоке мислення та задати бюджет"
+		"aiChat.thinkingOn"	"Натисніть, щоб увімкнути глибоке мислення та встановити ліміт токенів"
 		"aiChat.thinkingOff"	"Натисніть, щоб вимкнути глибоке мислення"
 		"aiChat.inputTok"	"Введення {prompt}{cached} токен"
 		"aiChat.cachedSuffix"	" (кешовано {n})"

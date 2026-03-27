@@ -537,7 +537,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       </Collapse>
 
       {/* 开关组：放在输入框正下方 */}
-      <Box sx={{ pt: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
+      <Box sx={{ pt: 2, display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
         <Tooltip title={aiRegex ? t('search.caseSensitiveTooltipAi') : t('search.caseSensitiveTooltip')}>
           <Box>
             <FormControlLabel
@@ -549,7 +549,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                   onChange={(e) => handleFieldChange('caseSensitive', e.target.checked)}
                 />
               }
-              label={<Typography variant="body2">{t('search.caseSensitive')}</Typography>}
+              label={<Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>{t('search.caseSensitive')}</Typography>}
             />
           </Box>
         </Tooltip>
@@ -567,7 +567,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                   onChange={(e) => handleFieldChange('wholeWord', e.target.checked)}
                 />
               }
-              label={<Typography variant="body2">{t('search.wholeWord')}</Typography>}
+              label={<Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>{t('search.wholeWord')}</Typography>}
             />
           </Box>
         </Tooltip>
@@ -581,7 +581,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                   disabled={isSearching || aiRegex}
                 />
               }
-              label={<Typography variant="body2">{t('search.useRegex')}</Typography>}
+              label={<Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>{t('search.useRegex')}</Typography>}
             />
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <FormControlLabel
@@ -595,7 +595,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                 }
                 label={
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
-                    <Typography variant="body2">
+                    <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
                       {moreContext ? t('search.moreContextLines', { lines: contextLines }) : t('search.moreContext')}
                     </Typography>
                     {moreContext && (
@@ -625,7 +625,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                   disabled={isSearching || isAiGenerating}
                 />
               }
-              label={<Typography variant="body2">{t('search.aiRegex')}</Typography>}
+              label={<Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>{t('search.aiRegex')}</Typography>}
             />
           </Box>
 
