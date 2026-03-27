@@ -48,20 +48,56 @@ export const SUPPORTED_LANGS = [
   { id: 'indonesian', label: 'Bahasa Indonesia' },
   { id: 'vietnamese', label: 'Tiếng Việt' },
   { id: 'turkish', label: 'Türkçe' },
+  { id: 'koreana', label: '한국어' },
+  { id: 'german', label: 'Deutsch' },
+  { id: 'thai', label: 'ไทย' },
+  { id: 'polish', label: 'Polski' },
+  { id: 'ukrainian', label: 'Українська' },
 ];
 
 const BROWSER_TO_VALVE_MAP = {
-  'zh-cn': 'schinese', 'zh-sg': 'schinese',
-  'zh-tw': 'tchinese_tw', 'zh-hk': 'tchinese_hk', 'zh-mo': 'tchinese_hk',
-  'ru': 'russian', 'es': 'latam', 'pt': 'brazilian',
-  'id': 'indonesian', 'vi': 'vietnamese', 'tr': 'turkish', 'en': 'english',
+  // 中文系列
+  'zh': 'schinese',           // 通用中文默认简体
+  'zh-cn': 'schinese',
+  'zh-sg': 'schinese',
+  'zh-hans': 'schinese',      // 简体中文脚本
+  'zh-tw': 'tchinese_tw',
+  'zh-hk': 'tchinese_hk',
+  'zh-mo': 'tchinese_hk',
+  'zh-hant': 'tchinese_tw',   // 繁体脚本默认台湾
+  'zh-hant-tw': 'tchinese_tw',
+  'zh-hant-hk': 'tchinese_hk',
+  'zh-hant-mo': 'tchinese_hk',
+  'ru': 'russian', 
+  'es': 'latam', 
+  'pt': 'brazilian',
+  'id': 'indonesian', 
+  'vi': 'vietnamese', 
+  'tr': 'turkish', 
+  'en': 'english',
+  'ko': 'koreana',
+  'de': 'german',
+  'th': 'thai',
+  'pl': 'polish',
+  'uk': 'ukrainian',
 };
 
 const VALVE_TO_HTML_MAP = {
-  schinese: 'zh-Hans', tchinese_hk: 'zh-Hant-HK', tchinese_tw: 'zh-Hant-TW', 
+  schinese: 'zh-Hans', 
+  tchinese_hk: 'zh-Hant-HK', 
+  tchinese_tw: 'zh-Hant-TW', 
   english: 'en',
-  russian: 'ru', latam: 'es-419', brazilian: 'pt-BR',
-  indonesian: 'id', vietnamese: 'vi', turkish: 'tr'
+  russian: 'ru', 
+  latam: 'es-419', 
+  brazilian: 'pt-BR',
+  indonesian: 'id', 
+  vietnamese: 'vi', 
+  turkish: 'tr',
+  koreana: 'ko',
+  german: 'de',
+  thai: 'th',
+  polish: 'pl',
+  ukrainian: 'uk',
 };
 
 // ─── 环境检测工具 ────────────────────────────────────────────────────────────
@@ -111,10 +147,6 @@ const detectBrowserLanguage = () => {
   for (const langTag of browserLangs) {
     const lowerTag = langTag.toLowerCase();
     if (BROWSER_TO_VALVE_MAP[lowerTag]) return BROWSER_TO_VALVE_MAP[lowerTag];
-
-    if (lowerTag.includes('hant')) {
-      return 'tchinese_tw';  // 默认走台湾
-    }
 
     const prefix = lowerTag.split('-')[0];
     if (BROWSER_TO_VALVE_MAP[prefix]) return BROWSER_TO_VALVE_MAP[prefix];
