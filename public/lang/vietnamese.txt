@@ -43,7 +43,7 @@
 		"fileList.lines"	"{lines} dòng"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
-		"search.title"	"Tìm kiếm"
+		"search.title"	"Cài đặt tìm kiếm"
 		"search.placeholder"	"Nhập nội dung tìm kiếm..."
 		"search.aiPlaceholder"	"Nhập mục đích của bạn..."
 		"search.advancedTooltip"	"Tùy chọn nâng cao"

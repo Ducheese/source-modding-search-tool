@@ -43,7 +43,7 @@
 		"fileList.lines"	"{lines} baris"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
-		"search.title"	"Cari"
+		"search.title"	"Pengaturan Pencarian"
 		"search.placeholder"	"Masukkan konten pencarian..."
 		"search.aiPlaceholder"	"Masukkan maksud Anda..."
 		"search.advancedTooltip"	"Opsi lanjutan"

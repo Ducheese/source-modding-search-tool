@@ -43,7 +43,7 @@
 		"fileList.lines"	"{lines} satır"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
-		"search.title"	"Arama"
+		"search.title"	"Arama Ayarları"
 		"search.placeholder"	"Arama içeriğini girin..."
 		"search.aiPlaceholder"	"Niyetinizi girin..."
 		"search.advancedTooltip"	"Gelişmiş seçenekler"

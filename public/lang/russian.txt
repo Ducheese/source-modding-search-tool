@@ -43,7 +43,7 @@
 		"fileList.lines"	"{lines} строк"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
-		"search.title"	"Поиск"
+		"search.title"	"Настройки поиска"
 		"search.placeholder"	"Введите текст для поиска..."
 		"search.aiPlaceholder"	"Введите ваш запрос..."
 		"search.advancedTooltip"	"Дополнительные параметры"
