@@ -39,7 +39,8 @@ export const LANGUAGE_STORAGE_KEY = 'languagePreference';
 
 export const SUPPORTED_LANGS = [
   { id: 'schinese', label: '简体中文' },
-  { id: 'tchinese', label: '繁體中文' },
+  { id: 'tchinese_hk', label: '繁體中文 (香港)' },
+  { id: 'tchinese_tw', label: '繁體中文 (台灣)' },
   { id: 'english', label: 'English' },
   { id: 'russian', label: 'Русский' },
   { id: 'latam', label: 'Español (Latinoamérica)' },
@@ -51,13 +52,14 @@ export const SUPPORTED_LANGS = [
 
 const BROWSER_TO_VALVE_MAP = {
   'zh-cn': 'schinese', 'zh-sg': 'schinese',
-  'zh-tw': 'tchinese', 'zh-hk': 'tchinese',
+  'zh-tw': 'tchinese_tw', 'zh-hk': 'tchinese_hk', 'zh-mo': 'tchinese_hk',
   'ru': 'russian', 'es': 'latam', 'pt': 'brazilian',
   'id': 'indonesian', 'vi': 'vietnamese', 'tr': 'turkish', 'en': 'english',
 };
 
 const VALVE_TO_HTML_MAP = {
-  schinese: 'zh-Hans', tchinese: 'zh-Hant', english: 'en',
+  schinese: 'zh-Hans', tchinese_hk: 'zh-Hant-HK', tchinese_tw: 'zh-Hant-TW', 
+  english: 'en',
   russian: 'ru', latam: 'es-419', brazilian: 'pt-BR',
   indonesian: 'id', vietnamese: 'vi', turkish: 'tr'
 };
@@ -109,6 +111,11 @@ const detectBrowserLanguage = () => {
   for (const langTag of browserLangs) {
     const lowerTag = langTag.toLowerCase();
     if (BROWSER_TO_VALVE_MAP[lowerTag]) return BROWSER_TO_VALVE_MAP[lowerTag];
+
+    if (lowerTag.includes('hant')) {
+      return 'tchinese_tw';  // 默认走台湾
+    }
+
     const prefix = lowerTag.split('-')[0];
     if (BROWSER_TO_VALVE_MAP[prefix]) return BROWSER_TO_VALVE_MAP[prefix];
   }

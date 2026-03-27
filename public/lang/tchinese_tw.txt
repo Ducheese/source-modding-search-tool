@@ -107,7 +107,7 @@
 
 		// ── SearchResults ─────────────────────────────────────────────────
 		"results.searching1"	"正在穿越時間的間隙..."
-		"results.searching2"	"少女折壽中..."
+		"results.searching2"	"少女祈禱中..."
 		"results.emptyTitle"	"無事可做"
 		"results.emptyHint"	"在永恆的等待中，請輸入點什麼吧。"
 		"results.noMatchTitle"	"空無一物"
