@@ -44,3 +44,9 @@ body {
   tab-size: 4;
   -moz-tab-size: 4;
 }
+
+/* 全局 code 标签样式 */
+code {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.9em;
+}
