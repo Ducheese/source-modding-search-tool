@@ -23,6 +23,7 @@ import { tauriAPI } from '../utils/tauriBridge';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getVersion } from '@tauri-apps/api/app';
+import { homeDir } from '@tauri-apps/api/path';
 
 import { useSnackbar, useThemeScheme } from '../App';
 import { useLanguage } from '../utils/i18n';
@@ -200,6 +201,7 @@ const HelpDialog = ({ open, onClose }) => {
   const [changelog, setChangelog] = useState(null);   // null=未加载, 'loading', 'error', [{tag, body}]
   const [currentVersion, setCurrentVersion] = useState(null);
   const [hasUpdate, setHasUpdate] = useState(false);
+  const [configPath, setConfigPath] = useState(null);
 
   const showSnackbar = useSnackbar();
   const { t } = useLanguage();
@@ -215,6 +217,17 @@ const HelpDialog = ({ open, onClose }) => {
     if (!open) return;
     setAiSettings(loadAiSettings());
     if (changelog !== null) return;
+
+    // 获取配置文件路径 - 只在首次打开帮助对话框时执行一次 - 因为 changelog !== null 会阻止后续执行
+    homeDir().then(home => {
+      if (home) {
+        // Windows: C:\Users\YourName\AppData\Local\com.sourcemodding.searchtool
+        const path = `${home}\\AppData\\Local\\com.sourcemodding.searchtool`;
+        setConfigPath(path);
+      }
+    }).catch((err) => {
+      console.error('Failed to find config folder:', err);
+    });
 
     setChangelog('loading');
     getVersion().catch(() => null).then(v => {
@@ -318,7 +331,42 @@ const HelpDialog = ({ open, onClose }) => {
 
         {/* 配置存储 */}
         <Box sx={{ mb: 2, px: 1 }}>
-          <Typography dangerouslySetInnerHTML={{ __html: t('help.storage', { path: 'C:\\Users\\YourName\\AppData\\Local\\com.sourcemodding.searchtool' }) }} />
+          <Typography>
+            {(() => {
+              const storageText = t('help.storage');
+              const [before, after] = storageText.split('{path}');
+              const displayPath = '.\\AppData\\Local\\com.sourcemodding.searchtool';
+              return (
+                <>
+                  {before}
+                  <a
+                    href="#"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      if (!configPath) return;
+                      try {
+                        await tauriAPI.openFileExternally(configPath);
+                      } catch (err) {
+                        console.error('Failed to open config folder:', err);
+                      }
+                    }}
+                    style={{
+                      color: theme.palette.primary.main,
+                      textDecoration: 'underline',
+                      cursor: configPath ? 'pointer' : 'default',
+                      opacity: configPath ? 1 : 0.6,
+                      fontFamily: 'Consolas, "Courier New", monospace',
+                      fontSize: '0.9em',
+                      // wordBreak: 'break-all',
+                    }}
+                  >
+                    {displayPath}
+                  </a>
+                  {after}
+                </>
+              );
+            })()}
+          </Typography>
         </Box>
 
         </>}
@@ -331,22 +379,22 @@ const HelpDialog = ({ open, onClose }) => {
               <Tab label={t('help.tab.pathFilter')}
               sx={{ 
                 whiteSpace: 'normal', // 允许换行
-                maxWidth: 160
+                maxWidth: 180
               }}/>
               <Tab label={t('help.tab.regex')}
               sx={{ 
                 whiteSpace: 'normal', // 允许换行
-                maxWidth: 160
+                maxWidth: 180
               }}/>
               <Tab label={t('help.tab.aiConfig')}
               sx={{ 
                 whiteSpace: 'normal', // 允许换行
-                maxWidth: 160
+                maxWidth: 180
               }}/>
               <Tab label={t('help.tab.colorScheme')}
               sx={{ 
                 whiteSpace: 'normal', // 允许换行
-                maxWidth: 160
+                maxWidth: 180
               }}/>
               <Tab label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -356,7 +404,7 @@ const HelpDialog = ({ open, onClose }) => {
               }
               sx={{ 
                 whiteSpace: 'normal', // 允许换行
-                maxWidth: 160
+                maxWidth: 180
               }}/>
             </Tabs>
           </Box>
@@ -612,13 +660,13 @@ const HelpDialog = ({ open, onClose }) => {
         {/* 超链接 */}
         <Box sx={{ textAlign: 'center', color: 'text.secondary' }}>
           <Typography variant="caption">
-            <a href="https://github.com/Ducheese/source-modding-search-tool/tree/feat/i18n" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/Ducheese/source-modding-search-tool/tree/feat/i18n" target="_blank" rel="noopener noreferrer" style={{ color: theme.palette.primary.main }}>
               {t('help.github')}
             </a>
-            <a href="https://space.bilibili.com/1889622121" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '12px' }}>
+            <a href="https://space.bilibili.com/1889622121" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '12px', color: theme.palette.primary.main }}>
               {t('help.bilibili')}
             </a>
-            <a href="https://www.youtube.com/@ducheese251" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '12px' }}>
+            <a href="https://www.youtube.com/@ducheese251" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '12px', color: theme.palette.primary.main }}>
               {t('help.youtube')}
             </a>
           </Typography>

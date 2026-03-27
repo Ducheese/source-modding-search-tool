@@ -162,7 +162,7 @@
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
 		"help.intro"	"This tool is designed to provide a lightweight, high-performance <b>cross-file text search</b> tool for Valve Source 1 engine (CS:S, CS:GO, L4D2, GMod, etc.) mod developers. Supported file types: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
 		"help.usage"	"Drop files into the dashed box (top-left) and review them in the file list below. Then, enter your search criteria (top-right) to view, export, or analyze the results in the bottom-right panel."
-		"help.storage"	"Configuration (including API Key) is stored unencrypted at <code>{path}</code>. This path also contains the WebView2 runtime cache. Manually deleting it fully uninstalls the tool and can resolve strange bugs after breaking updates."
+		"help.storage"	"Configuration (including API Key) is stored unencrypted at {path}. This path also contains the WebView2 runtime cache. Manually deleting it fully uninstalls the tool and can resolve strange bugs after breaking updates."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
 		"help.pathFilter.intro"	"This tool uses Unix shell-style wildcards for path filtering -- simpler than regex and focused on file paths. The following auto-processing rules apply:"

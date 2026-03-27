@@ -162,7 +162,7 @@
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
 		"help.intro"	"Esta ferramenta foi projetada para fornecer uma <b>pesquisa de texto entre arquivos</b> leve e de alto desempenho para desenvolvedores de mods do motor Valve Source 1 (CS:S, CS:GO, L4D2, GMod, etc.). Tipos de arquivo suportados: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
 		"help.usage"	"Arraste arquivos para a caixa tracejada (canto superior esquerdo) e revise-os na lista de arquivos abaixo. Em seguida, insira seus critérios de pesquisa (canto superior direito) para visualizar, exportar ou analisar os resultados no painel inferior direito."
-		"help.storage"	"A configuração (incluindo a API Key) é armazenada sem criptografia em <code>{path}</code>. Este caminho também contém o cache do runtime WebView2. Excluí-lo manualmente desinstala completamente a ferramenta e pode resolver bugs estranhos após atualizações problemáticas."
+		"help.storage"	"A configuração (incluindo a API Key) é armazenada sem criptografia em {path}. Este caminho também contém o cache do runtime WebView2. Excluí-lo manualmente desinstala completamente a ferramenta e pode resolver bugs estranhos após atualizações problemáticas."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
 		"help.pathFilter.intro"	"Esta ferramenta usa curingas no estilo Unix para filtrar caminhos — mais simples que regex e focados em caminhos de arquivos. As seguintes regras de processamento automático se aplicam:"

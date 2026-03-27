@@ -162,7 +162,7 @@
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
 		"help.intro"	"本工具旨在为 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 开发者提供一个轻量、高性能的<b>跨文本检索</b>工具，因此支持提交和检索的文本文件格式只包括：.sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut。"
 		"help.usage"	"食用方法是：在左上角「虚线框区域」完成文件提交，在左下角「文件列表区域」进行检查和初筛，在右上角「搜索配置区域」填上要检索的字符、正则或过滤通配符，在右下角「搜索结果区域」查看或导出结果，或把结果发给 AI 进行分析和讨论。"
-		"help.storage"	"本工具的配置信息（含 API Key）会以明文存储在 <code>{path}</code> 路径下，该路径同时包含 WebView2 运行时缓存。手动清空该路径可确保本工具的完全卸载，也可通过此方式解决新版本破坏性更新导致的各种稀奇古怪的Bug。"
+		"help.storage"	"本工具的配置信息（含 API Key）会以明文存储在 {path} 路径下，该路径同时包含 WebView2 运行时缓存。手动清空该路径可确保本工具的完全卸载，也可通过此方式解决新版本破坏性更新导致的各种稀奇古怪的Bug。"
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
 		"help.pathFilter.intro"	"本工具使用 Unix Shell 风格通配符进行路径筛选。它比正则表达式更简单，更专注于文件路径匹配。为简化输入，还有以下自动处理规则："

@@ -162,7 +162,7 @@
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
 		"help.intro"	"Bu araç, Valve Source 1 motoru (CS:S, CS:GO, L4D2, GMod vb.) mod geliştiricileri için hafif ve yüksek performanslı bir <b>dosyalar arası metin arama</b> aracı sağlamak üzere tasarlanmıştır. Desteklenen dosya türleri: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
 		"help.usage"	"Dosyaları kesik çizgili kutuya (sol üst) sürükleyin ve aşağıdaki dosya listesinde inceleyin. Ardından, sonuçları sağ alt panelde görüntülemek, dışa aktarmak veya analiz etmek için arama kriterlerinizi (sağ üst) girin."
-		"help.storage"	"Yapılandırma (API Anahtarı dahil) şifrelenmeden <code>{path}</code> dizininde saklanır. Bu yol aynı zamanda WebView2 çalışma zamanı önbelleğini de içerir. Bunu manuel olarak silmek aracı tamamen kaldırır ve sorunlu güncellemelerden sonraki garip hataları çözebilir."
+		"help.storage"	"Yapılandırma (API Anahtarı dahil) şifrelenmeden {path} dizininde saklanır. Bu yol aynı zamanda WebView2 çalışma zamanı önbelleğini de içerir. Bunu manuel olarak silmek aracı tamamen kaldırır ve sorunlu güncellemelerden sonraki garip hataları çözebilir."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
 		"help.pathFilter.intro"	"Bu araç, yolları filtrelemek için Unix stili joker karakterler kullanır -- regex'ten daha basittir ve dosya yollarına odaklanır. Aşağıdaki otomatik işleme kuralları geçerlidir:"

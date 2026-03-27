@@ -162,7 +162,7 @@
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
 		"help.intro"	"Dieses Tool wurde entwickelt, um ein leichtes, hochleistungsfähiges <b>Dateiübergreifendes Textsuch-Tool</b> für Entwickler von Valve Source 1-Engine-Mods (CS:S, CS:GO, L4D2, GMod usw.) bereitzustellen. Unterstützte Dateitypen: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
 		"help.usage"	"Ziehe Dateien in den gestrichelten Bereich (oben links) und prüfe sie in der Dateiliste darunter. Gib dann die Suchkriterien ein (oben rechts), um Ergebnisse im Panel unten rechts anzuzeigen, zu exportieren oder zu analysieren."
-		"help.storage"	"Die Konfiguration (einschließlich API-Schlüssel) wird unverschlüsselt unter <code>{path}</code> gespeichert. Dieser Pfad enthält auch den WebView2-Laufzeit-Cache. Das manuelle Löschen dieses Pfads deinstalliert das Tool vollständig und kann seltsame Fehler nach Updates beheben."
+		"help.storage"	"Die Konfiguration (einschließlich API-Schlüssel) wird unverschlüsselt unter {path} gespeichert. Dieser Pfad enthält auch den WebView2-Laufzeit-Cache. Das manuelle Löschen dieses Pfads deinstalliert das Tool vollständig und kann seltsame Fehler nach Updates beheben."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
 		"help.pathFilter.intro"	"Das Tool verwendet Unix-Shell-Wildcards zur Pfadfilterung — einfacher als Regex und auf Dateipfade ausgerichtet. Folgende automatische Verarbeitungsregeln gelten:"

@@ -162,7 +162,7 @@
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
 		"help.intro"	"Công cụ này được thiết kế để cung cấp công cụ <b>tìm kiếm văn bản đa tệp</b> nhẹ và hiệu năng cao cho các nhà phát triển mod động cơ Valve Source 1 (CS:S, CS:GO, L4D2, GMod, v.v.). Các loại tệp được hỗ trợ: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
 		"help.usage"	"Kéo tệp vào ô đứt nét (trên-trái) và xem lại trong danh sách tệp bên dưới. Sau đó nhập tiêu chí tìm kiếm (trên-phải) để xem, xuất hoặc phân tích kết quả trong bảng dưới-phải."
-		"help.storage"	"Cấu hình (bao gồm API Key) được lưu trữ không mã hóa tại <code>{path}</code>. Đường dẫn này cũng chứa bộ nhớ cache runtime WebView2. Xóa thủ công sẽ gỡ cài đặt hoàn toàn công cụ và có thể giải quyết các lỗi kỳ lạ sau các bản cập nhật lỗi."
+		"help.storage"	"Cấu hình (bao gồm API Key) được lưu trữ không mã hóa tại {path}. Đường dẫn này cũng chứa bộ nhớ cache runtime WebView2. Xóa thủ công sẽ gỡ cài đặt hoàn toàn công cụ và có thể giải quyết các lỗi kỳ lạ sau các bản cập nhật lỗi."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
 		"help.pathFilter.intro"	"Công cụ này sử dụng ký tự đại diện kiểu Unix để lọc đường dẫn -- đơn giản hơn regex và tập trung vào đường dẫn tệp. Các quy tắc xử lý tự động sau áp dụng:"
