@@ -12,7 +12,7 @@ import { ThemeProvider, alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import TranslateIcon from '@mui/icons-material/Translate';
+import LanguageIcon from '@mui/icons-material/Language';
 
 // 自定义组件
 import MainLayout from './components/MainLayout';
@@ -69,7 +69,7 @@ const LangSwitcher = ({ showSnackbar }) => {
           },
         }}
       >
-        <TranslateIcon />
+        <LanguageIcon />
       </IconButton>
       <Menu
         anchorEl={anchorEl}

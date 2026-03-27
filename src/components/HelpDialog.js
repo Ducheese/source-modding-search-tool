@@ -299,7 +299,7 @@ const HelpDialog = ({ open, onClose }) => {
 
       <DialogContent dividers>
         {/* 介绍 / 说明 / 配置存储：选中大模型接入配置 Tab 时隐藏 */}
-        {(tabValue !== 2 && tabValue !== 4) && <>
+        {(tabValue !== 2 && tabValue !== 3 && tabValue !== 4) && <>
         {/* 介绍 */}
         <Box sx={{ mb: 3, px: 1, display: 'flex', alignItems: 'flex-start', gap: 3 }}>
           <Box
@@ -328,16 +328,36 @@ const HelpDialog = ({ open, onClose }) => {
 
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
-              <Tab label={t('help.tab.pathFilter')} />
-              <Tab label={t('help.tab.regex')} />
-              <Tab label={t('help.tab.aiConfig')} />
-              <Tab label={t('help.tab.colorScheme')} />
+              <Tab label={t('help.tab.pathFilter')}
+              sx={{ 
+                whiteSpace: 'normal', // 允许换行
+                maxWidth: 160
+              }}/>
+              <Tab label={t('help.tab.regex')}
+              sx={{ 
+                whiteSpace: 'normal', // 允许换行
+                maxWidth: 160
+              }}/>
+              <Tab label={t('help.tab.aiConfig')}
+              sx={{ 
+                whiteSpace: 'normal', // 允许换行
+                maxWidth: 160
+              }}/>
+              <Tab label={t('help.tab.colorScheme')}
+              sx={{ 
+                whiteSpace: 'normal', // 允许换行
+                maxWidth: 160
+              }}/>
               <Tab label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   {t('help.tab.changelog')}
                   {hasUpdate && <Error sx={{ fontSize: 16, color: 'error.main' }} />}
                 </Box>
-              } />
+              }
+              sx={{ 
+                whiteSpace: 'normal', // 允许换行
+                maxWidth: 160
+              }}/>
             </Tabs>
           </Box>
 
@@ -378,7 +398,7 @@ const HelpDialog = ({ open, onClose }) => {
                 label="API Base Url"
                 value={aiSettings.baseUrl}
                 onChange={(e) => handleAiSettingChange('baseUrl', e.target.value)}
-                placeholder="https://api.siliconflow.cn/v1"
+                placeholder="https://openrouter.ai/api/v1"
                 helperText={t('help.apiBaseUrlHelper')}
                 size="small"
                 inputProps={{ style: { textOverflow: 'ellipsis' } }}
@@ -398,7 +418,7 @@ const HelpDialog = ({ open, onClose }) => {
                   label={t('help.regexModel')}
                   value={aiSettings.regexModelName}
                   onChange={(e) => handleAiSettingChange('regexModelName', e.target.value)}
-                  placeholder="Qwen/Qwen3-8B"
+                  placeholder="qwen/qwen3.5-9b"
                   helperText={t('help.regexModelHelper')}
                   size="small"
                   sx={{ flex: 1 }}
@@ -408,7 +428,7 @@ const HelpDialog = ({ open, onClose }) => {
                   label={t('help.chatModel')}
                   value={aiSettings.chatModelName}
                   onChange={(e) => handleAiSettingChange('chatModelName', e.target.value)}
-                  placeholder="deepseek-ai/DeepSeek-V3.2"
+                  placeholder="deepseek/deepseek-v3.2"
                   helperText={t('help.chatModelHelper')}
                   size="small"
                   sx={{ flex: 1 }}
@@ -418,7 +438,7 @@ const HelpDialog = ({ open, onClose }) => {
                   label={t('help.explainModel')}
                   value={aiSettings.explainModelName}
                   onChange={(e) => handleAiSettingChange('explainModelName', e.target.value)}
-                  placeholder="Qwen/Qwen3-8B"
+                  placeholder="qwen/qwen3.5-9b"
                   helperText={t('help.explainModelHelper')}
                   size="small"
                   sx={{ flex: 1 }}
