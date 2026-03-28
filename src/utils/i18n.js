@@ -53,6 +53,11 @@ export const SUPPORTED_LANGS = [
   { id: 'thai', label: 'ไทย' },
   { id: 'polish', label: 'Polski' },
   { id: 'ukrainian', label: 'Українська' },
+  { id: 'japanese', label: '日本語' },
+  { id: 'french', label: 'Français' },
+  { id: 'italian', label: 'Italiano' },
+  { id: 'portuguese', label: 'Português (Portugal)' },
+  { id: 'spanish', label: 'Español (España)' },
 ];
 
 const BROWSER_TO_VALVE_MAP = {
@@ -69,8 +74,10 @@ const BROWSER_TO_VALVE_MAP = {
   'zh-hant-hk': 'tchinese_hk',
   'zh-hant-mo': 'tchinese_hk',
   'ru': 'russian', 
-  'es': 'latam', 
+  'es': 'latam',
+  'es-es': 'spanish',
   'pt': 'brazilian',
+  'pt-pt': 'portuguese',
   'id': 'indonesian', 
   'vi': 'vietnamese', 
   'tr': 'turkish', 
@@ -80,6 +87,9 @@ const BROWSER_TO_VALVE_MAP = {
   'th': 'thai',
   'pl': 'polish',
   'uk': 'ukrainian',
+  'ja': 'japanese',
+  'fr': 'french',
+  'it': 'italian',
 };
 
 const VALVE_TO_HTML_MAP = {
@@ -98,6 +108,11 @@ const VALVE_TO_HTML_MAP = {
   thai: 'th',
   polish: 'pl',
   ukrainian: 'uk',
+  japanese: 'ja',
+  french: 'fr',
+  italian: 'it',
+  portuguese: 'pt-PT',
+  spanish: 'es',
 };
 
 // ─── 环境检测工具 ────────────────────────────────────────────────────────────
