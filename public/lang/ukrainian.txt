@@ -14,7 +14,7 @@
 		// ── Layout ───────────────────────────────────────────────────────
 		"layout.title"	"Source Modding Search Tool"
 		"layout.subtitle"	"Високопродуктивний локальний текстовий пошук для розробників модів Valve Source 1"
-		"layout.helpTooltip"	"Про програму та допомога"
+		"layout.helpTooltip"	"Довідка та інформація про програму"
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Перетягніть файли сюди"
@@ -58,7 +58,7 @@
 		"search.caseSensitive"	"Врахування регістру"
 		"search.caseSensitiveTooltipAi"	"Режим AI regex активний; використовуйте (?i) вручну"
 		"search.caseSensitiveTooltip"	"Доступно лише при вимкненому режимі AI regex"
-		"search.wholeWord"	"Ціле слово"
+		"search.wholeWord"	"Слово цілком"
 		"search.wholeWordTooltipRegex"	"Режим Regex активний; використовуйте \\b вручну"
 		"search.wholeWordTooltip"	"Доступно лише при вимкненому режимі regex"
 		"search.useRegex"	"Regex"
@@ -92,7 +92,7 @@
 		"regexSnippet.tab"	"Табуляція"
 		"regexSnippet.newline"	"Новий рядок (CRLF/LF)"
 		"regexSnippet.whitespace"	"Пробіл, табуляція або перенос рядка"
-		"regexSnippet.word"	"Літера, цифра або підкреслення"
+		"regexSnippet.word"	"Літера, цифра або символ підкреслення"
 		"regexSnippet.digit"	"Цифра"
 		"regexSnippet.optional"	"0 або 1 (?)"
 		"regexSnippet.zeroOrMore"	"0 або більше (*)"
@@ -106,9 +106,9 @@
 		"regexSnippet.csPropData"	"Збіг із викликами GetEntProp з Prop_Data"
 
 		// ── SearchResults ─────────────────────────────────────────────────
-		"results.searching1"	"Пошук крізь тріщини часу..."
+		"results.searching1"	"Пошук у шпаринах часу..."
 		"results.searching2"	"Обробка на повній потужності..."
-		"results.emptyTitle"	"Нічого робити"
+		"results.emptyTitle"	"Немає завдань"
 		"results.emptyHint"	"Введіть щось, щоб розпочати пошук."
 		"results.noMatchTitle"	"Нічого не знайдено"
 		"results.noMatchHint"	"Нічого не знайдено у {count} файлах."
@@ -135,7 +135,7 @@
 		"aiChat.minimize"	"Згорнути у кут"
 		"aiChat.close"	"Завершити розмову"
 		"aiChat.placeholder"	"Введіть питання · Enter для надсилання · Shift+Enter для нового рядка"
-		"aiChat.thinkProcess"	"Процес мислення"
+		"aiChat.thinkProcess"	"Процес міркування"
 		"aiChat.contextMounted"	"Контекст результатів пошуку завантажено"
 		"aiChat.noContext"	"Контекст результатів пошуку не завантажено"
 		"aiChat.user"	"Користувач"
@@ -144,14 +144,14 @@
 		"aiChat.restore"	"Відновити чат AI"
 		"aiChat.thinkingOn"	"Натисніть, щоб увімкнути глибоке мислення та встановити ліміт токенів"
 		"aiChat.thinkingOff"	"Натисніть, щоб вимкнути глибоке мислення"
-		"aiChat.inputTok"	"Введення {prompt}{cached} токен"
+		"aiChat.inputTok"	"Введення: {prompt}{cached} токенів"
 		"aiChat.cachedSuffix"	" (кешовано {n})"
-		"aiChat.outputTok"	"Виведення {n} токен"
+		"aiChat.outputTok"	"Виведення: {n} токенів"
 		"aiChat.speed"	"{speed} токен/с"
 		"aiChat.duration"	"{duration}с"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
-		"help.title"	"Про програму та допомога"
+		"help.title"	"Довідка та інформація про програму"
 		"help.appIconAlt"	"Іконка застосунку"
 		"help.tab.pathFilter"	"Маски шляху"
 		"help.tab.regex"	"Поради щодо Regex"
@@ -165,8 +165,8 @@
 		"help.storage"	"Конфігурація (включаючи API-ключ) зберігається у незашифрованому вигляді за шляхом {path}. За цим же шляхом знаходиться кеш середовища виконання WebView2. Видалення цього каталогу повністю видаляє інструмент і може усунути дивні помилки після оновлень."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
-		"help.pathFilter.intro"	"Інструмент використовує Unix-подібні маски для фільтрації шляхів — простіші за regex і орієнтовані на шляхи файлів. Застосовуються такі правила автоматичного оброблення:"
-		"help.pathFilter.rule1"	"Голий шлях до каталогу обгортається у <code>**</code> з обох боків, напр. <code>materials/models</code> стає <code>**/materials/models/**</code>"
+		"help.pathFilter.intro"	"Інструмент використовує Unix-подібні маски для фільтрації шляхів — простіші за regex і орієнтовані на шляхи файлів. Застосовуються такі правила автоматичної обробки:"
+		"help.pathFilter.rule1"	"Простий шлях до каталогу обгортається у <code>**</code> з обох боків, напр. <code>materials/models</code> стає <code>**/materials/models/**</code>"
 		"help.pathFilter.rule2"	"Розширення або ім'я файлу отримує <code>**</code> на початку, напр. <code>*.qc</code> стає <code>**/*.qc</code>"
 		"help.pathFilter.rule3"	"Без урахування регістру"
 		"help.pathFilter.rule4"	"Обидва роздільники <code>\\</code> та <code>/</code> вважаються роздільниками шляху і можуть змішуватися"
@@ -174,10 +174,10 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"Мінімальна одиниця відображення — один рядок, підтримуються якорі початку/кінця рядка. Однак з точки зору бекенду весь файл є одним довгим рядком із вбудованими переносами (<code>\\n</code> або <code>\\r\\n</code>). Рекомендації:"
 		"help.regex.rule1"	"Використовуйте <code>[ \\t]*</code> замість <code>\\s*</code> при зіставленні пробілів на межах рядків, щоб уникнути ненавмисних збігів між рядками"
-		"help.regex.rule2"	"Рушій байтових регулярних виразів не підтримує передперегляд: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> не працюватимуть"
+		"help.regex.rule2"	"Рушій байтових регулярних виразів не підтримує твердження (lookarounds): <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> не працюватимуть"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
-		"help.aiConfig.desc"	"Генератор та пояснювач регулярних виразів на базі AI потребують швидких відповідей моделі. Уникайте великих моделей або моделей із постійно увімкненим міркуванням."
+		"help.aiConfig.desc"	"Генератор та пояснювач регулярних виразів на базі AI потребують швидких відповідей моделі. Уникайте великих моделей або моделей з постійно увімкненим режимом роздумів."
 		"help.apiBaseUrlHelper"	"Працює як з /v1, так і з /v1/chat/completions"
 		"help.apiKeyHelper"	"Увага: цей API-ключ зберігається у відкритому вигляді локально"
 		"help.regexModel"	"Модель для AI-генератора регулярних виразів"
@@ -187,7 +187,7 @@
 		"help.explainModel"	"Модель для AI-пояснювача регулярних виразів"
 		"help.explainModelHelper"	"Без режиму мислення; залиште порожнім для першої моделі"
 		"help.regexPromptLabel"	"Промпт для AI-генератора регулярних виразів"
-		"help.regexPromptHelper"	"Увага: рушій regex не підтримує передперегляд"
+		"help.regexPromptHelper"	"Увага: рушій regex не підтримує твердження (lookarounds)"
 		"help.chatPromptLabel"	"Промпт для чату AI"
 		"help.chatPromptHelper"	"Увага: має містити {{context}} для вставки результатів пошуку в контекст"
 		"help.explainPromptLabel"	"Промпт для AI-пояснювача регулярних виразів"
@@ -220,7 +220,7 @@
 		"help.youtube"	"YouTube"
 
 		// ── Color scheme labels ─────────────────────────────────────────────
-		"colorScheme.0.label"	"Авроральний фіолетовий"
+		"colorScheme.0.label"	"Пурпурова аврора"
 		"colorScheme.1.label"	"Падіння сакури"
 		"colorScheme.2.label"	"Бірюзовий"
 		"colorScheme.3.label"	"Попелястий жар"

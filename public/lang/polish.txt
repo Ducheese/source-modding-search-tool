@@ -14,7 +14,7 @@
 		// ── Layout ───────────────────────────────────────────────────────
 		"layout.title"	"Source Modding Search Tool"
 		"layout.subtitle"	"Wysokowydajne lokalne narzędzie do przeszukiwania tekstu dla twórców modów Valve Source 1"
-		"layout.helpTooltip"	"O programie i pomoc"
+		"layout.helpTooltip"	"Pomoc i informacje o programie"
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Przeciągnij pliki tutaj"
@@ -108,7 +108,7 @@
 		// ── SearchResults ─────────────────────────────────────────────────
 		"results.searching1"	"Przeszukiwanie szczelin czasu..."
 		"results.searching2"	"Przetwarzanie pełną parą..."
-		"results.emptyTitle"	"Nic do zrobienia"
+		"results.emptyTitle"	"Nic do wykonania"
 		"results.emptyHint"	"Wpisz coś, aby rozpocząć wyszukiwanie."
 		"results.noMatchTitle"	"Brak wyników"
 		"results.noMatchHint"	"Nic nie znaleziono w {count} plikach."
@@ -135,23 +135,23 @@
 		"aiChat.minimize"	"Zminimalizuj do rogu"
 		"aiChat.close"	"Zakończ rozmowę"
 		"aiChat.placeholder"	"Wpisz pytanie · Enter, aby wysłać · Shift+Enter dla nowej linii"
-		"aiChat.thinkProcess"	"Proces myślenia"
+		"aiChat.thinkProcess"	"Proces analizy"
 		"aiChat.contextMounted"	"Kontekst wyników wyszukiwania załadowany"
 		"aiChat.noContext"	"Brak załadowanego kontekstu wyników wyszukiwania"
 		"aiChat.user"	"Użytkownik"
 		"aiChat.aiConfigHint"	"Przejdź do \"O programie i pomoc\", aby skonfigurować model AI"
 		"aiChat.startFailed"	"Nie udało się uruchomić żądania AI"
 		"aiChat.restore"	"Przywróć czat AI"
-		"aiChat.thinkingOn"	"Kliknij, aby włączyć głębokie myślenie i ustawić budżet"
+		"aiChat.thinkingOn"	"Kliknij, aby włączyć głębokie myślenie i ustawić limit tokenów"
 		"aiChat.thinkingOff"	"Kliknij, aby wyłączyć głębokie myślenie"
-		"aiChat.inputTok"	"Wejście {prompt}{cached} tok"
+		"aiChat.inputTok"	"Wejście: {prompt}{cached} tokenów"
 		"aiChat.cachedSuffix"	" (pamięć podręczna {n})"
-		"aiChat.outputTok"	"Wyjście {n} tok"
+		"aiChat.outputTok"	"Wyjście: {n} tokenów"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
-		"help.title"	"O programie i pomoc"
+		"help.title"	"Pomoc i informacje o programie"
 		"help.appIconAlt"	"Ikona aplikacji"
 		"help.tab.pathFilter"	"Wzorce filtru ścieżek"
 		"help.tab.regex"	"Wskazówki Regex"
@@ -166,7 +166,7 @@
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
 		"help.pathFilter.intro"	"Narzędzie używa wzorców powłoki Unix do filtrowania ścieżek — prostszych niż regex i skupionych na ścieżkach plików. Obowiązują następujące zasady automatycznego przetwarzania:"
-		"help.pathFilter.rule1"	"Czysta ścieżka katalogu jest owijana w <code>**</code> po obu stronach, np. <code>materials/models</code> staje się <code>**/materials/models/**</code>"
+		"help.pathFilter.rule1"	"Sama ścieżka katalogu jest owijana w <code>**</code> po obu stronach, np. <code>materials/models</code> staje się <code>**/materials/models/**</code>"
 		"help.pathFilter.rule2"	"Rozszerzenie lub nazwa pliku otrzymuje <code>**</code> na początku, np. <code>*.qc</code> staje się <code>**/*.qc</code>"
 		"help.pathFilter.rule3"	"Bez rozróżniania wielkości liter"
 		"help.pathFilter.rule4"	"Oba separatory <code>\\</code> i <code>/</code> są traktowane jako separatory ścieżek i mogą być mieszane"
@@ -177,20 +177,20 @@
 		"help.regex.rule2"	"Silnik regex bajtów nie obsługuje asercji: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> nie będą działać"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
-		"help.aiConfig.desc"	"Generator i wyjaśniacz wyrażeń regularnych AI wymagają szybkich odpowiedzi modelu. Unikaj dużych modeli lub modeli ze stale włączonym rozumowaniem."
+		"help.aiConfig.desc"	"Generator i moduł wyjaśniający wyrażenia regularne AI wymagają szybkich odpowiedzi modelu. Unikaj dużych modeli lub modeli ze stale włączonym rozumowaniem."
 		"help.apiBaseUrlHelper"	"Działa zarówno z /v1, jak i z /v1/chat/completions"
 		"help.apiKeyHelper"	"Uwaga: ten klucz API jest przechowywany w postaci zwykłego tekstu lokalnie"
 		"help.regexModel"	"Model dla generatora regex AI"
 		"help.regexModelHelper"	"Bez trybu myślenia; bez modelu zapasowego"
 		"help.chatModel"	"Model dla czatu AI"
 		"help.chatModelHelper"	"Obsługuje wyświetlanie łańcucha myśli; pozostaw puste dla pierwszego modelu"
-		"help.explainModel"	"Model dla wyjaśniacza regex AI"
+		"help.explainModel"	"Model dla modułu wyjaśniającego regex AI"
 		"help.explainModelHelper"	"Bez trybu myślenia; pozostaw puste dla pierwszego modelu"
 		"help.regexPromptLabel"	"Prompt dla generatora regex AI"
 		"help.regexPromptHelper"	"Uwaga: silnik regex nie obsługuje asercji"
 		"help.chatPromptLabel"	"Prompt dla czatu AI"
 		"help.chatPromptHelper"	"Uwaga: musi zawierać {{context}}, aby wstrzyknąć wyniki wyszukiwania do kontekstu"
-		"help.explainPromptLabel"	"Prompt dla wyjaśniacza regex AI"
+		"help.explainPromptLabel"	"Prompt dla modułu wyjaśniającego regex AI"
 		"help.explainPromptHelper"	"Zalecane wyjście w postaci zwykłego tekstu; bez znaków nowej linii ani formatowania"
 		"help.resetPrompts"	"Zresetuj wszystkie prompty"
 		"help.testConnection"	"Test połączenia"
@@ -220,14 +220,14 @@
 		"help.youtube"	"YouTube"
 
 		// ── Color scheme labels ─────────────────────────────────────────────
-		"colorScheme.0.label"	"Zorza Fioletowa"
-		"colorScheme.1.label"	"Opadająca Sakura"
-		"colorScheme.2.label"	"Morski Zielony"
-		"colorScheme.3.label"	"Popielaty Żar"
-		"colorScheme.4.label"	"Stare Drewno"
-		"colorScheme.5.label"	"Nocne Indygo"
-		"colorScheme.6.label"	"Szmaragdowy Pnącz"
-		"colorScheme.7.label"	"Bursztynowy Ocean"
+		"colorScheme.0.label"	"Fioletowa zorza"
+		"colorScheme.1.label"	"Opadająca sakura"
+		"colorScheme.2.label"	"Morska zieleń"
+		"colorScheme.3.label"	"Popielaty żar"
+		"colorScheme.4.label"	"Stare drewno"
+		"colorScheme.5.label"	"Nocne indygo"
+		"colorScheme.6.label"	"Szmaragdowe pnącze"
+		"colorScheme.7.label"	"Bursztynowy ocean"
 
 		// ── searchEngine export ─────────────────────────────────────────────
 		"export.noResults"	"Brak wyników wyszukiwania do eksportu"

@@ -14,7 +14,7 @@
 		// ── Layout ───────────────────────────────────────────────────────
 		"layout.title"	"Source Modding Search Tool"
 		"layout.subtitle"	"Высокопроизводительный локальный текстовый поиск для разработчиков модов Valve Source 1"
-		"layout.helpTooltip"	"О программе и помощь"
+		"layout.helpTooltip"	"Справка и о программе"
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Перетащите файлы сюда"
@@ -58,7 +58,7 @@
 		"search.caseSensitive"	"Учёт регистра"
 		"search.caseSensitiveTooltipAi"	"Режим AI regex активен; используйте (?i) вручную"
 		"search.caseSensitiveTooltip"	"Доступно только при отключённом режиме AI regex"
-		"search.wholeWord"	"Целое слово"
+		"search.wholeWord"	"Слово целиком"
 		"search.wholeWordTooltipRegex"	"Режим Regex активен; используйте \\b вручную"
 		"search.wholeWordTooltip"	"Доступно только при отключённом режиме regex"
 		"search.useRegex"	"Regex"
@@ -87,7 +87,7 @@
 		"regexSnippet.lineStart"	"Начало строки"
 		"regexSnippet.lineEnd"	"Конец строки (CRLF/LF)"
 		"regexSnippet.wordBoundary"	"Граница слова"
-		"regexSnippet.nonWordBoundary"	"Не-граница слова"
+		"regexSnippet.nonWordBoundary"	"Не граница слова"
 		"regexSnippet.anyChar"	"Любой символ"
 		"regexSnippet.tab"	"Табуляция"
 		"regexSnippet.newline"	"Новая строка (CRLF/LF)"
@@ -106,9 +106,9 @@
 		"regexSnippet.csPropData"	"Совпадение с вызовами GetEntProp с Prop_Data"
 
 		// ── SearchResults ─────────────────────────────────────────────────
-		"results.searching1"	"Поиск сквозь временны́е трещины..."
-		"results.searching2"	"Обработка на полной мощности..."
-		"results.emptyTitle"	"Нечего делать"
+		"results.searching1"	"Поиск сквозь разломы времени..."
+		"results.searching2"	"Работаем на полную мощность..."
+		"results.emptyTitle"	"Ничего нет"
 		"results.emptyHint"	"Введите что-нибудь для начала поиска."
 		"results.noMatchTitle"	"Ничего не найдено"
 		"results.noMatchHint"	"Ничего не найдено в {count} файлах."
@@ -135,7 +135,7 @@
 		"aiChat.minimize"	"Свернуть в угол"
 		"aiChat.close"	"Завершить разговор"
 		"aiChat.placeholder"	"Введите вопрос · Enter для отправки · Shift+Enter для новой строки"
-		"aiChat.thinkProcess"	"Процесс мышления"
+		"aiChat.thinkProcess"	"Процесс рассуждения"
 		"aiChat.contextMounted"	"Контекст результатов поиска загружен"
 		"aiChat.noContext"	"Контекст результатов поиска не загружен"
 		"aiChat.user"	"Пользователь"
@@ -144,14 +144,14 @@
 		"aiChat.restore"	"Восстановить чат AI"
 		"aiChat.thinkingOn"	"Нажмите, чтобы включить глубокое мышление и установить лимит токенов"
 		"aiChat.thinkingOff"	"Нажмите, чтобы отключить глубокое мышление"
-		"aiChat.inputTok"	"Ввод {prompt}{cached} токен"
+		"aiChat.inputTok"	"Ввод: {prompt}{cached} токенов"
 		"aiChat.cachedSuffix"	" (кэшировано {n})"
-		"aiChat.outputTok"	"Вывод {n} токен"
+		"aiChat.outputTok"	"Вывод: {n} токенов"
 		"aiChat.speed"	"{speed} токен/с"
 		"aiChat.duration"	"{duration}с"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
-		"help.title"	"О программе и помощь"
+		"help.title"	"Справка и о программе"
 		"help.appIconAlt"	"Иконка приложения"
 		"help.tab.pathFilter"	"Маски пути"
 		"help.tab.regex"	"Советы по Regex"
@@ -174,7 +174,7 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"Минимальная единица отображения — одна строка, поддерживаются якоря начала/конца строки. Однако с точки зрения бэкенда весь файл является одной длинной строкой со встроенными переносами (<code>\\n</code> или <code>\\r\\n</code>). Рекомендации:"
 		"help.regex.rule1"	"Используйте <code>[ \\t]*</code> вместо <code>\\s*</code> при сопоставлении пробелов на границах строк, чтобы избежать непреднамеренных совпадений между строками"
-		"help.regex.rule2"	"Движок байтовых регулярных выражений не поддерживает предпросмотр: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> не будут работать"
+		"help.regex.rule2"	"Движок байтовых регулярных выражений не поддерживает утверждения (lookarounds): <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> не будут работать"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"Генератор и объяснитель регулярных выражений на базе AI требуют быстрых ответов модели. Избегайте больших моделей или моделей с постоянно включенным рассуждением."
@@ -187,7 +187,7 @@
 		"help.explainModel"	"Модель для AI-объяснителя регулярных выражений"
 		"help.explainModelHelper"	"Без режима мышления; оставьте пустым для использования первой модели"
 		"help.regexPromptLabel"	"Промпт для AI-генератора регулярных выражений"
-		"help.regexPromptHelper"	"Внимание: движок regex не поддерживает предпросмотр"
+		"help.regexPromptHelper"	"Внимание: движок regex не поддерживает утверждения (lookarounds)"
 		"help.chatPromptLabel"	"Промпт для чата AI"
 		"help.chatPromptHelper"	"Внимание: должен содержать {{context}} для вставки результатов поиска в контекст"
 		"help.explainPromptLabel"	"Промпт для AI-объяснителя регулярных выражений"
@@ -220,14 +220,14 @@
 		"help.youtube"	"YouTube"
 
 		// ── Color scheme labels ─────────────────────────────────────────────
-		"colorScheme.0.label"	"Аврора Фиолетовая"
-		"colorScheme.1.label"	"Падение Сакуры"
+		"colorScheme.0.label"	"Пурпурная аврора"
+		"colorScheme.1.label"	"Опадающая сакура"
 		"colorScheme.2.label"	"Бирюзовый"
-		"colorScheme.3.label"	"Пепельный Огонь"
-		"colorScheme.4.label"	"Старое Дерево"
-		"colorScheme.5.label"	"Ночное Индиго"
-		"colorScheme.6.label"	"Изумрудная Лоза"
-		"colorScheme.7.label"	"Янтарный Океан"
+		"colorScheme.3.label"	"Пепельный огонь"
+		"colorScheme.4.label"	"Старое дерево"
+		"colorScheme.5.label"	"Ночное индиго"
+		"colorScheme.6.label"	"Изумрудная лоза"
+		"colorScheme.7.label"	"Янтарный океан"
 
 		// ── searchEngine export ─────────────────────────────────────────────
 		"export.noResults"	"Нет результатов поиска для экспорта"
