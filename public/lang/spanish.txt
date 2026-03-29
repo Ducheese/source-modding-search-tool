@@ -174,7 +174,7 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"La unidad mínima de visualización es una sola línea, y se admiten anclas de inicio/fin de línea. Sin embargo, desde la perspectiva del backend, el archivo completo se trata como una cadena larga con saltos de línea incrustados (<code>\\n</code> o <code>\\r\\n</code>). Recomendaciones:"
 		"help.regex.rule1"	"Usa <code>[ \\t]*</code> en lugar de <code>\\s*</code> al hacer coincidir espacios en blanco en límites de línea, para evitar coincidencias entre líneas no deseadas"
-		"help.regex.rule2"	"El motor de regex de bytes no admite lookaround (ni lookahead ni lookbehind): <code>(?=...), (?!...), (?<=...), (?<!...)</code> no funcionarán"
+		"help.regex.rule2"	"El motor de regex de bytes no admite lookaround (ni lookahead ni lookbehind): <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> no funcionarán"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"El generador y el explicador de regex con IA requieren respuestas rápidas del modelo. Evita modelos grandes o modelos con razonamiento siempre activo."
