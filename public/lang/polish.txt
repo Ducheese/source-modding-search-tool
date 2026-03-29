@@ -45,7 +45,7 @@
 		// ── SearchPanel ───────────────────────────────────────────────────
 		"search.title"	"Ustawienia wyszukiwania"
 		"search.placeholder"	"Wpisz tekst do wyszukania..."
-		"search.aiPlaceholder"	"Wpisz swój zamiar..."
+		"search.aiPlaceholder"	"Opisz, czego szukasz..."
 		"search.advancedTooltip"	"Opcje zaawansowane"
 		"search.pathFilterTitle"	"Wzorce filtru ścieżek"
 		"search.includeLabel"	"Uwzględnij (np. *.qc, **/weapon_*)"
@@ -145,7 +145,7 @@
 		"aiChat.thinkingOn"	"Kliknij, aby włączyć głębokie myślenie i ustawić limit tokenów"
 		"aiChat.thinkingOff"	"Kliknij, aby wyłączyć głębokie myślenie"
 		"aiChat.inputTok"	"Wejście: {prompt}{cached} tokenów"
-		"aiChat.cachedSuffix"	" (pamięć podręczna {n})"
+		"aiChat.cachedSuffix"	" (z pamięci podręcznej: {n})"
 		"aiChat.outputTok"	"Wyjście: {n} tokenów"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"

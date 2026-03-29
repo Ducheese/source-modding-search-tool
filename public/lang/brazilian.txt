@@ -132,7 +132,7 @@
 
 		// ── AIChatDialog ──────────────────────────────────────────────────
 		"aiChat.title"	"Enviar para a IA"
-		"aiChat.minimize"	"Minimizar para canto"
+		"aiChat.minimize"	"Minimizar para o canto"
 		"aiChat.close"	"Encerrar conversa"
 		"aiChat.placeholder"	"Digite sua pergunta · Enter para enviar · Shift+Enter para nova linha"
 		"aiChat.thinkProcess"	"Raciocínio"
@@ -142,7 +142,7 @@
 		"aiChat.aiConfigHint"	"Vá para \"Sobre e Ajuda\" para configurar o modelo de IA"
 		"aiChat.startFailed"	"Falha ao iniciar solicitação à IA"
 		"aiChat.restore"	"Restaurar chat com IA"
-		"aiChat.thinkingOn"	"Clique para ativar raciocínio profundo e definir o orçamento"
+		"aiChat.thinkingOn"	"Clique para ativar o raciocínio profundo e definir o orçamento de tokens"
 		"aiChat.thinkingOff"	"Clique para desativar o raciocínio profundo"
 		"aiChat.inputTok"	"Entrada {prompt}{cached} tok"
 		"aiChat.cachedSuffix"	" (em cache {n})"
@@ -205,7 +205,7 @@
 		"help.colorScheme.current"	"Esquema atual: {label} -- {desc}"
 
 		// ── HelpDialog — changelog tab ──────────────────────────────────────
-		"help.changelog.rateLimit"	"Limite de pedidos da API do GitHub atingido. Tente novamente mais tarde ou visite a"
+		"help.changelog.rateLimit"	"Limite de solicitações da API do GitHub atingido. Tente novamente mais tarde ou visite a"
 		"help.changelog.rateLimitLink"	"Página de lançamentos"
 		"help.changelog.error"	"Falha ao carregar. Verifique sua conexão de rede."
 		"help.changelog.retry"	"Tentar novamente"

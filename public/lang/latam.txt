@@ -142,8 +142,8 @@
 		"aiChat.aiConfigHint"	"Ve a \"Acerca de y Ayuda\" para configurar el modelo de IA"
 		"aiChat.startFailed"	"Error al iniciar la solicitud a la IA"
 		"aiChat.restore"	"Restaurar chat con IA"
-		"aiChat.thinkingOn"	"Haz clic para activar el pensamiento profundo y configurar el presupuesto"
-		"aiChat.thinkingOff"	"Haz clic para desactivar el pensamiento profundo"
+		"aiChat.thinkingOn"	"Haz clic para activar el razonamiento profundo y configurar el presupuesto"
+		"aiChat.thinkingOff"	"Haz clic para desactivar el razonamiento profundo"
 		"aiChat.inputTok"	"Entrada {prompt}{cached} tok"
 		"aiChat.cachedSuffix"	" (en caché {n})"
 		"aiChat.outputTok"	"Salida {n} tok"
@@ -168,7 +168,7 @@
 		"help.pathFilter.intro"	"Esta herramienta usa comodines de estilo shell Unix para filtrar rutas — más simples que regex y enfocados en rutas de archivos. Se aplican las siguientes reglas de procesamiento automático:"
 		"help.pathFilter.rule1"	"Una ruta de directorio simple se envuelve con <code>**</code> en ambos lados, ej. <code>materials/models</code> se convierte en <code>**/materials/models/**</code>"
 		"help.pathFilter.rule2"	"Una extensión o nombre de archivo simple obtiene <code>**</code> al inicio, ej. <code>*.qc</code> se convierte en <code>**/*.qc</code>"
-		"help.pathFilter.rule3"	"Sin distinción de mayúsculas"
+		"help.pathFilter.rule3"	"Sin distinción entre mayúsculas y minúsculas"
 		"help.pathFilter.rule4"	"Tanto <code>\\</code> como <code>/</code> se tratan como separadores de ruta y pueden combinarse"
 
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
@@ -197,7 +197,7 @@
 		"help.testing"	"Probando..."
 		"help.connectionSuccess"	"Conexión exitosa"
 		"help.connectionFailed"	"La conexión expiró"
-		"help.fillRequired"	"Por favor, completa la URL base de la API, la API Key y al menos un nombre de modelo"
+		"help.fillRequired"	"Completa la URL base de la API, la API Key y al menos un nombre de modelo"
 		"help.schemeSwitched"	"Esquema de color \"{label}\" activado"
 
 		// ── HelpDialog — color scheme tab ───────────────────────────────────
@@ -207,7 +207,7 @@
 		// ── HelpDialog — changelog tab ──────────────────────────────────────
 		"help.changelog.rateLimit"	"Se alcanzó el límite de solicitudes de la API de GitHub. Intenta más tarde o visita la"
 		"help.changelog.rateLimitLink"	"Página de versiones"
-		"help.changelog.error"	"Error al cargar. Por favor verifica tu conexión de red."
+		"help.changelog.error"	"Error al cargar. Verifica tu conexión de red."
 		"help.changelog.retry"	"Reintentar"
 		"help.changelog.noBody"	"(Sin descripción)"
 		"help.changelog.latest"	"Nuevo"

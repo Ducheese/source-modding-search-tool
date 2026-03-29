@@ -14,7 +14,7 @@
 		// ── Layout ───────────────────────────────────────────────────────
 		"layout.title"	"Source Modding Search Tool"
 		"layout.subtitle"	"Высокопроизводительный локальный текстовый поиск для разработчиков модов Valve Source 1"
-		"layout.helpTooltip"	"Справка и о программе"
+		"layout.helpTooltip"	"О программе и справка"
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Перетащите файлы сюда"
@@ -151,7 +151,7 @@
 		"aiChat.duration"	"{duration}с"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
-		"help.title"	"Справка и о программе"
+		"help.title"	"О программе и справка"
 		"help.appIconAlt"	"Иконка приложения"
 		"help.tab.pathFilter"	"Маски пути"
 		"help.tab.regex"	"Советы по Regex"
@@ -223,7 +223,7 @@
 		"colorScheme.0.label"	"Пурпурная аврора"
 		"colorScheme.1.label"	"Опадающая сакура"
 		"colorScheme.2.label"	"Бирюзовый"
-		"colorScheme.3.label"	"Пепельный огонь"
+		"colorScheme.3.label"	"Пепельный жар"
 		"colorScheme.4.label"	"Старое дерево"
 		"colorScheme.5.label"	"Ночное индиго"
 		"colorScheme.6.label"	"Изумрудная лоза"

@@ -87,7 +87,7 @@
 		"regexSnippet.lineStart"	"Початок рядка"
 		"regexSnippet.lineEnd"	"Кінець рядка (CRLF/LF)"
 		"regexSnippet.wordBoundary"	"Межа слова"
-		"regexSnippet.nonWordBoundary"	"Не-межа слова"
+		"regexSnippet.nonWordBoundary"	"Не межа слова"
 		"regexSnippet.anyChar"	"Будь-який символ"
 		"regexSnippet.tab"	"Табуляція"
 		"regexSnippet.newline"	"Новий рядок (CRLF/LF)"

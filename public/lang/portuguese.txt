@@ -17,7 +17,7 @@
 		"layout.helpTooltip"	"Sobre e Ajuda"
 
 		// ── FileDropZone ─────────────────────────────────────────────────
-		"dropzone.dragHint"	"Arraste ficheiros para aqui"
+		"dropzone.dragHint"	"Arraste os ficheiros para aqui"
 		"dropzone.supportHint"	"Suporta ficheiros .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
 		"dropzone.selectFiles"	"Selecionar ficheiros"
 		"dropzone.selectFolder"	"Selecionar pasta"
@@ -132,7 +132,7 @@
 
 		// ── AIChatDialog ──────────────────────────────────────────────────
 		"aiChat.title"	"Enviar para a IA"
-		"aiChat.minimize"	"Minimizar para canto"
+		"aiChat.minimize"	"Minimizar para o canto"
 		"aiChat.close"	"Terminar conversa"
 		"aiChat.placeholder"	"Introduza a sua pergunta · Enter para enviar · Shift+Enter para nova linha"
 		"aiChat.thinkProcess"	"Raciocínio"
@@ -142,7 +142,7 @@
 		"aiChat.aiConfigHint"	"Vá a \"Sobre e Ajuda\" para configurar o modelo de IA"
 		"aiChat.startFailed"	"Falha ao iniciar o pedido à IA"
 		"aiChat.restore"	"Restaurar chat com IA"
-		"aiChat.thinkingOn"	"Clique para ativar o raciocínio profundo e definir o orçamento"
+		"aiChat.thinkingOn"	"Clique para ativar o raciocínio profundo e definir o orçamento de tokens"
 		"aiChat.thinkingOff"	"Clique para desativar o raciocínio profundo"
 		"aiChat.inputTok"	"Entrada {prompt}{cached} tok"
 		"aiChat.cachedSuffix"	" (em cache {n})"
