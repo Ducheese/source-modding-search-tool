@@ -178,14 +178,14 @@
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"El generador y el explicador de regex con IA requieren respuestas rápidas del modelo. Evita modelos grandes o modelos con razonamiento siempre activo."
-		"help.apiBaseUrlHelper"	"Funciona terminando con /v1 o /v1/chat/completions"
+		"help.apiBaseUrlHelper"	"Acepta URLs terminadas en /v1 o /v1/chat/completions"
 		"help.apiKeyHelper"	"Nota: esta API Key se almacena en texto plano localmente"
 		"help.regexModel"	"Modelo para el generador de regex con IA"
 		"help.regexModelHelper"	"Sin modo de razonamiento; sin modelo de respaldo"
 		"help.chatModel"	"Modelo para chat con IA"
-		"help.chatModelHelper"	"Admite mostrar el razonamiento; dejar en blanco para usar el modelo más a la izquierda"
+		"help.chatModelHelper"	"Admite mostrar el razonamiento; dejar en blanco para usar el primer modelo de la lista"
 		"help.explainModel"	"Modelo para el explicador de regex con IA"
-		"help.explainModelHelper"	"Sin modo de razonamiento; dejar en blanco para usar el modelo más a la izquierda"
+		"help.explainModelHelper"	"Sin modo de razonamiento; dejar en blanco para usar el primer modelo de la lista"
 		"help.regexPromptLabel"	"Prompt para el generador de regex con IA"
 		"help.regexPromptHelper"	"Nota: el motor regex no admite lookaround (ni lookahead ni lookbehind)"
 		"help.chatPromptLabel"	"Prompt para chat con IA"
