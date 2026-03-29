@@ -9,7 +9,7 @@
 
 		// ── Language switcher ─────────────────────────────────────────────
 		"lang.label"	"语言"
-		"lang.switched"	"已切换到{name}"
+		"lang.switched"	"已切换到 {name}"
 
 		// ── Layout ───────────────────────────────────────────────────────
 		"layout.title"	"Source Modding Search Tool"
@@ -101,9 +101,9 @@
 		"regexSnippet.count"	"指定数量 {}"
 		"regexSnippet.hexColor"	"十六进制颜色代码"
 		"regexSnippet.chineseCharCount"	"指定数量中文字符"
-		"regexSnippet.csWeapon"	"匹配所有\"weapon_xxx.single\""
+		"regexSnippet.csWeapon"	"匹配所有 \"weapon_xxx.single\""
 		"regexSnippet.csAmmo"	"匹配所有武器脚本里的子弹数和种类定义"
-		"regexSnippet.csPropData"	"匹配所有用PropData的GetEntProp"
+		"regexSnippet.csPropData"	"匹配所有用 PropData 的 GetEntProp"
 
 		// ── SearchResults ─────────────────────────────────────────────────
 		"results.searching1"	"正在穿越时间的间隙..."
@@ -145,7 +145,7 @@
 		"aiChat.thinkingOn"	"点击开启深度思考，设置思考预算"
 		"aiChat.thinkingOff"	"点击关闭深度思考"
 		"aiChat.inputTok"	"输入 {prompt}{cached} tok"
-		"aiChat.cachedSuffix"	" (缓存 {n})"
+		"aiChat.cachedSuffix"	" (缓存 {n}) "
 		"aiChat.outputTok"	"输出 {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
@@ -197,7 +197,7 @@
 		"help.testing"	"测试中..."
 		"help.connectionSuccess"	"连接成功"
 		"help.connectionFailed"	"连接超时"
-		"help.fillRequired"	"请填写API Base Url、API Key和模型名称"
+		"help.fillRequired"	"请填写 API Base Url、API Key 和模型名称"
 		"help.schemeSwitched"	"已切换到「{label}」配色"
 
 		// ── HelpDialog — color scheme tab ───────────────────────────────────

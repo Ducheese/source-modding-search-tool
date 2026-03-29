@@ -202,7 +202,7 @@
 
 		// ── HelpDialog — color scheme tab ───────────────────────────────────
 		"help.colorScheme.desc"	"Material Design 2 yönergelerine uygun renk temaları:"
-		"help.colorScheme.current"	"Mevcut tema: {label} -- {desc}"
+		"help.colorScheme.current"	"Mevcut tema: {label} — {desc}"
 
 		// ── HelpDialog — changelog tab ──────────────────────────────────────
 		"help.changelog.rateLimit"	"GitHub API hız sınırına ulaşıldı. Lütfen daha sonra tekrar deneyin veya şu adresi ziyaret edin:"

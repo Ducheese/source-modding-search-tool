@@ -22,7 +22,7 @@
 		"dropzone.selectFiles"	"ファイルを選択"
 		"dropzone.selectFolder"	"フォルダを選択"
 		"dropzone.errorTitle"	"以下のファイルは対応していない形式のため拒否されました："
-		"dropzone.errorFolderTitle"	"選択したフォルダ内の以下のファイルは拒否されました："
+		"dropzone.errorFolderTitle"	"選択したフォルダ内の以下のファイルは、対応していない形式のため取り込めませんでした："
 		"dropzone.errorSupportedTypes"	"対応ファイル形式："
 		"dropzone.errorNoFiles"	"選択したフォルダに対応するファイルが見つかりませんでした。"
 
@@ -58,7 +58,7 @@
 		"search.caseSensitive"	"大文字・小文字を区別"
 		"search.caseSensitiveTooltipAi"	"AI正規表現モードが有効です；(?i) を手動で使用してください"
 		"search.caseSensitiveTooltip"	"AI正規表現モードがオフのときのみ使用可能"
-		"search.wholeWord"	"単語全体"
+		"search.wholeWord"	"単語単位一致"
 		"search.wholeWordTooltipRegex"	"正規表現モードが有効です；\\b を手動で使用してください"
 		"search.wholeWordTooltip"	"正規表現モードがオフのときのみ使用可能"
 		"search.useRegex"	"正規表現"
@@ -71,7 +71,7 @@
 		"search.noFiles"	"先にファイルを追加してください"
 		"search.aborted"	"リクエストを中断しました"
 		"search.timeout"	"リクエストがタイムアウトしました"
-		"search.aiExplaining"	"AI正規表現説明器が動作中..."
+		"search.aiExplaining"	"AI正規表現の解説を生成中…"
 		"search.noRegex"	"有効な正規表現が返されませんでした"
 		"search.aiConfigHint"	"「このツールについて・ヘルプ」でAIモデルの設定を入力してください"
 
@@ -107,7 +107,7 @@
 
 		// ── SearchResults ─────────────────────────────────────────────────
 		"results.searching1"	"時の狭間を検索中..."
-		"results.searching2"	"フル稼働で処理中..."
+		"results.searching2"	"少女祈祷中..."
 		"results.emptyTitle"	"やることがありません"
 		"results.emptyHint"	"検索を始めるには何かを入力してください。"
 		"results.noMatchTitle"	"結果が見つかりません"
@@ -135,15 +135,15 @@
 		"aiChat.minimize"	"右下に最小化"
 		"aiChat.close"	"会話を終了"
 		"aiChat.placeholder"	"質問を入力 · Enterで送信 · Shift+Enterで改行"
-		"aiChat.thinkProcess"	"思考プロセス"
-		"aiChat.contextMounted"	"検索結果のコンテキストをマウントしました"
-		"aiChat.noContext"	"検索結果がマウントされていません"
+		"aiChat.thinkProcess"	"思考過程"
+		"aiChat.contextMounted"	"検索結果をコンテキストとして読み込みました"
+		"aiChat.noContext"	"検索結果はコンテキストに読み込まれていません"
 		"aiChat.user"	"ユーザー"
 		"aiChat.aiConfigHint"	"「このツールについて・ヘルプ」でAIモデルの設定を入力してください"
 		"aiChat.startFailed"	"AIリクエストの開始に失敗しました"
 		"aiChat.restore"	"AIチャットを復元"
-		"aiChat.thinkingOn"	"クリックして深い思考を有効にし、思考予算を設定する"
-		"aiChat.thinkingOff"	"クリックして深い思考を無効にする"
+		"aiChat.thinkingOn"	"クリックして高度な思考を有効にし、思考予算を設定する"
+		"aiChat.thinkingOff"	"クリックして高度な思考を無効にする"
 		"aiChat.inputTok"	"入力 {prompt}{cached} tok"
 		"aiChat.cachedSuffix"	" (キャッシュ {n})"
 		"aiChat.outputTok"	"出力 {n} tok"
@@ -183,9 +183,9 @@
 		"help.regexModel"	"AI正規表現生成器用モデル"
 		"help.regexModelHelper"	"思考モードなし；フォールバックモデルなし"
 		"help.chatModel"	"AIチャット用モデル"
-		"help.chatModelHelper"	"思考連鎖の表示に対応；空白の場合は左端のモデルを使用"
+		"help.chatModelHelper"	"思考過程の表示に対応；空欄の場合は左端のモデルを使用"
 		"help.explainModel"	"AI正規表現説明器用モデル"
-		"help.explainModelHelper"	"思考モードなし；空白の場合は左端のモデルを使用"
+		"help.explainModelHelper"	"思考モードなし；空欄の場合は左端のモデルを使用"
 		"help.regexPromptLabel"	"AI正規表現生成器用プロンプト"
 		"help.regexPromptHelper"	"注意：正規表現エンジンはlookアラウンド構文をサポートしていません"
 		"help.chatPromptLabel"	"AIチャット用プロンプト"
@@ -202,7 +202,7 @@
 
 		// ── HelpDialog — color scheme tab ───────────────────────────────────
 		"help.colorScheme.desc"	"Material Design 2ガイドラインに準拠したカラースキーム："
-		"help.colorScheme.current"	"現在のスキーム: {label} -- {desc}"
+		"help.colorScheme.current"	"現在のスキーム: {label} — {desc}"
 
 		// ── HelpDialog — changelog tab ──────────────────────────────────────
 		"help.changelog.rateLimit"	"GitHub APIのレート制限に達しました。しばらくしてから再試行するか、"
@@ -220,14 +220,14 @@
 		"help.youtube"	"YouTube"
 
 		// ── Color scheme labels ─────────────────────────────────────────────
-		"colorScheme.0.label"	"オーロラパープル"
-		"colorScheme.1.label"	"落ち桜"
-		"colorScheme.2.label"	"ティール"
-		"colorScheme.3.label"	"アッシュエンバー"
-		"colorScheme.4.label"	"オールドウッド"
-		"colorScheme.5.label"	"ナイトインディゴ"
-		"colorScheme.6.label"	"エメラルドヴァイン"
-		"colorScheme.7.label"	"オーシャンアンバー"
+		"colorScheme.0.label"	"きょっこうむらさき"
+		"colorScheme.1.label"	"おちざくら"
+		"colorScheme.2.label"	"みずあさぎ"
+		"colorScheme.3.label"	"ふゆがすみべに"
+		"colorScheme.4.label"	"こぼくもえぎ"
+		"colorScheme.5.label"	"よいあいこがね"
+		"colorScheme.6.label"	"みどりふじ"
+		"colorScheme.7.label"	"うみこはく"
 
 		// ── searchEngine export ─────────────────────────────────────────────
 		"export.noResults"	"エクスポートする検索結果がありません"

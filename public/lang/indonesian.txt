@@ -202,7 +202,7 @@
 
 		// ── HelpDialog — color scheme tab ───────────────────────────────────
 		"help.colorScheme.desc"	"Skema warna yang sesuai dengan panduan Material Design 2:"
-		"help.colorScheme.current"	"Skema saat ini: {label} -- {desc}"
+		"help.colorScheme.current"	"Skema saat ini: {label} — {desc}"
 
 		// ── HelpDialog — changelog tab ──────────────────────────────────────
 		"help.changelog.rateLimit"	"Batas laju API GitHub tercapai. Coba lagi nanti, atau kunjungi"

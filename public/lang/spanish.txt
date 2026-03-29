@@ -202,7 +202,7 @@
 
 		// ── HelpDialog — color scheme tab ───────────────────────────────────
 		"help.colorScheme.desc"	"Esquemas de color conformes a las directrices de Material Design 2:"
-		"help.colorScheme.current"	"Esquema actual: {label} -- {desc}"
+		"help.colorScheme.current"	"Esquema actual: {label} — {desc}"
 
 		// ── HelpDialog — changelog tab ──────────────────────────────────────
 		"help.changelog.rateLimit"	"Se alcanzó el límite de solicitudes de la API de GitHub. Inténtalo más tarde o visita la"
