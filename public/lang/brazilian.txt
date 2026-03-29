@@ -33,14 +33,14 @@
 		"fileList.totalLines"	"Total de linhas: {lines}"
 		"fileList.searchChip"	"Pesquisar arquivos"
 		"fileList.searchPlaceholder"	"Digite o nome do arquivo..."
-		"fileList.filtered"	"{count} arquivos filtrados"
+		"fileList.filtered"	"Arquivos filtrados: {count}"
 		"fileList.emptyTitle"	"Nada aqui ainda"
 		"fileList.emptyHint"	"Tente adicionar alguns arquivos."
 		"fileList.noMatchTitle"	"Nenhum arquivo corresponde ao filtro"
 		"fileList.removeTooltip"	"Remover este arquivo"
 		"fileList.removed"	"Removido {name}"
 		"fileList.cleared"	"Todos os arquivos removidos"
-		"fileList.lines"	"{lines} linhas"
+		"fileList.lines"	"Linhas: {lines}"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
 		"search.title"	"Configurações de Pesquisa"
@@ -144,9 +144,9 @@
 		"aiChat.restore"	"Restaurar chat com IA"
 		"aiChat.thinkingOn"	"Clique para ativar o raciocínio profundo e definir o orçamento de tokens"
 		"aiChat.thinkingOff"	"Clique para desativar o raciocínio profundo"
-		"aiChat.inputTok"	"Entrada {prompt}{cached} tok"
+		"aiChat.inputTok"	"Entrada: {prompt}{cached} tok"
 		"aiChat.cachedSuffix"	" (em cache {n})"
-		"aiChat.outputTok"	"Saída {n} tok"
+		"aiChat.outputTok"	"Saída: {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
 

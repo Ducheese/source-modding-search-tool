@@ -33,14 +33,14 @@
 		"fileList.totalLines"	"Líneas totales: {lines}"
 		"fileList.searchChip"	"Buscar archivos"
 		"fileList.searchPlaceholder"	"Introduce el nombre del archivo..."
-		"fileList.filtered"	"{count} archivos filtrados"
+		"fileList.filtered"	"Archivos filtrados: {count}"
 		"fileList.emptyTitle"	"Nada aquí todavía"
 		"fileList.emptyHint"	"Intenta añadir algunos archivos."
 		"fileList.noMatchTitle"	"Ningún archivo coincide con el filtro"
 		"fileList.removeTooltip"	"Eliminar este archivo"
 		"fileList.removed"	"Eliminado {name}"
 		"fileList.cleared"	"Todos los archivos eliminados"
-		"fileList.lines"	"{lines} líneas"
+		"fileList.lines"	"Líneas: {lines}"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
 		"search.title"	"Ajustes de búsqueda"
@@ -144,9 +144,9 @@
 		"aiChat.restore"	"Restaurar chat con IA"
 		"aiChat.thinkingOn"	"Haz clic para activar el razonamiento profundo y configurar el presupuesto"
 		"aiChat.thinkingOff"	"Haz clic para desactivar el razonamiento profundo"
-		"aiChat.inputTok"	"Entrada {prompt}{cached} tok"
+		"aiChat.inputTok"	"Entrada: {prompt}{cached} tok"
 		"aiChat.cachedSuffix"	" (en caché {n})"
-		"aiChat.outputTok"	"Salida {n} tok"
+		"aiChat.outputTok"	"Salida: {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
 
@@ -205,7 +205,7 @@
 		"help.colorScheme.current"	"Esquema actual: {label} -- {desc}"
 
 		// ── HelpDialog — changelog tab ──────────────────────────────────────
-		"help.changelog.rateLimit"	"Se alcanzó el límite de solicitudes de la API de GitHub. Intenta más tarde o visita la"
+		"help.changelog.rateLimit"	"Se alcanzó el límite de solicitudes de la API de GitHub. Inténtalo más tarde o visita la"
 		"help.changelog.rateLimitLink"	"Página de versiones"
 		"help.changelog.error"	"Error al cargar. Comprueba tu conexión de red."
 		"help.changelog.retry"	"Reintentar"
