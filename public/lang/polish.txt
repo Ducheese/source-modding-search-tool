@@ -187,7 +187,7 @@
 		"help.explainModel"	"Model dla modułu wyjaśniającego regex z AI"
 		"help.explainModelHelper"	"Bez trybu rozumowania; pozostaw puste dla pierwszego modelu"
 		"help.regexPromptLabel"	"Prompt dla generatora regex z AI"
-		"help.regexPromptHelper"	"Uwaga: silnik regex nie obsługuje asercji"
+		"help.regexPromptHelper"	"Uwaga: silnik regex nie obsługuje asercji (lookahead / lookbehind)"
 		"help.chatPromptLabel"	"Prompt dla czatu AI"
 		"help.chatPromptHelper"	"Uwaga: musi zawierać {{context}}, aby wstrzyknąć wyniki wyszukiwania do kontekstu"
 		"help.explainPromptLabel"	"Prompt dla modułu wyjaśniającego regex z AI"
