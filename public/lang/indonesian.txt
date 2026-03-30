@@ -165,7 +165,7 @@
 		"help.storage"	"Konfigurasi (termasuk API Key) disimpan tanpa enkripsi di {path}. Jalur ini juga berisi cache runtime WebView2. Menghapusnya secara manual sepenuhnya menghapus instalasi alat ini dan dapat menyelesaikan bug aneh setelah pembaruan yang bermasalah."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
-		"help.pathFilter.intro"	"Alat ini menggunakan wildcard gaya Unix untuk pemfilteran jalur -- lebih sederhana dari regex dan berfokus pada jalur file. Aturan pemrosesan otomatis berikut berlaku:"
+		"help.pathFilter.intro"	"Alat ini menggunakan wildcard gaya Unix untuk pemfilteran jalur — lebih sederhana dari regex dan berfokus pada jalur file. Aturan pemrosesan otomatis berikut berlaku:"
 		"help.pathFilter.rule1"	"Jalur direktori biasa dibungkus dengan <code>**</code> di kedua sisi, mis. <code>materials/models</code> menjadi <code>**/materials/models/**</code>"
 		"help.pathFilter.rule2"	"Ekstensi atau nama file biasa mendapat <code>**</code> di depan, mis. <code>*.qc</code> menjadi <code>**/*.qc</code>"
 		"help.pathFilter.rule3"	"Tidak peka huruf besar-kecil"

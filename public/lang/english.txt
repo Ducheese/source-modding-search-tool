@@ -165,7 +165,7 @@
 		"help.storage"	"Configuration (including API Key) is stored unencrypted at {path}. This path also contains the WebView2 runtime cache. Manually deleting it fully uninstalls the tool and can resolve strange bugs after breaking updates."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
-		"help.pathFilter.intro"	"This tool uses Unix shell-style wildcards for path filtering -- simpler than regex and focused on file paths. The following auto-processing rules apply:"
+		"help.pathFilter.intro"	"This tool uses Unix shell-style wildcards for path filtering — simpler than regex and focused on file paths. The following auto-processing rules apply:"
 		"help.pathFilter.rule1"	"A bare directory path is wrapped with <code>**</code> on both sides, e.g. <code>materials/models</code> becomes <code>**/materials/models/**</code>"
 		"help.pathFilter.rule2"	"A bare extension or filename gets <code>**</code> prepended, e.g. <code>*.qc</code> becomes <code>**/*.qc</code>"
 		"help.pathFilter.rule3"	"Case-insensitive"

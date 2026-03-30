@@ -165,7 +165,7 @@
 		"help.storage"	"Cấu hình (bao gồm API Key) được lưu trữ không mã hóa tại {path}. Đường dẫn này cũng chứa bộ nhớ cache runtime WebView2. Xóa thủ công sẽ gỡ cài đặt hoàn toàn công cụ và có thể giải quyết các lỗi kỳ lạ sau các bản cập nhật lỗi."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
-		"help.pathFilter.intro"	"Công cụ này sử dụng ký tự đại diện kiểu Unix để lọc đường dẫn -- đơn giản hơn regex và tập trung vào đường dẫn tệp. Các quy tắc xử lý tự động sau áp dụng:"
+		"help.pathFilter.intro"	"Công cụ này sử dụng ký tự đại diện kiểu Unix để lọc đường dẫn — đơn giản hơn regex và tập trung vào đường dẫn tệp. Các quy tắc xử lý tự động sau áp dụng:"
 		"help.pathFilter.rule1"	"Đường dẫn thư mục đơn giản được bao bọc bởi <code>**</code> ở cả hai phía, vd. <code>materials/models</code> trở thành <code>**/materials/models/**</code>"
 		"help.pathFilter.rule2"	"Phần mở rộng hoặc tên tệp đơn giản được thêm <code>**</code> vào đầu, vd. <code>*.qc</code> trở thành <code>**/*.qc</code>"
 		"help.pathFilter.rule3"	"Không phân biệt hoa/thường"

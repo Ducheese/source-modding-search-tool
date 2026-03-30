@@ -165,7 +165,7 @@
 		"help.storage"	"Yapılandırma (API Anahtarı dahil) şifrelenmeden {path} dizininde saklanır. Bu yol aynı zamanda WebView2 çalışma zamanı önbelleğini de içerir. Bunu manuel olarak silmek aracı tamamen kaldırır ve sorunlu güncellemelerden sonraki garip hataları çözebilir."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
-		"help.pathFilter.intro"	"Bu araç, yolları filtrelemek için Unix stili joker karakterler kullanır -- regex'ten daha basittir ve dosya yollarına odaklanır. Aşağıdaki otomatik işleme kuralları geçerlidir:"
+		"help.pathFilter.intro"	"Bu araç, yolları filtrelemek için Unix stili joker karakterler kullanır — regex'ten daha basittir ve dosya yollarına odaklanır. Aşağıdaki otomatik işleme kuralları geçerlidir:"
 		"help.pathFilter.rule1"	"Basit bir dizin yolunun her iki tarafına <code>**</code> eklenir, örn. <code>materials/models</code>, <code>**/materials/models/**</code> olur"
 		"help.pathFilter.rule2"	"Basit bir uzantı veya dosya adının başına <code>**</code> eklenir, örn. <code>*.qc</code>, <code>**/*.qc</code> olur"
 		"help.pathFilter.rule3"	"Büyük/küçük harf duyarsızdır"
