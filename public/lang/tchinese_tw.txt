@@ -80,7 +80,7 @@
 		"regexCat.wildcards"	"萬用字元"
 		"regexCat.quantifiers"	"指定前面元素的出現次數"
 		"regexCat.charsets"	"字元集使用範例"
-		"regexCat.escape"	"必須轉義才能比對其本身的字元"
+		"regexCat.escape"	"必須跳脫才能比對其本身的字元"
 		"regexCat.csExamples"	"適用於 CS:Source 的範例"
 
 		// ── Regex snippet labels ──────────────────────────────────────────
@@ -177,7 +177,7 @@
 		"help.regex.rule2"	"位元組正規表示式引擎不支援斷言（look around），如 <code>(?=...)、(?!...)、(?&lt;=...)、(?&lt;!...)</code> 等語法將無法正常運作"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
-		"help.aiConfig.desc"	"AI 正規表示式產生器與解釋器需要快速的模型回應。請避免使用大型模型或始終開啟推理的模型。"
+		"help.aiConfig.desc"	"AI 正規表示式產生器與解釋器需要快速的模型回應。請避免使用大型模型或始終開啟思考的模型。"
 		"help.apiBaseUrlHelper"	"/v1 或 /v1/chat/completions 結尾均可"
 		"help.apiKeyHelper"	"注意，此 API Key 將會以明文儲存於本機"
 		"help.regexModel"	"AI 正規表示式產生器模型"
@@ -191,7 +191,7 @@
 		"help.chatPromptLabel"	"AI 對話的提示詞"
 		"help.chatPromptHelper"	"注意，必須提及{{context}}，才能將搜尋結果掛載進上下文"
 		"help.explainPromptLabel"	"AI 正規表示式解釋器提示詞"
-		"help.explainPromptHelper"	"建議輸出純文字，不支援換行與富文字格式呈現"
+		"help.explainPromptHelper"	"建議輸出純文字，不支援換行與豐富文字格式呈現"
 		"help.resetPrompts"	"重設所有提示詞"
 		"help.testConnection"	"測試連線"
 		"help.testing"	"測試中..."

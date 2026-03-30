@@ -109,7 +109,7 @@
 		"results.searching1"	"時の狭間を検索中..."
 		"results.searching2"	"少女祈祷中..."
 		"results.emptyTitle"	"やることがありません"
-		"results.emptyHint"	"検索を始めるには何かを入力してください。"
+		"results.emptyHint"	"この静寂の中で、何か入力してみましょう。"
 		"results.noMatchTitle"	"結果が見つかりません"
 		"results.noMatchHint"	"{count} 件のファイルで何も見つかりませんでした。"
 		"results.title"	"検索結果"
@@ -174,7 +174,7 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"最小表示単位は1行で、行頭・行末のアンカーに対応しています。ただしバックエンドの視点では、ファイル全体が改行文字（<code>\\n</code> または <code>\\r\\n</code>）を含む1つの長い文字列として扱われます。推奨事項："
 		"help.regex.rule1"	"行境界の空白を一致させる際は <code>\\s*</code> の代わりに <code>[ \\t]*</code> を使用し、意図しない行跨ぎの一致を避けてください"
-		"help.regex.rule2"	"バイト正規表現エンジンはlookアラウンド構文をサポートしていません：<code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> は動作しません"
+		"help.regex.rule2"	"バイト正規表現エンジンは先読み/後読み（Lookaround）をサポートしていません：<code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> は動作しません"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"AI正規表現生成器と説明器はモデルの高速レスポンスが必要です。大規模モデルや常時推論が有効なモデルは避けてください。"
@@ -187,7 +187,7 @@
 		"help.explainModel"	"AI正規表現説明器用モデル"
 		"help.explainModelHelper"	"思考モードなし；空欄の場合は左端のモデルを使用"
 		"help.regexPromptLabel"	"AI正規表現生成器用プロンプト"
-		"help.regexPromptHelper"	"注意：正規表現エンジンはlookアラウンド構文をサポートしていません"
+		"help.regexPromptHelper"	"注意：正規表現エンジンは先読み/後読み（Lookaround）をサポートしていません"
 		"help.chatPromptLabel"	"AIチャット用プロンプト"
 		"help.chatPromptHelper"	"注意：検索結果をコンテキストに挿入するには {{context}} を含める必要があります"
 		"help.explainPromptLabel"	"AI正規表現説明器用プロンプト"
@@ -209,9 +209,9 @@
 		"help.changelog.rateLimitLink"	"リリースページ"
 		"help.changelog.error"	"読み込みに失敗しました。ネットワーク接続を確認してください。"
 		"help.changelog.retry"	"再試行"
-		"help.changelog.noBody"	"(説明なし)"
+		"help.changelog.noBody"	"（説明なし）"
 		"help.changelog.latest"	"新バージョン"
-		"help.changelog.current"	"現在"
+		"help.changelog.current"	"現行版"
 		"help.changelog.upToDate"	"最新です"
 
 		// ── HelpDialog — footer links ───────────────────────────────────────
@@ -220,14 +220,14 @@
 		"help.youtube"	"YouTube"
 
 		// ── Color scheme labels ─────────────────────────────────────────────
-		"colorScheme.0.label"	"きょっこうむらさき"
-		"colorScheme.1.label"	"おちざくら"
-		"colorScheme.2.label"	"みずあさぎ"
-		"colorScheme.3.label"	"ふゆがすみべに"
-		"colorScheme.4.label"	"こぼくもえぎ"
-		"colorScheme.5.label"	"よいあいこがね"
-		"colorScheme.6.label"	"みどりふじ"
-		"colorScheme.7.label"	"うみこはく"
+		"colorScheme.0.label"	"極光紫"
+		"colorScheme.1.label"	"落桜"
+		"colorScheme.2.label"	"水浅葱"
+		"colorScheme.3.label"	"寒煙緋"
+		"colorScheme.4.label"	"古木萌黄"
+		"colorScheme.5.label"	"宵紺金"
+		"colorScheme.6.label"	"翠藤"
+		"colorScheme.7.label"	"海琥珀"
 
 		// ── searchEngine export ─────────────────────────────────────────────
 		"export.noResults"	"エクスポートする検索結果がありません"

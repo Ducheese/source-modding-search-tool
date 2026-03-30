@@ -36,7 +36,7 @@
 		"fileList.filtered"	"篩選出 {count} 個檔案"
 		"fileList.emptyTitle"	"這裡什麼都沒有"
 		"fileList.emptyHint"	"試著新增一些檔案吧。"
-		"fileList.noMatchTitle"	"您的過濾條件過於嚴格"
+		"fileList.noMatchTitle"	"您的篩選條件過於嚴格"
 		"fileList.removeTooltip"	"移除此檔案"
 		"fileList.removed"	"已移除 {name}"
 		"fileList.cleared"	"已清除所有檔案"
@@ -72,11 +72,11 @@
 		"search.aborted"	"已中斷請求"
 		"search.timeout"	"已逾時"
 		"search.aiExplaining"	"AI 正在解釋正則表達式…"
-		"search.noRegex"	"未回傳有效的正則表達式"
+		"search.noRegex"	"未返回有效的正則表達式"
 		"search.aiConfigHint"	"請前往「關於與說明」填寫「大型模型接入設定」"
 
 		// ── Regex category titles ─────────────────────────────────────────
-		"regexCat.anchors"	"錨點"
+		"regexCat.anchors"	"錨定符"
 		"regexCat.wildcards"	"萬用字元"
 		"regexCat.quantifiers"	"指定前面元素的出現次數"
 		"regexCat.charsets"	"字元集使用範例"
