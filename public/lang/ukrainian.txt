@@ -144,9 +144,9 @@
 		"aiChat.restore"	"Відновити чат ШІ"
 		"aiChat.thinkingOn"	"Натисніть, щоб увімкнути поглиблене міркування та встановити ліміт токенів"
 		"aiChat.thinkingOff"	"Натисніть, щоб вимкнути поглиблене міркування"
-		"aiChat.inputTok"	"Введення: {prompt}{cached} токенів"
+		"aiChat.inputTok"	"Введення {prompt}{cached} токенів"
 		"aiChat.cachedSuffix"	" (кешовано {n})"
-		"aiChat.outputTok"	"Виведення: {n} токенів"
+		"aiChat.outputTok"	"Виведення {n} токенів"
 		"aiChat.speed"	"{speed} токен/с"
 		"aiChat.duration"	"{duration}с"
 

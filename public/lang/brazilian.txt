@@ -144,9 +144,9 @@
 		"aiChat.restore"	"Restaurar chat com IA"
 		"aiChat.thinkingOn"	"Clique para ativar o raciocínio profundo e definir o orçamento de tokens"
 		"aiChat.thinkingOff"	"Clique para desativar o raciocínio profundo"
-		"aiChat.inputTok"	"Entrada: {prompt}{cached} tok"
+		"aiChat.inputTok"	"Entrada {prompt}{cached} tok"
 		"aiChat.cachedSuffix"	" (em cache {n})"
-		"aiChat.outputTok"	"Saída: {n} tok"
+		"aiChat.outputTok"	"Saída {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
 

@@ -144,9 +144,9 @@
 		"aiChat.restore"	"Восстановить чат ИИ"
 		"aiChat.thinkingOn"	"Нажмите, чтобы включить углублённое рассуждение и установить лимит токенов"
 		"aiChat.thinkingOff"	"Нажмите, чтобы отключить углублённое рассуждение"
-		"aiChat.inputTok"	"Ввод: {prompt}{cached} токенов"
+		"aiChat.inputTok"	"Ввод {prompt}{cached} токенов"
 		"aiChat.cachedSuffix"	" (кэшировано {n})"
-		"aiChat.outputTok"	"Вывод: {n} токенов"
+		"aiChat.outputTok"	"Вывод {n} токенов"
 		"aiChat.speed"	"{speed} токен/с"
 		"aiChat.duration"	"{duration}с"
 

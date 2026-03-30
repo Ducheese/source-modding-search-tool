@@ -144,9 +144,9 @@
 		"aiChat.restore"	"Przywróć czat AI"
 		"aiChat.thinkingOn"	"Kliknij, aby włączyć głębokie rozumowanie i ustawić limit tokenów"
 		"aiChat.thinkingOff"	"Kliknij, aby wyłączyć głębokie rozumowanie"
-		"aiChat.inputTok"	"Wejście: {prompt}{cached} tokenów"
-		"aiChat.cachedSuffix"	" (z pamięci podręcznej: {n})"
-		"aiChat.outputTok"	"Wyjście: {n} tokenów"
+		"aiChat.inputTok"	"Wejście {prompt}{cached} tokenów"
+		"aiChat.cachedSuffix"	" (z pamięci podręcznej {n})"
+		"aiChat.outputTok"	"Wyjście {n} tokenów"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
 
