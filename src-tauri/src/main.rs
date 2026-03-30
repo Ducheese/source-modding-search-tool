@@ -3,6 +3,7 @@
 use rayon::prelude::*;
 use regex::bytes::RegexBuilder; // 注意：改为 bytes 的正则
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -140,6 +141,84 @@ fn normalize_base_url(base_url: &str) -> String {
     
     // 其他情况添加 /v1
     format!("{trimmed}/v1")
+}
+
+// 提取 host 用于判断提供商
+fn extract_host(base_url: &str) -> String {
+    let trimmed = base_url.trim().trim_end_matches('/');
+    
+    // 移除协议前缀
+    let without_proto = trimmed
+        .strip_prefix("http://")
+        .or_else(|| trimmed.strip_prefix("https://"))
+        .unwrap_or(trimmed);
+    
+    // 提取域名部分（去掉路径和端口）
+    let host = without_proto
+        .split('/')
+        .next()
+        .and_then(|s| s.split(':').next())
+        .unwrap_or(without_proto);
+    
+    host.to_lowercase()
+}
+
+// 根据提供商生成推理参数
+fn get_reasoning_params(base_url: &str, enable_thinking: bool, thinking_budget: u16) -> serde_json::Value {
+    let host = extract_host(base_url);
+    
+    match host.as_str() {
+        // OpenRouter: 使用 reasoning 对象
+        h if h.contains("openrouter.ai") => {
+            if enable_thinking {
+                json!({
+                    "reasoning": {
+                        "max_tokens": thinking_budget
+                    }
+                })
+            } else {
+                json!({})
+            }
+        }
+        
+        // DeepSeek / 硅基流动: 使用 enable_thinking + thinking_budget
+        h if h.contains("api.siliconflow.cn") || h.contains("api.deepseek.com") => {
+            json!({
+                "enable_thinking": enable_thinking,
+                "thinking_budget": if enable_thinking { thinking_budget } else { 0 }
+            })
+        }
+        
+        // 豆包 (火山): 使用 thinking.type
+        h if h.contains("ark.cn-beijing.volces.com") || h.contains("ark.cn-beijing.volcengineapi.com") => {
+            json!({
+                "thinking": {
+                    "type": if enable_thinking { "enabled" } else { "disabled" }
+                }
+            })
+        }
+        
+        // 阿里云百炼: 使用 enable_thinking + thinking_budget
+        h if h.contains("dashscope.aliyuncs.com") => {
+            json!({
+                "enable_thinking": enable_thinking,
+                "thinking_budget": if enable_thinking { thinking_budget } else { 0 }
+            })
+        }
+        
+        // 默认使用 OpenRouter 格式（兼容性最好）
+        _ => {
+            if enable_thinking {
+                json!({
+                    "reasoning": {
+                        "max_tokens": thinking_budget
+                    }
+                })
+            } else {
+                json!({})
+            }
+        }
+    }
 }
 
 // 用于 AI 写正则 / 解释正则：响应快，超时短
@@ -647,14 +726,27 @@ async fn stream_ai_chat_internal(window: tauri::Window, request: AiChatStreamReq
         }))
         .collect();
 
-    let payload = serde_json::json!({
+    // 构建基础 payload
+    let mut payload = serde_json::json!({
         "model": request.model_name,
         "messages": messages,
         "stream": true,
         "stream_options": { "include_usage": true },
-        "enable_thinking": request.enable_thinking,
-        "thinking_budget": request.thinking_budget,
     });
+
+    // 根据提供商添加推理参数（兼容不同API）
+    let reasoning_params = get_reasoning_params(
+        &request.base_url,
+        request.enable_thinking,
+        request.thinking_budget
+    );
+    
+    // 合并推理参数到 payload
+    if let Some(obj) = reasoning_params.as_object() {
+        for (key, value) in obj {
+            payload[key] = value.clone();
+        }
+    }
 
     let client = create_stream_http_client()?;
     let response = client
@@ -718,17 +810,24 @@ async fn stream_ai_chat_internal(window: tauri::Window, request: AiChatStreamReq
                 .and_then(|arr| arr.first())
                 .and_then(|choice| choice.get("delta"));
             
-            //  从 delta 里取出的 content 字符串是直接 emit 出去的
+            // 从 delta 里取出的 content 字符串是直接 emit 出去的
+            // 使用链式回退兼容不同提供商的推理字段名
             if let Some(delta) = delta {
                 let content = delta.get("content").and_then(|v| v.as_str());
-                let reasoning = delta.get("reasoning_content").and_then(|v| v.as_str());
+                
+                // 链式回退：尝试多个可能的推理字段名
+                // 优先级：reasoning_content (DeepSeek/硅基流动) > reasoning (OpenRouter) > thinking
+                let reasoning = delta.get("reasoning_content")
+                    .or_else(|| delta.get("reasoning"))
+                    .or_else(|| delta.get("thinking"))
+                    .and_then(|v| v.as_str());
 
                 if content.is_some() || reasoning.is_some() {
                     let _ = window.emit("ai-chat-stream", serde_json::json!({
                         "requestId": request.request_id,
                         "delta": {
                             "content": content,
-                            "reasoning_content": reasoning,
+                            "reasoning": reasoning,
                         }
                     }));
                 }

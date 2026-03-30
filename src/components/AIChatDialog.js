@@ -291,14 +291,14 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
 
       // 流式内容 delta
       if (payload.delta) {
-        const { content, reasoning_content } = payload.delta;
-        if (!content && !reasoning_content) return;
+        const { content, reasoning } = payload.delta;
+        if (!content && !reasoning) return;
 
         const nextMessages = messagesRef.current.map((m) => {
           if (m.id !== meta.messageId) return m;
           let updated = m;
           if (content)           updated = parseThinkChunk(updated, content);
-          if (reasoning_content) updated = { ...updated, reasoningRaw: (updated.reasoningRaw || '') + reasoning_content };
+          if (reasoning) updated = { ...updated, reasoningRaw: (updated.reasoningRaw || '') + reasoning };
           return { ...updated, updatedAt: Date.now() };
         });
         messagesRef.current = nextMessages;
