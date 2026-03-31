@@ -76,11 +76,11 @@
 		"search.aiConfigHint"	"Vào \"Giới thiệu & Trợ giúp\" để điền cấu hình mô hình AI"
 
 		// ── Regex category titles ─────────────────────────────────────────
-		"regexCat.anchors"	"Neo"
+		"regexCat.anchors"	"Điểm neo"
 		"regexCat.wildcards"	"Ký tự đại diện"
-		"regexCat.quantifiers"	"Định lượng từ"
+		"regexCat.quantifiers"	"Lượng từ"
 		"regexCat.charsets"	"Ví dụ về tập ký tự"
-		"regexCat.escape"	"Ký tự cần được thoát"
+		"regexCat.escape"	"Ký tự cần escape"
 		"regexCat.csExamples"	"Ví dụ CS:Source"
 
 		// ── Regex snippet labels ──────────────────────────────────────────
@@ -90,14 +90,14 @@
 		"regexSnippet.nonWordBoundary"	"Không phải ranh giới từ"
 		"regexSnippet.anyChar"	"Bất kỳ ký tự nào"
 		"regexSnippet.tab"	"Tab"
-		"regexSnippet.newline"	"Dòng mới (CRLF/LF)"
-		"regexSnippet.whitespace"	"Khoảng trắng, tab hoặc dòng mới"
+		"regexSnippet.newline"	"Ký tự xuống dòng (CRLF/LF)"
+		"regexSnippet.whitespace"	"Dấu cách, tab hoặc xuống dòng"
 		"regexSnippet.word"	"Chữ cái, chữ số hoặc gạch dưới"
 		"regexSnippet.digit"	"Chữ số"
 		"regexSnippet.optional"	"0 hoặc 1 (?)"
 		"regexSnippet.zeroOrMore"	"0 hoặc nhiều hơn (*)"
 		"regexSnippet.oneOrMore"	"1 hoặc nhiều hơn (+)"
-		"regexSnippet.lazy"	"Lười biếng (*?)"
+		"regexSnippet.lazy"	"Khớp tối thiểu (*?)"
 		"regexSnippet.count"	"Số lượng chính xác {}"
 		"regexSnippet.hexColor"	"Mã màu thập lục phân"
 		"regexSnippet.chineseCharCount"	"Số lượng ký tự tiếng Trung"
@@ -142,8 +142,8 @@
 		"aiChat.aiConfigHint"	"Vào \"Giới thiệu & Trợ giúp\" để điền cấu hình mô hình AI"
 		"aiChat.startFailed"	"Yêu cầu AI không thể khởi động"
 		"aiChat.restore"	"Khôi phục chat AI"
-		"aiChat.thinkingOn"	"Nhấn để bật suy nghĩ sâu và đặt ngân sách"
-		"aiChat.thinkingOff"	"Nhấn để tắt suy nghĩ sâu"
+		"aiChat.thinkingOn"	"Nhấn để bật chế độ suy nghĩ sâu và đặt ngân sách suy nghĩ"
+		"aiChat.thinkingOff"	"Nhấn để tắt chế độ suy nghĩ sâu"
 		"aiChat.inputTok"	"Đầu vào {prompt}{cached} tok"
 		"aiChat.cachedSuffix"	" (đã cache {n})"
 		"aiChat.outputTok"	"Đầu ra {n} tok"
@@ -156,12 +156,12 @@
 		"help.tab.pathFilter"	"Ký tự đại diện bộ lọc đường dẫn"
 		"help.tab.regex"	"Mẹo Regex"
 		"help.tab.aiConfig"	"Cấu hình mô hình AI"
-		"help.tab.colorScheme"	"Giao diện màu"
+		"help.tab.colorScheme"	"Phối màu"
 		"help.tab.changelog"	"Nhật ký thay đổi"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
-		"help.intro"	"Công cụ này được thiết kế để cung cấp công cụ <b>tìm kiếm văn bản đa tệp</b> nhẹ và hiệu năng cao cho các nhà phát triển mod động cơ Valve Source 1 (CS:S, CS:GO, L4D2, GMod, v.v.). Các loại tệp được hỗ trợ: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
-		"help.usage"	"Kéo tệp vào ô đứt nét (trên-trái) và xem lại trong danh sách tệp bên dưới. Sau đó nhập tiêu chí tìm kiếm (trên-phải) để xem, xuất hoặc phân tích kết quả trong bảng dưới-phải."
+		"help.intro"	"Công cụ này được thiết kế để cung cấp một công cụ <b>tìm kiếm văn bản đa tệp</b> nhẹ và hiệu năng cao cho các nhà phát triển mod của động cơ Valve Source 1 (CS:S, CS:GO, L4D2, GMod, v.v.). Các loại tệp được hỗ trợ: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
+		"help.usage"	"Kéo tệp vào khung nét đứt (góc trên bên trái) và xem lại chúng trong danh sách tệp bên dưới. Sau đó, nhập điều kiện tìm kiếm (góc trên bên phải) để xem, xuất hoặc phân tích kết quả trong bảng ở góc dưới bên phải."
 		"help.storage"	"Cấu hình (bao gồm API Key) được lưu trữ không mã hóa tại {path}. Đường dẫn này cũng chứa bộ nhớ cache runtime WebView2. Xóa thủ công sẽ gỡ cài đặt hoàn toàn công cụ và có thể giải quyết các lỗi kỳ lạ sau các bản cập nhật lỗi."
 
 		// ── HelpDialog — path filter tab ───────────────────────────────────
@@ -174,16 +174,16 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"Đơn vị hiển thị tối thiểu là một dòng, và các neo đầu/cuối dòng được hỗ trợ. Tuy nhiên, từ góc nhìn backend, toàn bộ tệp được coi là một chuỗi dài với dòng mới được nhúng sẵn (<code>\\n</code> hoặc <code>\\r\\n</code>). Khuyến nghị:"
 		"help.regex.rule1"	"Sử dụng <code>[ \\t]*</code> thay vì <code>\\s*</code> khi khớp khoảng trắng tại ranh giới dòng, để tránh khớp không mong muốn giữa các dòng"
-		"help.regex.rule2"	"Công cụ byte-regex không hỗ trợ các xác nhận look-around: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> sẽ không hoạt động"
+		"help.regex.rule2"	"Công cụ byte-regex không hỗ trợ các xác nhận look-around: <code>(?=...), (?!...), (?<=...), (?<!...)</code> sẽ không hoạt động"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
-		"help.aiConfig.desc"	"Trình tạo và giải thích regex AI yêu cầu phản hồi mô hình nhanh. Tránh các mô hình lớn hoặc các mô hình luôn bật tính năng suy luận."
+		"help.aiConfig.desc"	"Trình tạo và giải thích regex AI yêu cầu phản hồi mô hình nhanh. Tránh các mô hình lớn hoặc các mô hình luôn bật chế độ suy nghĩ."
 		"help.apiBaseUrlHelper"	"Kết thúc bằng /v1 hoặc /v1/chat/completions đều hoạt động"
 		"help.apiKeyHelper"	"Lưu ý: API Key này được lưu trữ dạng văn bản thuần túy cục bộ"
 		"help.regexModel"	"Mô hình cho trình tạo regex AI"
 		"help.regexModelHelper"	"Không có chế độ suy nghĩ; không có mô hình dự phòng"
 		"help.chatModel"	"Mô hình cho chat AI"
-		"help.chatModelHelper"	"Hỗ trợ hiển thị chuỗi suy nghĩ; để trống để sử dụng mô hình ngoài cùng bên trái"
+		"help.chatModelHelper"	"Hỗ trợ hiển thị quá trình suy nghĩ; để trống để sử dụng mô hình ngoài cùng bên trái"
 		"help.explainModel"	"Mô hình cho trình giải thích regex AI"
 		"help.explainModelHelper"	"Không có chế độ suy nghĩ; để trống để sử dụng mô hình ngoài cùng bên trái"
 		"help.regexPromptLabel"	"Prompt cho trình tạo regex AI"
@@ -191,18 +191,18 @@
 		"help.chatPromptLabel"	"Prompt cho chat AI"
 		"help.chatPromptHelper"	"Lưu ý: phải bao gồm {{context}} để chèn kết quả tìm kiếm vào ngữ cảnh"
 		"help.explainPromptLabel"	"Prompt cho trình giải thích regex AI"
-		"help.explainPromptHelper"	"Khuyến nghị đầu ra văn bản thuần; không có dòng mới hoặc văn bản phong phú"
+		"help.explainPromptHelper"	"Khuyến nghị đầu ra văn bản thuần; không hỗ trợ xuống dòng hoặc rich text"
 		"help.resetPrompts"	"Đặt lại tất cả prompt"
 		"help.testConnection"	"Kiểm tra kết nối"
 		"help.testing"	"Đang kiểm tra..."
 		"help.connectionSuccess"	"Kết nối thành công"
 		"help.connectionFailed"	"Kết nối hết thời gian"
 		"help.fillRequired"	"Vui lòng điền URL cơ sở API, API Key và ít nhất một tên mô hình"
-		"help.schemeSwitched"	"Đã chuyển sang giao diện màu \"{label}\""
+		"help.schemeSwitched"	"Đã chuyển sang phối màu \"{label}\""
 
 		// ── HelpDialog — color scheme tab ───────────────────────────────────
-		"help.colorScheme.desc"	"Giao diện màu tuân theo hướng dẫn Material Design 2:"
-		"help.colorScheme.current"	"Giao diện hiện tại: {label} — {desc}"
+		"help.colorScheme.desc"	"Các phối màu tuân theo hướng dẫn Material Design 2:"
+		"help.colorScheme.current"	"Phối màu hiện tại: {label} — {desc}"
 
 		// ── HelpDialog — changelog tab ──────────────────────────────────────
 		"help.changelog.rateLimit"	"Đạt giới hạn tốc độ GitHub API. Thử lại sau, hoặc truy cập"
@@ -212,7 +212,7 @@
 		"help.changelog.noBody"	"(Không có mô tả)"
 		"help.changelog.latest"	"Mới"
 		"help.changelog.current"	"Hiện tại"
-		"help.changelog.upToDate"	"Đã cập nhật"
+		"help.changelog.upToDate"	"Phiên bản mới nhất"
 
 		// ── HelpDialog — footer links ───────────────────────────────────────
 		"help.github"	"GitHub"
