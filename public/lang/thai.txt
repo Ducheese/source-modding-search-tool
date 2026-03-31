@@ -191,7 +191,7 @@
 		"help.chatPromptLabel"	"Prompt สำหรับแชท AI"
 		"help.chatPromptHelper"	"หมายเหตุ: ต้องมี {{context}} เพื่อนำผลการค้นหาเข้าสู่บริบท"
 		"help.explainPromptLabel"	"Prompt สำหรับตัวอธิบาย regex AI"
-		"help.explainPromptHelper"	"แนะนำให้ใช้เอาต์พุตเป็นข้อความล้วน; ไม่รองรับการขึ้นบรรทัดใหม่หรือ rich text"
+		"help.explainPromptHelper"	"แนะนำให้ใช้เอาต์พุตเป็นข้อความล้วน; ไม่รองรับการขึ้นบรรทัดใหม่หรือข้อความจัดรูปแบบ"
 		"help.resetPrompts"	"รีเซ็ต prompt ทั้งหมด"
 		"help.testConnection"	"ทดสอบการเชื่อมต่อ"
 		"help.testing"	"กำลังทดสอบ..."
@@ -221,11 +221,11 @@
 
 		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"ม่วงออโรรา"
-		"colorScheme.1.label"	"ซากุระร่วง"
-		"colorScheme.2.label"	"เขียวอมฟ้า"
-		"colorScheme.3.label"	"เถ้าถ่านคุ"
-		"colorScheme.4.label"	"ไม้เก่า"
-		"colorScheme.5.label"	"ครามยามค่ำ"
+		"colorScheme.1.label"	"ฝนซากุระ"
+		"colorScheme.2.label"	"สีนกเป็ดน้ำ"
+		"colorScheme.3.label"	"เถ้าสีชาด"
+		"colorScheme.4.label"	"มอสป่า"
+		"colorScheme.5.label"	"ครามประกายทอง"
 		"colorScheme.6.label"	"เถาวัลย์มรกต"
 		"colorScheme.7.label"	"อำพันมหาสมุทร"
 

@@ -31,7 +31,7 @@
 		"fileList.clear"	"Tümünü Temizle"
 		"fileList.totalSize"	"Toplam boyut: {size}"
 		"fileList.totalLines"	"Toplam satır: {lines}"
-		"fileList.searchChip"	"Dosyaları ara"
+		"fileList.searchChip"	"Dosyaları Ara"
 		"fileList.searchPlaceholder"	"Dosya adını girin..."
 		"fileList.filtered"	"{count} dosya filtrelendi"
 		"fileList.emptyTitle"	"Henüz burada bir şey yok"
@@ -76,7 +76,7 @@
 		"search.aiConfigHint"	"AI modelini yapılandırmak için \"Hakkında ve Yardım\"a gidin"
 
 		// ── Regex category titles ─────────────────────────────────────────
-		"regexCat.anchors"	"Çapalar (Anchors)"
+		"regexCat.anchors"	"Çapalar"
 		"regexCat.wildcards"	"Joker Karakterler"
 		"regexCat.quantifiers"	"Niceleyiciler"
 		"regexCat.charsets"	"Karakter Seti Örnekleri"
@@ -156,7 +156,7 @@
 		"help.tab.pathFilter"	"Yol Filtresi Joker Karakterleri"
 		"help.tab.regex"	"Regex İpuçları"
 		"help.tab.aiConfig"	"AI Model Yapılandırması"
-		"help.tab.colorScheme"	"Renk şeması"
+		"help.tab.colorScheme"	"Renk Şeması"
 		"help.tab.changelog"	"Değişiklik Günlüğü"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
@@ -221,11 +221,11 @@
 
 		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"Aurora Moru"
-		"colorScheme.1.label"	"Düşen Sakura"
-		"colorScheme.2.label"	"Teal"
-		"colorScheme.3.label"	"Kor Külü"
-		"colorScheme.4.label"	"Eski Ahşap"
-		"colorScheme.5.label"	"Gece İndigosu"
+		"colorScheme.1.label"	"Sakura Yağmuru"
+		"colorScheme.2.label"	"Ördekbaşı"
+		"colorScheme.3.label"	"Kızıl Kül"
+		"colorScheme.4.label"	"Orman Yosunu"
+		"colorScheme.5.label"	"Altın İndigo"
 		"colorScheme.6.label"	"Zümrüt Sarmaşığı"
 		"colorScheme.7.label"	"Okyanus Kehribarı"
 

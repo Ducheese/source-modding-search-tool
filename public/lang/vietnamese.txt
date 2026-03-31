@@ -191,7 +191,7 @@
 		"help.chatPromptLabel"	"Prompt cho chat AI"
 		"help.chatPromptHelper"	"Lưu ý: phải bao gồm {{context}} để chèn kết quả tìm kiếm vào ngữ cảnh"
 		"help.explainPromptLabel"	"Prompt cho trình giải thích regex AI"
-		"help.explainPromptHelper"	"Khuyến nghị đầu ra văn bản thuần; không hỗ trợ xuống dòng hoặc rich text"
+		"help.explainPromptHelper"	"Khuyến nghị đầu ra văn bản thuần; không hỗ trợ xuống dòng hoặc văn bản có định dạng"
 		"help.resetPrompts"	"Đặt lại tất cả prompt"
 		"help.testConnection"	"Kiểm tra kết nối"
 		"help.testing"	"Đang kiểm tra..."
@@ -221,12 +221,12 @@
 
 		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"Tím Aurora"
-		"colorScheme.1.label"	"Hoa Anh Đào Rơi"
+		"colorScheme.1.label"	"Mưa Anh Đào"
 		"colorScheme.2.label"	"Xanh Mòng Két"
-		"colorScheme.3.label"	"Tro Hồng"
-		"colorScheme.4.label"	"Gỗ Cổ"
-		"colorScheme.5.label"	"Chàm Đêm"
-		"colorScheme.6.label"	"Dây Leo Ngọc Lục Bảo"
+		"colorScheme.3.label"	"Tàn Tro Đỏ"
+		"colorScheme.4.label"	"Rêu Phong"
+		"colorScheme.5.label"	"Chàm Ánh Vàng"
+		"colorScheme.6.label"	"Thường Xuân Ngọc"
 		"colorScheme.7.label"	"Hổ Phách Đại Dương"
 
 		// ── searchEngine export ─────────────────────────────────────────────

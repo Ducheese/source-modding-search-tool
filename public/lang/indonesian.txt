@@ -107,7 +107,7 @@
 
 		// ── SearchResults ─────────────────────────────────────────────────
 		"results.searching1"	"Mencari melalui celah waktu..."
-		"results.searching2"	"Memproses dengan kecepatan penuh..."
+		"results.searching2"	"Mengerahkan seluruh tenaga..."
 		"results.emptyTitle"	"Tidak ada yang perlu dilakukan"
 		"results.emptyHint"	"Masukkan sesuatu untuk mulai mencari."
 		"results.noMatchTitle"	"Tidak ada hasil ditemukan"
@@ -191,7 +191,7 @@
 		"help.chatPromptLabel"	"Prompt untuk chat AI"
 		"help.chatPromptHelper"	"Catatan: harus menyertakan {{context}} untuk menyisipkan hasil pencarian ke dalam konteks"
 		"help.explainPromptLabel"	"Prompt untuk penjelas regex AI"
-		"help.explainPromptHelper"	"Disarankan keluaran teks biasa; tanpa baris baru atau rich text"
+		"help.explainPromptHelper"	"Disarankan keluaran teks biasa; tanpa baris baru atau teks kaya"
 		"help.resetPrompts"	"Reset semua prompt"
 		"help.testConnection"	"Uji koneksi"
 		"help.testing"	"Menguji..."
@@ -221,11 +221,11 @@
 
 		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"Ungu Aurora"
-		"colorScheme.1.label"	"Sakura Gugur"
-		"colorScheme.2.label"	"Teal"
-		"colorScheme.3.label"	"Abu Membara"
-		"colorScheme.4.label"	"Kayu Tua"
-		"colorScheme.5.label"	"Indigo Malam"
+		"colorScheme.1.label"	"Hujan Sakura"
+		"colorScheme.2.label"	"Hijau Toska"
+		"colorScheme.3.label"	"Bara Kelabu"
+		"colorScheme.4.label"	"Lumut Hutan"
+		"colorScheme.5.label"	"Indigo Keemasan"
 		"colorScheme.6.label"	"Sulur Zamrud"
 		"colorScheme.7.label"	"Amber Samudra"
 
