@@ -45,7 +45,8 @@ const FileDropZone = ({ onFilesAdded }) => {
 
   // 监听 Tauri 的全局拖拽事件
   useEffect(() => {
-    const unlisten = listen('tauri://file-drop', async (event) => {
+    // listen 返回一个 Promise，resolve 后返回 unlisten 函数
+    const unlistenPromise = listen('tauri://file-drop', async (event) => {
       setIsDragOver(false);
       const paths = event.payload;
       if (!paths || paths.length === 0) return;
@@ -84,8 +85,9 @@ const FileDropZone = ({ onFilesAdded }) => {
       }
     });
 
+    // cleanup: 调用 unlisten 函数移除事件监听
     return () => {
-      unlisten.then(f => f());
+      unlistenPromise.then(unlisten => unlisten());
     };
   }, [onFilesAdded]);
 

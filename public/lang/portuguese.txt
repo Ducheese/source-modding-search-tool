@@ -43,7 +43,7 @@
 		"fileList.lines"	"Linhas: {lines}"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
-		"search.title"	"Definições de Pesquisa"
+		"search.title"	"Definições de pesquisa"
 		"search.placeholder"	"Introduza o conteúdo a pesquisar..."
 		"search.aiPlaceholder"	"Descreva o que pretende procurar..."
 		"search.advancedTooltip"	"Opções avançadas"

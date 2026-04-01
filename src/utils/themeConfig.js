@@ -6,6 +6,31 @@ import { createTheme } from '@mui/material/styles';
 
 export const COLOR_SCHEME_STORAGE_KEY = 'colorScheme';
 
+// ─────────────────────────────────────────────────────────────
+// 通用配置（所有配色方案共享）
+// ─────────────────────────────────────────────────────────────
+
+// 通用的 typography 配置
+const COMMON_TYPOGRAPHY = {
+  fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+};
+
+// 通用的 components 配置（浅色模式）
+const COMMON_COMPONENTS_LIGHT = {
+  MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
+  MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
+};
+
+// 通用的 components 配置（深色模式）
+const COMMON_COMPONENTS_DARK = {
+  MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
+  MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
+};
+
+// ─────────────────────────────────────────────────────────────
+// 配色方案定义
+// ─────────────────────────────────────────────────────────────
+
 // ── 方案 0：极光紫（MD2 Deep Purple 500 / Teal 200）──────────
 const scheme0Light = createTheme({
   palette: {
@@ -16,11 +41,8 @@ const scheme0Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_LIGHT,
 });
 
 const scheme0Dark = createTheme({
@@ -32,11 +54,8 @@ const scheme0Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_DARK,
 });
 
 // ── 方案 1：落樱粉 (Pink 400 / Cyan 400) ────────────
@@ -49,27 +68,21 @@ const scheme1Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_LIGHT,
 });
 
 const scheme1Dark = createTheme({
   palette: {
     mode: 'dark',
-    primary:    { main: '#F48FB1', dark: '#C2185B', contrastText: '#000000' }, 
+    primary:    { main: '#F48FB1', dark: '#C2185B', contrastText: '#000000' },
     secondary:  { main: '#80DEEA', dark: '#00ACC1', contrastText: '#000000' },
     background: { default: '#121212', paper: '#1E1E1E' },
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_DARK,
 });
 
 // ── 方案 2：水鸭青 (Teal 500 / Deep Orange 500) ────────────
@@ -82,11 +95,8 @@ const scheme2Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_LIGHT,
 });
 
 const scheme2Dark = createTheme({
@@ -98,11 +108,8 @@ const scheme2Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_DARK,
 });
 
 // ── 方案 3：寒烟绯（Blue Grey 500 / Red 500） ────────────
@@ -115,11 +122,8 @@ const scheme3Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_LIGHT,
 });
 
 const scheme3Dark = createTheme({
@@ -131,11 +135,8 @@ const scheme3Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_DARK,
 });
 
 // ── 方案 4：古木萌（Brown 500 / Light Green 500）───────
@@ -148,11 +149,8 @@ const scheme4Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_LIGHT,
 });
 
 const scheme4Dark = createTheme({
@@ -164,11 +162,8 @@ const scheme4Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_DARK,
 });
 
 // ── 方案 5：靛蓝橙 (Indigo 500 / Orange 500) ─────────
@@ -181,27 +176,21 @@ const scheme5Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_LIGHT,
 });
 
 const scheme5Dark = createTheme({
   palette: {
     mode: 'dark',
-    primary:    { main: '#9FA8DA', dark: '#7986CB', contrastText: '#000000' }, 
+    primary:    { main: '#9FA8DA', dark: '#7986CB', contrastText: '#000000' },
     secondary:  { main: '#FFCC80', dark: '#FFB74D', contrastText: '#000000' },
     background: { default: '#121212', paper: '#1E1E1E' },
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_DARK,
 });
 
 // ── 方案 6：翠藤萝（Green 600 / Deep Purple 400）反向撞色 ───
@@ -214,11 +203,8 @@ const scheme6Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_LIGHT,
 });
 
 const scheme6Dark = createTheme({
@@ -230,11 +216,8 @@ const scheme6Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_DARK,
 });
 
 // ── 方案 7：苍海珀（Cyan 700 / Amber 500）深沉冷色 ─────────
@@ -247,11 +230,8 @@ const scheme7Light = createTheme({
     error:      { main: '#B00020', contrastText: '#FFFFFF' },
     text:       { primary: 'rgba(0,0,0,0.87)', secondary: 'rgba(0,0,0,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_LIGHT,
 });
 
 const scheme7Dark = createTheme({
@@ -263,11 +243,8 @@ const scheme7Dark = createTheme({
     error:      { main: '#CF6679', contrastText: '#000000' },
     text:       { primary: 'rgba(255,255,255,0.87)', secondary: 'rgba(255,255,255,0.6)' },
   },
-  typography: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
-  components: {
-    MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
-    MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
-  },
+  typography: COMMON_TYPOGRAPHY,
+  components: COMMON_COMPONENTS_DARK,
 });
 
 // ─────────────────────────────────────────────────────────────
