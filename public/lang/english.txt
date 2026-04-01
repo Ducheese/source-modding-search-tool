@@ -222,10 +222,10 @@
 		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"Aurora Purple"
 		"colorScheme.1.label"	"Falling Sakura"
-		"colorScheme.2.label"	"Teal"
+		"colorScheme.2.label"	"Deep Teal"
 		"colorScheme.3.label"	"Ash Ember"
-		"colorScheme.4.label"	"Old Wood"
-		"colorScheme.5.label"	"Night Indigo"
+		"colorScheme.4.label"	"Forest Moss"
+		"colorScheme.5.label"	"Dusk Indigo"
 		"colorScheme.6.label"	"Emerald Vine"
 		"colorScheme.7.label"	"Ocean Amber"
 
