@@ -16,6 +16,7 @@ use futures_util::StreamExt;
 use std::time::Duration;
 use anyhow::{bail, ensure, Context};
 use once_cell::sync::Lazy;
+use url::Url;
 
 // 保持结构体不变，方便你前端不用改太多
 #[derive(Serialize, Clone)]
@@ -145,23 +146,13 @@ fn normalize_base_url(base_url: &str) -> String {
 }
 
 // 提取 host 用于判断提供商
+// 使用标准库 url::Url 正确解析，避免手写字符串操作的潜在 bug
+// 支持带认证信息、IPv6、非标准路径等各种 URL 格式
 fn extract_host(base_url: &str) -> String {
-    let trimmed = base_url.trim().trim_end_matches('/');
-    
-    // 移除协议前缀
-    let without_proto = trimmed
-        .strip_prefix("http://")
-        .or_else(|| trimmed.strip_prefix("https://"))
-        .unwrap_or(trimmed);
-    
-    // 提取域名部分（去掉路径和端口）
-    let host = without_proto
-        .split('/')
-        .next()
-        .and_then(|s| s.split(':').next())
-        .unwrap_or(without_proto);
-    
-    host.to_lowercase()
+    Url::parse(base_url)
+        .ok()
+        .and_then(|url| url.host_str().map(|s| s.to_lowercase()))
+        .unwrap_or_default()
 }
 
 // 根据提供商生成推理参数
