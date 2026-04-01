@@ -224,8 +224,8 @@
 		"colorScheme.1.label"	"Sakura-Regen"
 		"colorScheme.2.label"	"Petrol"
 		"colorScheme.3.label"	"Ascheglut"
-		"colorScheme.4.label"	"Waldmoos"
-		"colorScheme.5.label"	"Indigo-Gold"
+		"colorScheme.4.label"	"Bemosstes Holz"
+		"colorScheme.5.label"	"Indigo-Dämmerung"
 		"colorScheme.6.label"	"Smaragdranke"
 		"colorScheme.7.label"	"Ozean-Bernstein"
 

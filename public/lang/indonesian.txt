@@ -174,7 +174,7 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"Unit tampilan minimum adalah satu baris, dan jangkar awal/akhir baris didukung. Namun, dari perspektif backend, seluruh file diperlakukan sebagai satu string panjang dengan baris baru yang tertanam (<code>\\n</code> atau <code>\\r\\n</code>). Rekomendasi:"
 		"help.regex.rule1"	"Gunakan <code>[ \\t]*</code> daripada <code>\\s*</code> saat mencocokkan spasi kosong di batas baris, untuk menghindari kecocokan lintas baris yang tidak diinginkan"
-		"help.regex.rule2"	"Mesin byte-regex tidak mendukung pernyataan look-around: <code>(?=...), (?!...), (?<=...), (?<!...)</code> tidak akan berfungsi"
+		"help.regex.rule2"	"Mesin byte-regex tidak mendukung pernyataan look-around: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> tidak akan berfungsi"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"Generator dan penjelas regex AI memerlukan respons model yang cepat. Hindari model besar atau model dengan mode berpikir yang selalu aktif."
@@ -224,8 +224,8 @@
 		"colorScheme.1.label"	"Hujan Sakura"
 		"colorScheme.2.label"	"Hijau Toska"
 		"colorScheme.3.label"	"Bara Kelabu"
-		"colorScheme.4.label"	"Lumut Hutan"
-		"colorScheme.5.label"	"Indigo Keemasan"
+		"colorScheme.4.label"	"Kayu Tua Berlumut"
+		"colorScheme.5.label"	"Indigo Senja"
 		"colorScheme.6.label"	"Sulur Zamrud"
 		"colorScheme.7.label"	"Amber Samudra"
 

@@ -224,8 +224,8 @@
 		"colorScheme.1.label"	"Deszcz sakury"
 		"colorScheme.2.label"	"Morski błękit"
 		"colorScheme.3.label"	"Popielaty żar"
-		"colorScheme.4.label"	"Leśny mech"
-		"colorScheme.5.label"	"Złote indygo"
+		"colorScheme.4.label"	"Omszały pień"
+		"colorScheme.5.label"	"Indygo o zmierzchu"
 		"colorScheme.6.label"	"Szmaragdowy bluszcz"
 		"colorScheme.7.label"	"Oceaniczny bursztyn"
 

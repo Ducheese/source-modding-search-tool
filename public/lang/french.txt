@@ -225,7 +225,7 @@
 		"colorScheme.2.label"	"Bleu sarcelle"
 		"colorScheme.3.label"	"Braise cendrée"
 		"colorScheme.4.label"	"Bois et mousse"
-		"colorScheme.5.label"	"Indigo doré"
+		"colorScheme.5.label"	"Indigo crépusculaire"
 		"colorScheme.6.label"	"Lierre émeraude"
 		"colorScheme.7.label"	"Ambre océanique"
 

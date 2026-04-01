@@ -224,8 +224,8 @@
 		"colorScheme.1.label"	"Chuva de sakura"
 		"colorScheme.2.label"	"Azul-petróleo"
 		"colorScheme.3.label"	"Cinza escarlate"
-		"colorScheme.4.label"	"Musgo da floresta"
-		"colorScheme.5.label"	"Índigo dourado"
+		"colorScheme.4.label"	"Tronco musgoso"
+		"colorScheme.5.label"	"Índigo crepuscular"
 		"colorScheme.6.label"	"Hera esmeralda"
 		"colorScheme.7.label"	"Âmbar oceânico"
 

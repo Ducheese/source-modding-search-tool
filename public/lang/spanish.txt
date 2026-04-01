@@ -224,8 +224,8 @@
 		"colorScheme.1.label"	"Lluvia de sakura"
 		"colorScheme.2.label"	"Azul petróleo"
 		"colorScheme.3.label"	"Ceniza escarlata"
-		"colorScheme.4.label"	"Musgo de bosque"
-		"colorScheme.5.label"	"Índigo dorado"
+		"colorScheme.4.label"	"Tronco musgoso"
+		"colorScheme.5.label"	"Índigo crepuscular"
 		"colorScheme.6.label"	"Hiedra esmeralda"
 		"colorScheme.7.label"	"Ámbar oceánico"
 

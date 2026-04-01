@@ -174,7 +174,7 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"Đơn vị hiển thị tối thiểu là một dòng, và các neo đầu/cuối dòng được hỗ trợ. Tuy nhiên, từ góc nhìn backend, toàn bộ tệp được coi là một chuỗi dài với dòng mới được nhúng sẵn (<code>\\n</code> hoặc <code>\\r\\n</code>). Khuyến nghị:"
 		"help.regex.rule1"	"Sử dụng <code>[ \\t]*</code> thay vì <code>\\s*</code> khi khớp khoảng trắng tại ranh giới dòng, để tránh khớp không mong muốn giữa các dòng"
-		"help.regex.rule2"	"Công cụ byte-regex không hỗ trợ các xác nhận look-around: <code>(?=...), (?!...), (?<=...), (?<!...)</code> sẽ không hoạt động"
+		"help.regex.rule2"	"Công cụ byte-regex không hỗ trợ các xác nhận look-around: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> sẽ không hoạt động"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"Trình tạo và giải thích regex AI yêu cầu phản hồi mô hình nhanh. Tránh các mô hình lớn hoặc các mô hình luôn bật chế độ suy nghĩ."
@@ -224,8 +224,8 @@
 		"colorScheme.1.label"	"Mưa Anh Đào"
 		"colorScheme.2.label"	"Xanh Mòng Két"
 		"colorScheme.3.label"	"Tàn Tro Đỏ"
-		"colorScheme.4.label"	"Rêu Phong"
-		"colorScheme.5.label"	"Chàm Ánh Vàng"
+		"colorScheme.4.label"	"Cổ Mộc Xanh Rêu"
+		"colorScheme.5.label"	"Chàm Hoàng Hôn"
 		"colorScheme.6.label"	"Thường Xuân Ngọc"
 		"colorScheme.7.label"	"Hổ Phách Đại Dương"
 

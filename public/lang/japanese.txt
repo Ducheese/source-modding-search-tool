@@ -225,7 +225,7 @@
 		"colorScheme.2.label"	"鴨の羽色"
 		"colorScheme.3.label"	"灰と緋色"
 		"colorScheme.4.label"	"古木と苔"
-		"colorScheme.5.label"	"宵闇の金"
+		"colorScheme.5.label"	"宵のインディゴ"
 		"colorScheme.6.label"	"エメラルドの蔦"
 		"colorScheme.7.label"	"オーシャンアンバー"
 

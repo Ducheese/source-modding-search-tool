@@ -224,8 +224,8 @@
 		"colorScheme.1.label"	"Pioggia di Sakura"
 		"colorScheme.2.label"	"Verde acqua"
 		"colorScheme.3.label"	"Brace cenerina"
-		"colorScheme.4.label"	"Muschio antico"
-		"colorScheme.5.label"	"Indaco dorato"
+		"colorScheme.4.label"	"Legno muschioso"
+		"colorScheme.5.label"	"Indaco al crepuscolo"
 		"colorScheme.6.label"	"Edera smeraldo"
 		"colorScheme.7.label"	"Ambra oceanica"
 

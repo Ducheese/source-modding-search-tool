@@ -224,8 +224,8 @@
 		"colorScheme.1.label"	"Дождь сакуры"
 		"colorScheme.2.label"	"Цвет морской волны"
 		"colorScheme.3.label"	"Пепельный жар"
-		"colorScheme.4.label"	"Лесной мох"
-		"colorScheme.5.label"	"Золотое индиго"
+		"colorScheme.4.label"	"Замшелое дерево"
+		"colorScheme.5.label"	"Сумеречное индиго"
 		"colorScheme.6.label"	"Изумрудная лоза"
 		"colorScheme.7.label"	"Океанский янтарь"
 

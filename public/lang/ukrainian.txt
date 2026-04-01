@@ -224,8 +224,8 @@
 		"colorScheme.1.label"	"Дощ сакури"
 		"colorScheme.2.label"	"Колір морської хвилі"
 		"colorScheme.3.label"	"Попелястий жар"
-		"colorScheme.4.label"	"Лісовий мох"
-		"colorScheme.5.label"	"Золоте індиго"
+		"colorScheme.4.label"	"Замшіле дерево"
+		"colorScheme.5.label"	"Індиго сутінок"
 		"colorScheme.6.label"	"Смарагдова лоза"
 		"colorScheme.7.label"	"Океанський бурштин"
 

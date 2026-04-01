@@ -174,7 +174,7 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"หน่วยแสดงผลขั้นต่ำคือหนึ่งบรรทัด และรองรับตัวยึดต้น/ท้ายบรรทัด อย่างไรก็ตาม จากมุมมองของ backend ไฟล์ทั้งหมดถูกจัดการเป็นสตริงยาวเดียวที่มีตัวขึ้นบรรทัด (<code>\\n</code> หรือ <code>\\r\\n</code>) คำแนะนำ:"
 		"help.regex.rule1"	"ใช้ <code>[ \\t]*</code> แทน <code>\\s*</code> เมื่อจับคู่ช่องว่างที่ขอบบรรทัด เพื่อหลีกเลี่ยงการจับคู่ข้ามบรรทัดโดยไม่ตั้งใจ"
-		"help.regex.rule2"	"เอนจิน byte-regex ไม่รองรับ look-around: <code>(?=...), (?!...), (?<=...), (?<!...)</code> จะไม่ทำงาน"
+		"help.regex.rule2"	"เอนจิน byte-regex ไม่รองรับ look-around: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> จะไม่ทำงาน"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"ตัวสร้างและตัวอธิบาย regex ด้วย AI ต้องการการตอบสนองของโมเดลที่รวดเร็ว หลีกเลี่ยงโมเดลขนาดใหญ่หรือโมเดลที่เปิดโหมดการคิดตลอดเวลา"
@@ -224,8 +224,8 @@
 		"colorScheme.1.label"	"ฝนซากุระ"
 		"colorScheme.2.label"	"สีนกเป็ดน้ำ"
 		"colorScheme.3.label"	"เถ้าสีชาด"
-		"colorScheme.4.label"	"มอสป่า"
-		"colorScheme.5.label"	"ครามประกายทอง"
+		"colorScheme.4.label"	"ไม้เก่าหุ้มมอส"
+		"colorScheme.5.label"	"ครามสนธยา"
 		"colorScheme.6.label"	"เถาวัลย์มรกต"
 		"colorScheme.7.label"	"อำพันมหาสมุทร"
 
