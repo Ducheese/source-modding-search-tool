@@ -35,7 +35,7 @@
 		"fileList.searchPlaceholder"	"ป้อนชื่อไฟล์..."
 		"fileList.filtered"	"กรองได้ {count} ไฟล์"
 		"fileList.emptyTitle"	"ยังไม่มีอะไรที่นี่"
-		"fileList.emptyHint"	"ลองเพิ่มไฟล์ดูสิ"
+		"fileList.emptyHint"	"ลองเพิ่มไฟล์ดู"
 		"fileList.noMatchTitle"	"ไม่พบไฟล์ที่ตรงกับตัวกรอง"
 		"fileList.removeTooltip"	"ลบไฟล์นี้"
 		"fileList.removed"	"ลบ {name} แล้ว"

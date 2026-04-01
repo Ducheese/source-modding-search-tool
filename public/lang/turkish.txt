@@ -27,7 +27,7 @@
 		"dropzone.errorNoFiles"	"Seçilen klasörde desteklenen bir dosya türü bulunamadı."
 
 		// ── FileList ─────────────────────────────────────────────────────
-		"fileList.title"	"Dosya Listesi ({count})"
+		"fileList.title"	"Dosya listesi ({count})"
 		"fileList.clear"	"Tümünü Temizle"
 		"fileList.totalSize"	"Toplam boyut: {size}"
 		"fileList.totalLines"	"Toplam satır: {lines}"
@@ -43,7 +43,7 @@
 		"fileList.lines"	"{lines} satır"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
-		"search.title"	"Arama Ayarları"
+		"search.title"	"Arama ayarları"
 		"search.placeholder"	"Arama içeriğini girin..."
 		"search.aiPlaceholder"	"Niyetinizi girin..."
 		"search.advancedTooltip"	"Gelişmiş seçenekler"

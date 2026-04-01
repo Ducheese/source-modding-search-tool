@@ -97,7 +97,7 @@
 		"regexSnippet.optional"	"0 lub 1 (?)"
 		"regexSnippet.zeroOrMore"	"0 lub więcej (*)"
 		"regexSnippet.oneOrMore"	"1 lub więcej (+)"
-		"regexSnippet.lazy"	"Nienachłanne (*?)"
+		"regexSnippet.lazy"	"Leniwe (*?)"
 		"regexSnippet.count"	"Dokładna liczba {}"
 		"regexSnippet.hexColor"	"Szesnastkowy kod koloru"
 		"regexSnippet.chineseCharCount"	"Liczba chińskich znaków"

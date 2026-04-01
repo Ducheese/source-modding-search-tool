@@ -87,7 +87,7 @@
 		"regexSnippet.lineStart"	"Inicio de línea"
 		"regexSnippet.lineEnd"	"Fin de línea (CRLF/LF)"
 		"regexSnippet.wordBoundary"	"Límite de palabra"
-		"regexSnippet.nonWordBoundary"	"No límite de palabra"
+		"regexSnippet.nonWordBoundary"	"Límite no de palabra"
 		"regexSnippet.anyChar"	"Cualquier carácter"
 		"regexSnippet.tab"	"Tabulación"
 		"regexSnippet.newline"	"Salto de línea (CRLF/LF)"

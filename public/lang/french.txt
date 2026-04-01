@@ -174,7 +174,7 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"L'unité minimale d'affichage est une seule ligne, et les ancres de début/fin de ligne sont supportées. Cependant, du point de vue du backend, le fichier entier est traité comme une longue chaîne avec des sauts de ligne intégrés (<code>\\n</code> ou <code>\\r\\n</code>). Recommandations :"
 		"help.regex.rule1"	"Utilisez <code>[ \\t]*</code> au lieu de <code>\\s*</code> pour les espaces aux limites de lignes, afin d'éviter les correspondances inter-lignes non désirées"
-		"help.regex.rule2"	"Le moteur regex de bytes ne supporte pas les assertions de regard : <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> ne fonctionneront pas"
+		"help.regex.rule2"	"Le moteur regex de bytes ne supporte pas les assertions de voisinage : <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> ne fonctionneront pas"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"Le générateur et l'explicateur de regex AI nécessitent des réponses rapides du modèle. Évitez les grands modèles ou les modèles avec raisonnement toujours actif."
@@ -187,7 +187,7 @@
 		"help.explainModel"	"Modèle pour l'explicateur de regex AI"
 		"help.explainModelHelper"	"Pas de mode de raisonnement ; laisser vide pour utiliser le modèle le plus à gauche"
 		"help.regexPromptLabel"	"Prompt du générateur de regex AI"
-		"help.regexPromptHelper"	"Note : le moteur regex ne supporte pas les assertions de regard"
+		"help.regexPromptHelper"	"Note : le moteur regex ne supporte pas les assertions de voisinage"
 		"help.chatPromptLabel"	"Prompt du chat AI"
 		"help.chatPromptHelper"	"Note : doit inclure {{context}} pour injecter les résultats de recherche dans le contexte"
 		"help.explainPromptLabel"	"Prompt de l'explicateur de regex AI"

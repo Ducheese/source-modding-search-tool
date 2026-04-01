@@ -97,7 +97,7 @@
 		"regexSnippet.optional"	"0 или 1 (?)"
 		"regexSnippet.zeroOrMore"	"0 или более (*)"
 		"regexSnippet.oneOrMore"	"1 или более (+)"
-		"regexSnippet.lazy"	"Ленивый (*?)"
+		"regexSnippet.lazy"	"Нежадный (*?)"
 		"regexSnippet.count"	"Точное количество {}"
 		"regexSnippet.hexColor"	"Шестнадцатеричный цвет"
 		"regexSnippet.chineseCharCount"	"Количество китайских иероглифов"
@@ -106,7 +106,7 @@
 		"regexSnippet.csPropData"	"Совпадение с вызовами GetEntProp с Prop_Data"
 
 		// ── SearchResults ─────────────────────────────────────────────────
-		"results.searching1"	"Поиск сквозь разломы времени..."
+		"results.searching1"	"Поиск сквозь щели времени..."
 		"results.searching2"	"Работаем на полную мощность..."
 		"results.emptyTitle"	"Ничего нет"
 		"results.emptyHint"	"Введите что-нибудь для начала поиска."
@@ -142,7 +142,7 @@
 		"aiChat.aiConfigHint"	"Перейдите в «Справка и информация о программе», чтобы настроить модель ИИ"
 		"aiChat.startFailed"	"Не удалось запустить запрос ИИ"
 		"aiChat.restore"	"Восстановить чат ИИ"
-		"aiChat.thinkingOn"	"Нажмите, чтобы включить углублённое рассуждение и установить лимит токенов"
+		"aiChat.thinkingOn"	"Нажмите, чтобы включить углублённое рассуждение и задать бюджет рассуждения"
 		"aiChat.thinkingOff"	"Нажмите, чтобы отключить углублённое рассуждение"
 		"aiChat.inputTok"	"Ввод {prompt}{cached} токенов"
 		"aiChat.cachedSuffix"	" (кэшировано {n})"

@@ -222,7 +222,7 @@
 		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"Aurora viola"
 		"colorScheme.1.label"	"Pioggia di Sakura"
-		"colorScheme.2.label"	"Ottanio"
+		"colorScheme.2.label"	"Verde acqua"
 		"colorScheme.3.label"	"Brace cenerina"
 		"colorScheme.4.label"	"Muschio antico"
 		"colorScheme.5.label"	"Indaco dorato"

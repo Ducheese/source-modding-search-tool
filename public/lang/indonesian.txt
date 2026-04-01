@@ -47,7 +47,7 @@
 		"search.placeholder"	"Masukkan konten pencarian..."
 		"search.aiPlaceholder"	"Masukkan maksud Anda..."
 		"search.advancedTooltip"	"Opsi lanjutan"
-		"search.pathFilterTitle"	"Wildcard filter jalur"
+		"search.pathFilterTitle"	"Filter jalur wildcard"
 		"search.includeLabel"	"Sertakan (mis. *.qc, **/weapon_*)"
 		"search.includeHelper"	"Dipisah koma; kosongkan untuk menyertakan semua"
 		"search.excludeLabel"	"Kecualikan (mis. *metal*, **/cfg/*)"
@@ -153,7 +153,7 @@
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
 		"help.title"	"Tentang & Bantuan"
 		"help.appIconAlt"	"Ikon aplikasi"
-		"help.tab.pathFilter"	"Wildcard filter jalur"
+		"help.tab.pathFilter"	"Filter jalur wildcard"
 		"help.tab.regex"	"Tips Regex"
 		"help.tab.aiConfig"	"Konfigurasi model AI"
 		"help.tab.colorScheme"	"Skema warna"

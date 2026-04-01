@@ -71,9 +71,9 @@
 		"search.noFiles"	"請先新增檔案"
 		"search.aborted"	"已中斷請求"
 		"search.timeout"	"已逾時"
-		"search.aiExplaining"	"AI 正規表示式解釋器運作中…"
+		"search.aiExplaining"	"AI 正在解釋正規表示式…"
 		"search.noRegex"	"未返回有效的正規表示式"
-		"search.aiConfigHint"	"請前往「關於與說明」填寫「大型模型接入設定」"
+		"search.aiConfigHint"	"請前往「關於與說明」填寫「AI 模型串接設定」"
 
 		// ── Regex category titles ─────────────────────────────────────────
 		"regexCat.anchors"	"錨定符"
@@ -93,7 +93,7 @@
 		"regexSnippet.newline"	"換行符 (CRLF/LF)"
 		"regexSnippet.whitespace"	"空格、定位或換行符"
 		"regexSnippet.word"	"字母、數字或底線"
-		"regexSnippet.digit"	"純數字字元"
+		"regexSnippet.digit"	"數字字元"
 		"regexSnippet.optional"	"0或1個 (?)"
 		"regexSnippet.zeroOrMore"	"0或多個 (*)"
 		"regexSnippet.oneOrMore"	"1或多個 (+)"
@@ -139,7 +139,7 @@
 		"aiChat.contextMounted"	"已掛載搜尋結果上下文"
 		"aiChat.noContext"	"未掛載搜尋結果"
 		"aiChat.user"	"使用者"
-		"aiChat.aiConfigHint"	"請前往「關於與說明」填寫「大型模型接入設定」"
+		"aiChat.aiConfigHint"	"請前往「關於與說明」填寫「AI 模型串接設定」"
 		"aiChat.startFailed"	"AI 請求啟動失敗"
 		"aiChat.restore"	"還原 AI 對話"
 		"aiChat.thinkingOn"	"點擊開啟深度思考，設定思考預算"
@@ -151,11 +151,11 @@
 		"aiChat.duration"	"{duration}s"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
-		"help.title"	"關於 & 說明"
+		"help.title"	"關於與說明"
 		"help.appIconAlt"	"應用程式圖示"
 		"help.tab.pathFilter"	"路徑篩選萬用字元"
 		"help.tab.regex"	"正規表示式使用建議"
-		"help.tab.aiConfig"	"大型模型接入設定"
+		"help.tab.aiConfig"	"AI 模型串接設定"
 		"help.tab.colorScheme"	"色彩方案"
 		"help.tab.changelog"	"更新記錄"
 
