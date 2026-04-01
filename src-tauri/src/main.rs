@@ -15,6 +15,7 @@ use reqwest::Client;
 use futures_util::StreamExt;
 use std::time::Duration;
 use anyhow::{bail, ensure, Context};
+use once_cell::sync::Lazy;
 
 // 保持结构体不变，方便你前端不用改太多
 #[derive(Serialize, Clone)]
@@ -222,21 +223,29 @@ fn get_reasoning_params(base_url: &str, enable_thinking: bool, thinking_budget: 
 }
 
 // 用于 AI 写正则 / 解释正则：响应快，超时短
-fn create_http_client() -> anyhow::Result<Client> {
+static HTTP_CLIENT: Lazy<anyhow::Result<Client>> = Lazy::new(|| {
     Client::builder()
         .timeout(Duration::from_secs(30))
         .connect_timeout(Duration::from_secs(5))
         .build()
         .context("创建HTTP客户端失败")
-}
+});
 
 // 用于流式对话：输出可能较长，超时宽松
-fn create_stream_http_client() -> anyhow::Result<Client> {
+static STREAM_HTTP_CLIENT: Lazy<anyhow::Result<Client>> = Lazy::new(|| {
     Client::builder()
         .timeout(Duration::from_secs(180))
         .connect_timeout(Duration::from_secs(5))
         .build()
         .context("创建HTTP客户端失败")
+});
+
+fn get_httpt_clien() -> anyhow::Result<&'static Client> {
+    HTTP_CLIENT.as_ref().map_err(|e| anyhow::anyhow!("{}", e))
+}
+
+fn get_stream_http_client() -> anyhow::Result<&'static Client> {
+    STREAM_HTTP_CLIENT.as_ref().map_err(|e| anyhow::anyhow!("{}", e))
 }
 
 // 去掉多余的考虑情况，感觉意义不大
@@ -399,7 +408,9 @@ async fn get_file_stats(file_paths: Vec<String>) -> Result<Vec<FileStats>, Strin
             }
 
             // 使用 Mmap，极速！
-            let mmap = unsafe { Mmap::map(&file).ok() };
+            let mmap = unsafe { Mmap::map(&file) }
+                .with_context(|| format!("无法映射文件: {}", path.display()))
+                .ok();
             
             if let Some(mmap) = mmap {
                 // 检查二进制
@@ -522,7 +533,9 @@ async fn search_in_files(
         .filter_map(|path_str| {
             let path = Path::new(path_str);
             let file = File::open(path).ok()?;
-            let mmap = unsafe { Mmap::map(&file).ok()? };
+            let mmap = unsafe { Mmap::map(&file) }
+                .with_context(|| format!("无法映射文件: {}", path.display()))
+                .ok()?;
 
             // 二进制检查
             if is_binary(&mmap) { return None; }
@@ -680,7 +693,7 @@ async fn generate_ai_regex_internal(request: AiRegexRequest) -> anyhow::Result<A
         "stream": false
     });
 
-    let client = create_http_client()?;
+    let client = get_http_client()?;
     let response = client
         .post(&endpoint)
         .bearer_auth(request.api_key)
@@ -748,7 +761,7 @@ async fn stream_ai_chat_internal(window: tauri::Window, request: AiChatStreamReq
         }
     }
 
-    let client = create_stream_http_client()?;
+    let client = get_stream_http_client()?;
     let response = client
         .post(&endpoint)
         .bearer_auth(request.api_key)
