@@ -220,13 +220,13 @@
 		"help.youtube"	"YouTube"
 
 		// ── Color scheme labels ─────────────────────────────────────────────
-		"colorScheme.0.label"	"Aurora púrpura"
+		"colorScheme.0.label"	"Aurora violeta"
 		"colorScheme.1.label"	"Chuva de sakura"
-		"colorScheme.2.label"	"Verde-azulado"
-		"colorScheme.3.label"	"Brasas cinzentas"
-		"colorScheme.4.label"	"Madeira envelhecida"
-		"colorScheme.5.label"	"Índigo noturno"
-		"colorScheme.6.label"	"Videira esmeralda"
+		"colorScheme.2.label"	"Azul-petróleo"
+		"colorScheme.3.label"	"Cinza escarlate"
+		"colorScheme.4.label"	"Musgo da floresta"
+		"colorScheme.5.label"	"Índigo dourado"
+		"colorScheme.6.label"	"Hera esmeralda"
 		"colorScheme.7.label"	"Âmbar oceânico"
 
 		// ── searchEngine export ─────────────────────────────────────────────

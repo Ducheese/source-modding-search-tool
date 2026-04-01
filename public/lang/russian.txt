@@ -220,14 +220,14 @@
 		"help.youtube"	"YouTube"
 
 		// ── Color scheme labels ─────────────────────────────────────────────
-		"colorScheme.0.label"	"Пурпурная аврора"
+		"colorScheme.0.label"	"Фиолетовая аврора"
 		"colorScheme.1.label"	"Дождь сакуры"
-		"colorScheme.2.label"	"Бирюзовый"
+		"colorScheme.2.label"	"Цвет морской волны"
 		"colorScheme.3.label"	"Пепельный жар"
-		"colorScheme.4.label"	"Старое дерево"
-		"colorScheme.5.label"	"Ночное индиго"
+		"colorScheme.4.label"	"Лесной мох"
+		"colorScheme.5.label"	"Золотое индиго"
 		"colorScheme.6.label"	"Изумрудная лоза"
-		"colorScheme.7.label"	"Янтарный океан"
+		"colorScheme.7.label"	"Океанский янтарь"
 
 		// ── searchEngine export ─────────────────────────────────────────────
 		"export.noResults"	"Нет результатов поиска для экспорта"

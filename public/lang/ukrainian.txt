@@ -220,14 +220,14 @@
 		"help.youtube"	"YouTube"
 
 		// ── Color scheme labels ─────────────────────────────────────────────
-		"colorScheme.0.label"	"Пурпурова аврора"
+		"colorScheme.0.label"	"Фіолетова аврора"
 		"colorScheme.1.label"	"Дощ сакури"
-		"colorScheme.2.label"	"Бірюзовий"
+		"colorScheme.2.label"	"Колір морської хвилі"
 		"colorScheme.3.label"	"Попелястий жар"
-		"colorScheme.4.label"	"Старе дерево"
-		"colorScheme.5.label"	"Нічне індиго"
+		"colorScheme.4.label"	"Лісовий мох"
+		"colorScheme.5.label"	"Золоте індиго"
 		"colorScheme.6.label"	"Смарагдова лоза"
-		"colorScheme.7.label"	"Бурштиновий океан"
+		"colorScheme.7.label"	"Океанський бурштин"
 
 		// ── searchEngine export ─────────────────────────────────────────────
 		"export.noResults"	"Немає результатів пошуку для експорту"

@@ -220,14 +220,14 @@
 		"help.youtube"	"YouTube"
 
 		// ── Color scheme labels ─────────────────────────────────────────────
-		"colorScheme.0.label"	"오로라 보라"
-		"colorScheme.1.label"	"벚꽃 낙화"
-		"colorScheme.2.label"	"물오리 청록"
-		"colorScheme.3.label"	"한연 비홍"
-		"colorScheme.4.label"	"고목 연두"
-		"colorScheme.5.label"	"밤쪽빛 금채"
+		"colorScheme.0.label"	"오로라 퍼플"
+		"colorScheme.1.label"	"흩날리는 벚꽃"
+		"colorScheme.2.label"	"청록색"
+		"colorScheme.3.label"	"붉은 잿빛"
+		"colorScheme.4.label"	"이끼 낀 고목"
+		"colorScheme.5.label"	"골든 인디고"
 		"colorScheme.6.label"	"에메랄드 덩굴"
-		"colorScheme.7.label"	"창해 호박"
+		"colorScheme.7.label"	"오션 앰버"
 
 		// ── searchEngine export ─────────────────────────────────────────────
 		"export.noResults"	"내보낼 검색 결과가 없습니다"

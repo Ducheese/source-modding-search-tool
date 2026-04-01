@@ -222,12 +222,12 @@
 		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"Fioletowa zorza"
 		"colorScheme.1.label"	"Deszcz sakury"
-		"colorScheme.2.label"	"Morska zieleń"
+		"colorScheme.2.label"	"Morski błękit"
 		"colorScheme.3.label"	"Popielaty żar"
-		"colorScheme.4.label"	"Stare drewno"
-		"colorScheme.5.label"	"Nocne indygo"
-		"colorScheme.6.label"	"Szmaragdowe pnącze"
-		"colorScheme.7.label"	"Bursztynowy ocean"
+		"colorScheme.4.label"	"Leśny mech"
+		"colorScheme.5.label"	"Złote indygo"
+		"colorScheme.6.label"	"Szmaragdowy bluszcz"
+		"colorScheme.7.label"	"Oceaniczny bursztyn"
 
 		// ── searchEngine export ─────────────────────────────────────────────
 		"export.noResults"	"Brak wyników wyszukiwania do eksportu"
