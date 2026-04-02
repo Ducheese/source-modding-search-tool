@@ -7,7 +7,7 @@
  * - Feature request
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Box,
   TextField,
@@ -15,6 +15,7 @@ import {
   Paper,
   CircularProgress,
   Autocomplete,
+  Fade,
   alpha,
   createFilterOptions,
   useTheme,
@@ -26,6 +27,7 @@ import {
   Translate,
   BugReport,
   Lightbulb,
+  CheckCircle,
 } from '@mui/icons-material';
 import { SUPPORTED_LANGS } from '../utils/i18n';
 import { tauriAPI } from '../utils/tauriBridge';
@@ -367,6 +369,19 @@ const FeedbackForm = () => {
   const showSnackbar = useSnackbar();
   const [feedbackType, setFeedbackType] = useState('translation');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Ref for timeout cleanup
+  const successTimeoutRef = useRef(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleSubmitFeedback = useCallback(
     async (feedback) => {
@@ -376,7 +391,13 @@ const FeedbackForm = () => {
           ...feedback,
           timestamp: new Date().toISOString(),
         });
-        showSnackbar('Feedback submitted. Thank you!', 'success');
+        setShowSuccess(true);
+
+        // Store timeout ref for cleanup
+        successTimeoutRef.current = setTimeout(() => {
+          setShowSuccess(false);
+        }, 2500);
+
         return true;
       } catch (error) {
         const errorMessage =
@@ -425,80 +446,121 @@ const FeedbackForm = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      {/* Interactive card navigation */}
-      <Box sx={{ display: 'flex', gap: 2 }} role="radiogroup" aria-label="Feedback Type Selection">
-        {FEEDBACK_TYPES.map((type) => {
-          const Icon = type.icon;
-          const isSelected = feedbackType === type.id;
-          return (
-            <Paper
-              key={type.id}
-              component="button"
-              type="button"
-              onClick={() => !isSubmitting && setFeedbackType(type.id)}
-              elevation={0}
-              role="radio"
-              aria-checked={isSelected}
-              tabIndex={isSubmitting ? -1 : 0}
-              sx={{
-                flex: 1,
-                p: 2,
-                textAlign: 'left',
-                border: '1px solid',
-                borderColor: isSelected ? 'primary.main' : 'divider',
-                backgroundColor: isSelected
-                  ? alpha(theme.palette.primary.main, 0.04)
-                  : 'background.paper',
-                cursor: isSubmitting ? 'default' : 'pointer',
-                transition: 'all 0.2s ease',
-                borderRadius: 2,
-                opacity: isSubmitting && !isSelected ? 0.6 : 1,
-                '&:hover': {
-                  borderColor: isSubmitting ? undefined : 'primary.main',
-                  boxShadow: isSubmitting
-                    ? 'none'
-                    : '0 4px 12px rgba(0,0,0,0.05)',
-                },
-                '&:focus-visible': {
-                  outline: '2px solid',
-                  outlineColor: 'primary.main',
-                  outlineOffset: 2,
-                },
-              }}
-            >
-              <Icon
-                sx={{
-                  color: isSelected ? 'primary.main' : 'text.secondary',
-                  mb: 1,
-                  fontSize: 28,
-                }}
-              />
-              <Typography
-                variant="subtitle2"
-                sx={{
-                  fontWeight: 600,
-                  color: isSelected ? 'primary.main' : 'text.primary',
-                }}
-              >
-                {type.label}
-              </Typography>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ display: 'block', mt: 0.5, lineHeight: 1.2 }}
-              >
-                {type.description}
-              </Typography>
-            </Paper>
-          );
-        })}
-      </Box>
+    <Box sx={{ position: 'relative', minHeight: 400 }}>
+      {/* Success overlay */}
+      <Fade in={showSuccess} timeout={400} unmountOnExit>
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 10,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2,
+          }}
+        >
+          <CheckCircle
+            sx={{
+              fontSize: 64,
+              color: 'success.main',
+              animation:
+                'scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            }}
+          />
+          <Typography variant="h6" fontWeight={600} color="text.primary">
+            Feedback Submitted
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Thank you for helping us improve.
+          </Typography>
+          <style>{`@keyframes scaleIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }`}</style>
+        </Box>
+      </Fade>
 
-      <Divider />
+      {/* Main form area */}
+      <Fade in={!showSuccess} timeout={400}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {/* Interactive card navigation */}
+          <Box sx={{ display: 'flex', gap: 2 }} role="radiogroup" aria-label="Feedback Type Selection">
+            {FEEDBACK_TYPES.map((type) => {
+              const Icon = type.icon;
+              const isSelected = feedbackType === type.id;
+              return (
+                <Paper
+                  key={type.id}
+                  component="button"
+                  type="button"
+                  onClick={() => !isSubmitting && setFeedbackType(type.id)}
+                  elevation={0}
+                  role="radio"
+                  aria-checked={isSelected}
+                  tabIndex={isSubmitting ? -1 : 0}
+                  sx={{
+                    flex: 1,
+                    p: 2,
+                    textAlign: 'left',
+                    border: '1px solid',
+                    borderColor: isSelected ? 'primary.main' : 'divider',
+                    backgroundColor: isSelected
+                      ? alpha(theme.palette.primary.main, 0.04)
+                      : 'background.paper',
+                    cursor: isSubmitting ? 'default' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    borderRadius: 2,
+                    opacity: isSubmitting && !isSelected ? 0.6 : 1,
+                    '&:hover': {
+                      borderColor: isSubmitting ? undefined : 'primary.main',
+                      boxShadow: isSubmitting
+                        ? 'none'
+                        : '0 4px 12px rgba(0,0,0,0.05)',
+                    },
+                    '&:focus-visible': {
+                      outline: '2px solid',
+                      outlineColor: 'primary.main',
+                      outlineOffset: 2,
+                    },
+                  }}
+                >
+                  <Icon
+                    sx={{
+                      color: isSelected ? 'primary.main' : 'text.secondary',
+                      mb: 1,
+                      fontSize: 28,
+                    }}
+                  />
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      fontWeight: 600,
+                      color: isSelected ? 'primary.main' : 'text.primary',
+                    }}
+                  >
+                    {type.label}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ display: 'block', mt: 0.5, lineHeight: 1.2 }}
+                  >
+                    {type.description}
+                  </Typography>
+                </Paper>
+              );
+            })}
+          </Box>
 
-      {/* Form content */}
-      <Box>{renderFeedbackContent()}</Box>
+          <Divider>
+            <Typography variant="caption" color="text.secondary" sx={{ px: 1 }}>
+              Powered by Formspree
+            </Typography>
+          </Divider>
+
+          {/* Form content */}
+          <Box>{renderFeedbackContent()}</Box>
+        </Box>
+      </Fade>
     </Box>
   );
 };
