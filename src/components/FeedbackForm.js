@@ -255,14 +255,14 @@ const TranslationFeedbackForm = ({ onSubmit, isSubmitting }) => {
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Box sx={{ display: 'flex', gap: 2 }}>
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
         <Autocomplete
           options={SUPPORTED_LANGS}
           value={SUPPORTED_LANGS.find((lang) => lang.id === selectedLang) ?? null}
           onChange={(_, val) => handleLanguageChange(val)}
           getOptionLabel={(opt) => opt.label}
           isOptionEqualToValue={(opt, val) => opt.id === val.id}
-          fullWidth
+          sx={{ flex: 1, minWidth: 240 }}
           size="small"
           renderInput={(params) => (
             <TextField
@@ -411,7 +411,7 @@ const FeedbackForm = () => {
     [showSnackbar]
   );
 
-  const renderFeedbackContent = () => {
+  const renderFeedbackContent = useCallback(() => {
     const commonProps = { isSubmitting };
 
     switch (feedbackType) {
@@ -443,7 +443,7 @@ const FeedbackForm = () => {
       default:
         return null;
     }
-  };
+  }, [feedbackType, isSubmitting, handleSubmitFeedback]);
 
   return (
     <Box sx={{ position: 'relative', minHeight: 400 }}>
@@ -465,8 +465,11 @@ const FeedbackForm = () => {
             sx={{
               fontSize: 64,
               color: 'success.main',
-              animation:
-                'scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+              '@keyframes scaleIn': {
+                '0%': { transform: 'scale(0.5)', opacity: 0 },
+                '100%': { transform: 'scale(1)', opacity: 1 },
+              },
+              animation: 'scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
             }}
           />
           <Typography variant="h6" fontWeight={600} color="text.primary">
@@ -475,7 +478,6 @@ const FeedbackForm = () => {
           <Typography variant="body2" color="text.secondary">
             Thank you for helping us improve.
           </Typography>
-          <style>{`@keyframes scaleIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }`}</style>
         </Box>
       </Fade>
 
