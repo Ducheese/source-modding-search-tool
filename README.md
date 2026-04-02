@@ -91,6 +91,7 @@ source-modding-search-tool/
 ├── src/
 │   ├── components/       # React frontend
 │   │   ├── AIChatDialog.js
+│   │   ├── FeedbackForm.js
 │   │   ├── FileDropZone.js
 │   │   ├── FileList.js
 │   │   ├── HelpDialog.js
@@ -98,6 +99,7 @@ source-modding-search-tool/
 │   │   ├── ResultLine.js
 │   │   ├── SearchPanel.js
 │   │   ├── SearchResults.js
+│   │   ├── SimpleFeedbackForm.js
 │   │   └── VirtualizedResults.js
 │   ├── utils/            # Utility functions
 │   │   ├── aiDefaults.js
@@ -106,6 +108,7 @@ source-modding-search-tool/
 │   │   ├── searchEngine.js
 │   │   ├── tauriBridge.js
 │   │   ├── themeConfig.js
+│   │   ├── useTranslationKeys.js
 │   │   └── vdfParser.js
 │   ├── App.js            # Main application component
 │   ├── index.css         # Global styles
