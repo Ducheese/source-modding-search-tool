@@ -1,10 +1,11 @@
 /**
- * GenericFeedbackForm.js
- * Configuration-driven feedback form component
+ * SimpleFeedbackForm.js
+ * Simple text-based feedback form component
  * Handles validation, character counting, and submission
+ * Suitable for Bug reports and Feature requests
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Box, TextField, Button, CircularProgress } from '@mui/material';
 import { Send } from '@mui/icons-material';
 
@@ -19,12 +20,11 @@ import { Send } from '@mui/icons-material';
  * @property {number} maxRows - Maximum rows for multiline
  * @property {number} maxLength - Maximum character length
  * @property {boolean} required - Whether field is required
- * @property {string} helperText - Additional helper text
  */
 
 /**
- * Props for GenericFeedbackForm
- * @typedef {Object} GenericFeedbackFormProps
+ * Props for SimpleFeedbackForm
+ * @typedef {Object} SimpleFeedbackFormProps
  * @property {Object.<string, FieldConfig>} fields - Field configurations
  * @property {string} submitLabel - Submit button label
  * @property {string} submitLoadingLabel - Submit button loading label
@@ -33,28 +33,10 @@ import { Send } from '@mui/icons-material';
  */
 
 /**
- * Character-counted text field component
+ * Simple feedback form with validation and character counting
+ * @param {SimpleFeedbackFormProps} props
  */
-const CountedTextField = ({ value, max, ...props }) => {
-  const count = value?.length || 0;
-  const isOver = count > max;
-
-  return (
-    <TextField
-      value={value}
-      error={isOver || props.error}
-      helperText={`${count}/${max}`}
-      {...props}
-      size="small"
-    />
-  );
-};
-
-/**
- * Generic feedback form with validation and character counting
- * @param {GenericFeedbackFormProps} props
- */
-const GenericFeedbackForm = ({
+const SimpleFeedbackForm = ({
   fields,
   submitLabel = 'Submit',
   submitLoadingLabel = 'Submitting...',
@@ -77,6 +59,18 @@ const GenericFeedbackForm = ({
     });
     return initialState;
   });
+
+  // Reset form when fields change (e.g., when switching feedback types)
+  useEffect(() => {
+    const resetState = {};
+    const resetTouched = {};
+    Object.keys(fields).forEach((key) => {
+      resetState[key] = '';
+      resetTouched[key] = false;
+    });
+    setFormData(resetState);
+    setTouched(resetTouched);
+  }, [fields]);
 
   /**
    * Validate form fields
@@ -123,12 +117,26 @@ const GenericFeedbackForm = ({
   }, []);
 
   /**
+   * Mark all fields as touched (for showing validation errors)
+   */
+  const markAllTouched = useCallback(() => {
+    const allTouched = {};
+    Object.keys(fields).forEach((key) => {
+      allTouched[key] = true;
+    });
+    setTouched(allTouched);
+  }, [fields]);
+
+  /**
    * Handle form submission
    */
   const handleFormSubmit = useCallback(
     async (e) => {
       e.preventDefault(); // Prevent default browser behavior
-      if (!validateForm() || isSubmitting) return;
+      if (!validateForm() || isSubmitting) {
+        markAllTouched();
+        return;
+      }
 
       // Trim all string values
       const trimmedData = {};
@@ -149,7 +157,7 @@ const GenericFeedbackForm = ({
         setTouched(resetTouched);
       }
     },
-    [formData, fields, validateForm, onSubmit, isSubmitting]
+    [formData, fields, validateForm, onSubmit, isSubmitting, markAllTouched]
   );
 
   /**
@@ -180,7 +188,7 @@ const GenericFeedbackForm = ({
       sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
     >
       {Object.entries(fields).map(([key, config]) => (
-        <CountedTextField
+        <TextField
           key={key}
           label={config.label}
           value={formData[key]}
@@ -190,16 +198,16 @@ const GenericFeedbackForm = ({
           multiline={config.multiline}
           minRows={config.minRows}
           maxRows={config.maxRows}
-          max={config.maxLength}
           placeholder={config.placeholder}
           disabled={isSubmitting}
           fullWidth
+          size="small"
           helperText={
             hasFieldError(key)
-              ? config.required && !formData[key].trim()
+              ? config.required && !formData[key]?.trim()
                 ? 'This field is required'
                 : `Maximum ${config.maxLength} characters`
-              : `${formData[key].length}/${config.maxLength}`
+              : `${formData[key]?.length || 0}/${config.maxLength}`
           }
         />
       ))}
@@ -218,4 +226,4 @@ const GenericFeedbackForm = ({
   );
 };
 
-export default GenericFeedbackForm;
+export default SimpleFeedbackForm;

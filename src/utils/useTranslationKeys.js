@@ -5,11 +5,18 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useSnackbar } from '../App';
 import { parseVdf } from './vdfParser';
 
 // Global cache that persists across component unmounts
 const globalTranslationCache = new Map();
+
+/**
+ * Convert translation map to sorted key options array
+ */
+const toKeyOptions = (map) =>
+  Array.from(map.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => ({ key, value }));
 
 /**
  * Hook for loading and caching translation keys
@@ -17,7 +24,6 @@ const globalTranslationCache = new Map();
  * @returns {Object} { translationMap, keyOptions, isLoading, error }
  */
 export const useTranslationKeys = (langId) => {
-  const showSnackbar = useSnackbar();
   const [translationMap, setTranslationMap] = useState(new Map());
   const [keyOptions, setKeyOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,38 +36,33 @@ export const useTranslationKeys = (langId) => {
       setTranslationMap(new Map());
       setKeyOptions([]);
       setError(null);
+      setIsLoading(false);
       return;
     }
 
-    // Reset error state before any operation
     setError(null);
 
     // Return cached data if available (global cache persists across unmounts)
     if (globalTranslationCache.has(langId)) {
       const cached = globalTranslationCache.get(langId);
       setTranslationMap(cached);
-      setKeyOptions(
-        Array.from(cached.entries()).map(([key, value]) => ({ key, value }))
-      );
+      setKeyOptions(toKeyOptions(cached));
       setIsLoading(false);
       return;
     }
 
-    // Cancel previous request if still pending
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    // Create new abort controller for this request
-    abortControllerRef.current = new AbortController();
-    const { signal } = abortControllerRef.current;
-
+    // Clear stale data before loading a new uncached language
+    setTranslationMap(new Map());
+    setKeyOptions([]);
     setIsLoading(true);
-    setError(null);
+
+    // Create controller and track it locally for race condition handling
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     try {
       const response = await fetch(`${process.env.PUBLIC_URL}/lang/${langId}.txt`, {
-        signal,
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -82,26 +83,25 @@ export const useTranslationKeys = (langId) => {
       // Cache the result in global cache
       globalTranslationCache.set(langId, tokensMap);
       setTranslationMap(tokensMap);
-      setKeyOptions(
-        Array.from(tokensMap.entries()).map(([key, value]) => ({ key, value }))
-      );
+      setKeyOptions(toKeyOptions(tokensMap));
     } catch (err) {
       // Ignore abort errors (they're expected)
-      if (err.name === 'AbortError') {
-        return;
-      }
+      if (err.name === 'AbortError') return;
 
       const errorMessage = err instanceof Error ? err.message : String(err);
+      // Clear data on error to prevent stale data from showing
+      setTranslationMap(new Map());
+      setKeyOptions([]);
       setError(errorMessage);
-      showSnackbar(
-        `Failed to load language file for "${langId}": ${errorMessage}`,
-        'error'
-      );
     } finally {
-      setIsLoading(false);
-      abortControllerRef.current = null;
+      // Only update state if this controller is still the current one
+      // This prevents old requests from overwriting new request state
+      if (abortControllerRef.current === controller) {
+        setIsLoading(false);
+        abortControllerRef.current = null;
+      }
     }
-  }, [langId, showSnackbar]);
+  }, [langId]);
 
   // Load translation file when langId changes
   useEffect(() => {
@@ -111,6 +111,7 @@ export const useTranslationKeys = (langId) => {
     return () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
+        abortControllerRef.current = null;
       }
     };
   }, [loadTranslationFile]);

@@ -36,7 +36,7 @@ import {
   loadAiSettings, 
   AI_SETTINGS_STORAGE_KEY 
 } from '../utils/aiDefaults';
-import TranslationFeedback from './TranslationFeedback';
+import FeedbackForm from './FeedbackForm';
 
 // ─────────────────────────────────────────────────────────────
 // TabPanel
@@ -668,7 +668,7 @@ const HelpDialog = ({ open, onClose }) => {
 
           {/* Tab 5 — 翻译反馈 */}
           <TabPanel value={tabValue} index={5}>
-            <TranslationFeedback />
+            <FeedbackForm />
           </TabPanel>
 
         </Box>
