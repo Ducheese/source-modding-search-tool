@@ -73,5 +73,10 @@ export const tauriAPI = {
   // AI流式对话
   streamAiChat: async (payload) => {
     return await invoke('stream_ai_chat', { request: payload });
-  }
+  },
+
+  // 提交反馈（通用接口，支持翻译反馈、Bug报告等多种类型）
+  submitFeedback: async (feedback) => {
+    return await invoke('submit_feedback', { feedback });
+  },
 };

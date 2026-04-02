@@ -39,6 +39,8 @@ url = "2.5"
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 # 懒加载单例
 once_cell = "1.19"
+# 日志
+log = "0.4"
 
 [features]
 # 默认开启自定义协议

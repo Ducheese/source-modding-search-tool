@@ -17,6 +17,7 @@ use std::time::Duration;
 use anyhow::{bail, ensure, Context};
 use once_cell::sync::Lazy;
 use url::Url;
+use log::{info, error};
 
 // 保持结构体不变，方便你前端不用改太多
 #[derive(Serialize, Clone)]
@@ -106,6 +107,17 @@ struct AiChatStreamRequest {
 #[derive(Serialize)]
 struct AiRegexResponse {
     regex: String,
+}
+
+// 通用反馈结构体 - 支持多种反馈类型
+// type: "translation" | "bug" | "feature" | ...
+// data: 具体反馈内容（根据 type 不同而变化）
+#[derive(Deserialize, Serialize, Clone)]
+struct Feedback {
+    #[serde(rename = "type")]  // 前端字段名为 type，Rust 映射到 feedback_type
+    feedback_type: String,
+    data: serde_json::Value,    // 使用 Value 支持任意 JSON 结构
+    timestamp: String,
 }
 
 #[derive(Deserialize)]
@@ -231,7 +243,7 @@ static STREAM_HTTP_CLIENT: Lazy<anyhow::Result<Client>> = Lazy::new(|| {
         .context("创建HTTP客户端失败")
 });
 
-fn get_httpt_clien() -> anyhow::Result<&'static Client> {
+fn get_http_client() -> anyhow::Result<&'static Client> {
     HTTP_CLIENT.as_ref().map_err(|e| anyhow::anyhow!("{}", e))
 }
 
@@ -873,6 +885,115 @@ async fn test_ai_connection(request: AiRegexRequest) -> Result<(), String> {
     Ok(())
 }
 
+// Feedback input validation limits (synced with frontend MAX_LEN)
+const FEEDBACK_MAX_FIELD_LEN: usize = 4_000;
+const FEEDBACK_MAX_TOTAL_LEN: usize = 12_000;
+
+/// Recursively validate string field lengths in feedback.data
+fn validate_feedback_lengths(data: &serde_json::Value, budget: &mut usize) -> Result<(), String> {
+    match data {
+        serde_json::Value::String(s) => {
+            if s.len() > FEEDBACK_MAX_FIELD_LEN {
+                return Err(format!(
+                    "A feedback field exceeds the maximum length of {} characters.",
+                    FEEDBACK_MAX_FIELD_LEN
+                ));
+            }
+            *budget = budget.saturating_sub(s.len());
+            if *budget == 0 {
+                return Err("Total feedback payload is too large.".to_string());
+            }
+            Ok(())
+        }
+        serde_json::Value::Object(map) => {
+            for v in map.values() {
+                validate_feedback_lengths(v, budget)?;
+            }
+            Ok(())
+        }
+        serde_json::Value::Array(arr) => {
+            for v in arr {
+                validate_feedback_lengths(v, budget)?;
+            }
+            Ok(())
+        }
+        _ => Ok(()),
+    }
+}
+
+/// 提交反馈到 Formspree（通用接口）
+/// 支持翻译反馈、Bug报告等多种类型
+/// 
+/// Formspree 配置：
+/// 1. 访问 https://formspree.io 创建账号
+/// 2. 创建新表单，获取表单ID（格式：YOUR_FORM_ID）
+/// 3. 将下方 FORMSPREE_FORM_ID 替换为你的表单ID
+///
+/// 扩展方式：
+/// - 前端发送 { type: "bug", data: {...}, timestamp: "..." }
+/// - Formspree 会收到包含 type 字段的表单，便于分类处理
+#[tauri::command]
+async fn submit_feedback(feedback: Feedback) -> Result<(), String> {
+    // Input validation
+    if feedback.feedback_type.len() > 64 {
+        return Err("Invalid feedback type.".to_string());
+    }
+
+    let mut budget = FEEDBACK_MAX_TOTAL_LEN;
+    validate_feedback_lengths(&feedback.data, &mut budget)?;
+
+    // ========== 配置区域 ==========
+    // 请替换为你的 Formspree 表单ID
+    // 格式: https://formspree.io/f/YOUR_FORM_ID
+    const FORMSPREE_FORM_ID: &str = "xbdparne";  // TODO: 替换为你的表单ID
+    // ==============================
+    
+    let formspree_endpoint = format!("https://formspree.io/f/{}", FORMSPREE_FORM_ID);
+    
+    // 构建表单数据 - 包含类型字段便于分类
+    let form_data = json!({
+        "type": feedback.feedback_type,
+        "data": feedback.data,
+        "timestamp": feedback.timestamp,
+    });
+
+    // Reuse global HTTP client singleton
+    let client = get_http_client().map_err(|e| e.to_string())?;
+
+    let response = client
+        .post(&formspree_endpoint)
+        .header("Accept", "application/json")
+        .json(&form_data)
+        .send()
+        .await
+        .map_err(|e| format!("Network error while submitting feedback: {}", e))?;
+
+    let status = response.status();
+    if !status.is_success() {
+        let body = response.text().await.unwrap_or_default();
+
+        // Return user-friendly error messages for common Formspree errors
+        let msg = if status.as_u16() == 429 {
+            "Feedback rate limit reached. Please wait a moment and try again.".to_string()
+        } else if status.as_u16() == 422 {
+            format!("Formspree rejected the submission (422): {}", body)
+        } else {
+            format!("Formspree error: HTTP {} - {}", status, body)
+        };
+
+        error!("submit_feedback failed: {}", msg);
+        return Err(msg);
+    }
+
+    info!(
+        "Feedback submitted: type={}, lang={}",
+        feedback.feedback_type,
+        feedback.data.get("language").and_then(|v| v.as_str()).unwrap_or("-")
+    );
+
+    Ok(())
+}
+
 fn main() {
     tauri::Builder::default()
         // 阻止窗口重复打开
@@ -898,7 +1019,8 @@ fn main() {
             search_in_files,
             generate_ai_regex,
             test_ai_connection,
-            stream_ai_chat
+            stream_ai_chat,
+            submit_feedback
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

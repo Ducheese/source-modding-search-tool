@@ -18,7 +18,7 @@ import {
   useTheme,
   alpha,
 } from '@mui/material';
-import { Close, Help, CheckCircle, ExpandMore, ExpandLess, Error } from '@mui/icons-material';
+import { Close, Help, CheckCircle, ExpandMore, ExpandLess, Error, Feedback } from '@mui/icons-material';
 import { tauriAPI } from '../utils/tauriBridge';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -36,6 +36,7 @@ import {
   loadAiSettings, 
   AI_SETTINGS_STORAGE_KEY 
 } from '../utils/aiDefaults';
+import TranslationFeedback from './TranslationFeedback';
 
 // ─────────────────────────────────────────────────────────────
 // TabPanel
@@ -311,8 +312,8 @@ const HelpDialog = ({ open, onClose }) => {
       </DialogTitle>
 
       <DialogContent dividers>
-        {/* 介绍 / 说明 / 配置存储：选中大模型接入配置 Tab 时隐藏 */}
-        {(tabValue !== 2 && tabValue !== 3 && tabValue !== 4) && <>
+        {/* 介绍 / 说明 / 配置存储：选中大模型接入配置、配色方案、更新日志、翻译反馈 Tab 时隐藏 */}
+        {(tabValue !== 2 && tabValue !== 3 && tabValue !== 4 && tabValue !== 5) && <>
         {/* 介绍 */}
         <Box sx={{ mb: 3, px: 1, display: 'flex', alignItems: 'flex-start', gap: 3 }}>
           <Box
@@ -400,6 +401,16 @@ const HelpDialog = ({ open, onClose }) => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   {t('help.tab.changelog')}
                   {hasUpdate && <Error sx={{ fontSize: 16, color: 'error.main' }} />}
+                </Box>
+              }
+              sx={{ 
+                whiteSpace: 'normal', // 允许换行
+                maxWidth: 180
+              }}/>
+              <Tab label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Feedback sx={{ fontSize: 16 }} />
+                  Feedback
                 </Box>
               }
               sx={{ 
@@ -653,6 +664,11 @@ const HelpDialog = ({ open, onClose }) => {
                 ))}
               </Box>
             )}
+          </TabPanel>
+
+          {/* Tab 5 — 翻译反馈 */}
+          <TabPanel value={tabValue} index={5}>
+            <TranslationFeedback />
           </TabPanel>
 
         </Box>
