@@ -40,9 +40,19 @@ export const useSnackbar = () => useContext(SnackbarContext);
 // ─────────────────────────────────────────────────────────────
 
 const LangSwitcher = ({ showSnackbar }) => {
-  const { lang, setLang, SUPPORTED_LANGS, t } = useLanguage();
+  const { lang, setLang, SUPPORTED_LANGS, t, loadedLang } = useLanguage();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [pendingLang, setPendingLang] = useState(null);
+
+  // 当目标语言包加载完成后再显示 snackbar
+  useEffect(() => {
+    if (pendingLang && loadedLang === pendingLang) {
+      const label = SUPPORTED_LANGS.find(l => l.id === pendingLang)?.label ?? pendingLang;
+      showSnackbar(t('lang.switched', { name: label }), 'info');
+      setPendingLang(null);
+    }
+  }, [loadedLang]);
 
   const handleToggle = (e) => setAnchorEl(prev => prev ? null : e.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -50,9 +60,8 @@ const LangSwitcher = ({ showSnackbar }) => {
   const handleSelect = (newLang) => {
     handleClose();
     if (newLang === lang) return;
-    const label = SUPPORTED_LANGS.find(l => l.id === newLang)?.label ?? newLang;
+    setPendingLang(newLang);
     setLang(newLang);
-    showSnackbar(t('lang.switched', { name: label }), 'info');
   };
 
   return (

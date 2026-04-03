@@ -182,6 +182,11 @@ export const LanguageProvider = ({ children }) => {
     safeSetDocumentLang(initial);
     return initial;
   });
+  // loadedLang: 表示目标语言包已加载完成，用于精确判断语言切换时机
+  const [loadedLang, setLoadedLang] = useState(() => {
+    const initial = detectBrowserLanguage();
+    return initial === 'english' ? 'english' : null; // 英语不需要加载，直接就绪
+  });
   const [langTokens, setLangTokens] = useState({});
   const [fallbackTokens, setFallbackTokens] = useState({});
   const langRef = useRef(lang);
@@ -216,6 +221,7 @@ export const LanguageProvider = ({ children }) => {
     // 【短路判断】如果当前是英语，直接清空 langTokens（t函数会自动走到 fallback）
     if (lang === 'english') {
       setLangTokens({});
+      setLoadedLang('english');
       return;
     }
 
@@ -236,12 +242,17 @@ export const LanguageProvider = ({ children }) => {
         if (langRef.current === lang) {
           const parsed = parseVdf(text);
           setLangTokens(parsed?.Tokens ?? {});
+          setLoadedLang(lang); // 标记目标语言已加载完成
         }
       })
       .catch(err => {
         if (err.name === 'AbortError') return;
         console.warn(`[i18n] Failed to load ${lang}.txt, using english:`, err);
         setLangTokens({});
+        // 加载失败时 fallback 到英语，loadedLang 应反映实际生效的语言
+        if (langRef.current === lang) {
+          setLoadedLang('english');
+        }
       });
 
     return () => controller.abort();
@@ -249,6 +260,7 @@ export const LanguageProvider = ({ children }) => {
 
   const setLang = useCallback((newLang) => {
     if (SUPPORTED_LANGS.some(l => l.id === newLang)) {
+      setLoadedLang(null); // 先重置，表示正在加载
       setLangState(newLang);
       safeSetLocalStorage(LANGUAGE_STORAGE_KEY, newLang);
       safeSetDocumentLang(newLang);
@@ -272,7 +284,7 @@ export const LanguageProvider = ({ children }) => {
     });
   }, [langTokens, fallbackTokens]);
 
-  const value = { t, lang, setLang, SUPPORTED_LANGS };
+  const value = { t, lang, setLang, SUPPORTED_LANGS, loadedLang };
 
   return (
     <LanguageContext.Provider value={value}>
