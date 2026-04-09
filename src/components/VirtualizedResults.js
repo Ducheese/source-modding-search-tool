@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo, useEffect, memo } from 'react';
+import React, { useRef, useState, useMemo, useEffect, useCallback, memo } from 'react';
 import { Box, Typography, IconButton, Chip, useTheme, alpha } from '@mui/material';
 import { ExpandMore, ExpandLess, CopyAll, FileOpen } from '@mui/icons-material';
 import { VariableSizeList as List, areEqual } from 'react-window';
@@ -197,11 +197,12 @@ const VirtualizedResults = ({ results }) => {
 
   // --- 关键修复：当数据变化时，强制重置列表缓存 ---
   // 没有这段就会出现 "渲染错位"
+  // 注意：expandedFiles 变化由 toggleFile 同步处理，这里只监听 results
   useEffect(() => {
     if (listRef.current) {
       listRef.current.resetAfterIndex(0);
     }
-  }, [results, expandedFiles]);   // 监听 expandedFiles 变化也很重要
+  }, [results]);
 
   // 初始化时默认展开所有文件（或者你可以改成默认折叠）
   useEffect(() => {
@@ -212,7 +213,7 @@ const VirtualizedResults = ({ results }) => {
     }
   }, [results]);
 
-  const toggleFile = (path) => {
+  const toggleFile = useCallback((path) => {
     setExpandedFiles(prev => {
       const next = new Set(prev);
       if (next.has(path)) next.delete(path);
@@ -224,7 +225,7 @@ const VirtualizedResults = ({ results }) => {
     if (listRef.current) {
       listRef.current.resetAfterIndex(0);
     }
-  };
+  }, []);
 
   // --- 数据展平：第一层 ---
   // 只依赖 results，缓存每个文件的 match/context/separator 行
@@ -298,7 +299,7 @@ const VirtualizedResults = ({ results }) => {
     theme,
     showSnackbar,
     t,
-  }), [flatRows, theme, showSnackbar, t]);
+  }), [flatRows, toggleFile, theme, showSnackbar, t]);
 
   return (
     <Box sx={{ flex: 1, height: '100%' }}>

@@ -123,6 +123,7 @@ export const formatResultsForExport = (results, format = 'txt', t = null) => {
 };
 
 export const exportResults = (results, format = 'txt', t = null) => {
+  const s = (key, fallback) => (t ? t(key) : fallback);
   const content = formatResultsForExport(results, format, t);
   if (!content) {
     throw new Error(s('export.noResults', 'No search results to export'));

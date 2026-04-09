@@ -230,17 +230,19 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
       try {
         // 分批处理，防止IPC阻塞
         const CHUNK_SIZE = 500;
+        const allStats = {};
+
         for (let i = 0; i < pathsToFetch.length; i += CHUNK_SIZE) {
           const chunk = pathsToFetch.slice(i, i + CHUNK_SIZE);
           const statsArray = await tauriAPI.getFileStatsBatch(chunk);
-          setFileStats(prev => {
-            const newStats = { ...prev };
-            statsArray.forEach(stat => {
-              newStats[stat.path] = stat;
-            });
-            return newStats;
+          // 收集结果，不立即 setState
+          statsArray.forEach(stat => {
+            allStats[stat.path] = stat;
           });
         }
+
+        // 最后一次性更新
+        setFileStats(prev => ({ ...prev, ...allStats }));
       } catch (error) {
         console.error('Failed to get stats batch:', error);
       } finally {

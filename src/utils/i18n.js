@@ -37,6 +37,10 @@ import { parseVdf } from './vdfParser';
 
 export const LANGUAGE_STORAGE_KEY = 'languagePreference';
 
+// 插值正则：匹配 {key} 但忽略 {{context}}
+// 提升到模块顶层，避免每次 t() 调用都重新编译
+const INTERPOLATION_RE = /(?<!{){([^{}]+)}(?!})/g;
+
 export const SUPPORTED_LANGS = [
   { id: 'schinese', label: '简体中文' },
   { id: 'tchinese_hk', label: '繁體中文 (香港)' },
@@ -278,7 +282,7 @@ export const LanguageProvider = ({ children }) => {
     const rawStr = langTokens[key] ?? fallbackTokens[key] ?? key;
     if (!vars) return rawStr;
 
-    return rawStr.replace(/(?<!{){([^{}]+)}(?!})/g, (match, p1) => {
+    return rawStr.replace(INTERPOLATION_RE, (match, p1) => {
       const val = vars[p1];
       return (val !== undefined && val !== null) ? String(val) : match;
     });

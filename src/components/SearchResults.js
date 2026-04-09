@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Chip, Button, Menu, MenuItem, useTheme, alpha, CircularProgress, Alert } from '@mui/material';
 import { Download, SmartToy } from '@mui/icons-material';
 import { exportResults } from '../utils/searchEngine';
@@ -13,6 +13,18 @@ const SearchResults = ({ results, isSearching, isAtBottom }) => {
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [aiMinimized, setAiMinimized] = useState(false);
   const [chatResults, setChatResults] = useState(null); // 对话绑定的结果快照
+
+  // 搜索时显示的文本（在搜索开始时固定，避免闪烁）
+  const searchingTextRef = useRef(0);
+  const prevIsSearchingRef = useRef(false);
+
+  useEffect(() => {
+    // 只在 isSearching 从 false 变为 true 时固定随机值
+    if (isSearching && !prevIsSearchingRef.current) {
+      searchingTextRef.current = Math.random() < 0.5 ? 0 : 1;
+    }
+    prevIsSearchingRef.current = isSearching;
+  }, [isSearching]);
 
   // 解决红字报错：isSearching 或 results 变化时关掉 Menu
   useEffect(() => {
@@ -57,7 +69,7 @@ const SearchResults = ({ results, isSearching, isAtBottom }) => {
       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: theme.palette.text.secondary }}>
         <CircularProgress size={48} sx={{ mb: 2 }} />
         <Typography variant="h6">
-          {Math.random() < 0.5 ? t('results.searching1') : t('results.searching2')}
+          {searchingTextRef.current === 0 ? t('results.searching1') : t('results.searching2')}
         </Typography>
       </Box>
     );

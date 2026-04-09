@@ -18,6 +18,9 @@ import { tauriAPI } from '../utils/tauriBridge';
 import { listen } from '@tauri-apps/api/event';
 import { useLanguage } from '../utils/i18n';
 
+// 支持的文件格式（提升到模块顶层，避免每次渲染都重建）
+const SUPPORTED_EXTENSIONS = ['.sp', '.cfg', '.ini', '.txt', '.vmt', '.qc', '.inc', '.lua', '.log', '.vdf', '.scr', '.res', '.nut'];
+
 const FileDropZone = ({ onFilesAdded }) => {
   // 允许你在任何函数组件中，无需通过 Prop 层层传递，就能直接访问最近的 ThemeProvider 组件提供的主题对象。
   const theme = useTheme();
@@ -34,13 +37,10 @@ const FileDropZone = ({ onFilesAdded }) => {
     setShowAlert(true);
   };
 
-  // 支持的文件格式
-  const supportedExtensions = ['.sp', '.cfg', '.ini', '.txt', '.vmt', '.qc', '.inc', '.lua', '.log', '.vdf', '.scr', '.res', '.nut'];
-
   // 校验文件格式
   const validateFileFormat = (fileName) => {
     const ext = '.' + fileName.split('.').pop().toLowerCase();
-    return supportedExtensions.includes(ext);
+    return SUPPORTED_EXTENSIONS.includes(ext);
   };
 
   // 监听 Tauri 的全局拖拽事件
@@ -114,7 +114,7 @@ const FileDropZone = ({ onFilesAdded }) => {
         });
 
         if (invalidFiles.length > 0) {
-          const message = `${t('dropzone.errorTitle')}\n${invalidFiles.join(', ')}\n\n${t('dropzone.errorSupportedTypes')} ${supportedExtensions.join(', ')}`;
+          const message = `${t('dropzone.errorTitle')}\n${invalidFiles.join(', ')}\n\n${t('dropzone.errorSupportedTypes')} ${SUPPORTED_EXTENSIONS.join(', ')}`;
           showErrorAlert(message);
         }
 
@@ -149,7 +149,7 @@ const FileDropZone = ({ onFilesAdded }) => {
         });
 
         if (invalidFiles.length > 0) {
-          const message = `${t('dropzone.errorFolderTitle')}\n${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}\n\n${t('dropzone.errorSupportedTypes')} ${supportedExtensions.join(', ')}`;
+          const message = `${t('dropzone.errorFolderTitle')}\n${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}\n\n${t('dropzone.errorSupportedTypes')} ${SUPPORTED_EXTENSIONS.join(', ')}`;
           showErrorAlert(message);
         }
 

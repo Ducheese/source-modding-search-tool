@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useReducer,
   useMemo,
+  useCallback,
 } from 'react';
 import {
   Box,
@@ -171,7 +172,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
   const [regexExplanation, setRegexExplanation] = useState('');
   const [isExplaining, setIsExplaining] = useState(false);
 
-  const explainRegex = async (regexStr) => {
+  const explainRegex = useCallback(async (regexStr) => {
     if (!regexStr.trim()) return;
     const settings = loadAiSettings();
     // 未配置 AI 则静默跳过，不打扰用户
@@ -196,7 +197,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     } finally {
       setIsExplaining(false);
     }
-  };
+  }, []);
 
   // 用于输入正则快捷方式
   const searchInputRef = useRef(null);
@@ -212,7 +213,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     if (isSearching && (useRegex || aiRegex)) {
       explainRegex(searchQuery);
     }
-  }, [isSearching]);
+  }, [isSearching, searchQuery, useRegex, aiRegex, explainRegex]);
 
   useEffect(() => {
     if (!useRegex && !aiRegex && isExplaining) {
@@ -221,7 +222,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       setRegexExplanation('');
       showSnackbar(t('search.aborted'), 'warning');
     }
-  }, [useRegex, aiRegex]);
+  }, [useRegex, aiRegex, isExplaining, showSnackbar, t]);
 
   // 从 localStorage 加载搜索历史
   useEffect(() => {
@@ -236,15 +237,17 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
   }, []);
 
   // 保存搜索历史到 localStorage
-  const saveSearchHistory = (query) => {
+  const saveSearchHistory = useCallback((query) => {
     if (!query.trim()) return;
 
-    const newHistory = [query, ...searchHistory.filter(h => h !== query)].slice(0, 30);
-    setSearchHistory(newHistory);
-    localStorage.setItem(SEARCH_HISTORY_STORAGE_KEY, JSON.stringify(newHistory));
-  };
+    setSearchHistory(prev => {
+      const newHistory = [query, ...prev.filter(h => h !== query)].slice(0, 30);
+      localStorage.setItem(SEARCH_HISTORY_STORAGE_KEY, JSON.stringify(newHistory));
+      return newHistory;
+    });
+  }, []);
 
-  const handleSearch = async (overrideQuery, overrideUseRegex) => {
+  const handleSearch = useCallback(async (overrideQuery, overrideUseRegex) => {
     // 【注意】这里不再需要前端计算 finalFilePaths 了！
     // 因为 searchInFiles 后端会自己做完全一致的过滤
     const finalQuery = typeof overrideQuery === 'string' ? overrideQuery : searchQuery;
@@ -272,9 +275,9 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       console.error('Search failed:', error);
       onSearch({ error: error.message });
     }
-  };
+  }, [searchQuery, useRegex, files, caseSensitive, wholeWord, includePattern, excludePattern, moreContext, contextLines, saveSearchHistory, onSearchStart, onSearch]);
 
-  const handleAiRegexSearch = async () => {
+  const handleAiRegexSearch = useCallback(async () => {
 
     const intent = searchQuery.trim();
     if (!intent || files.length === 0) return;
@@ -307,9 +310,9 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     } finally {
       setIsAiGenerating(false);
     }
-  };
+  }, [searchQuery, files, showSnackbar, t, handleSearch]);
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = useCallback((e) => {
     if (e.key === 'Enter') {
       if (isAiGenerating) return;  // 防止重复提交，收到两次输出
       if (aiRegex) {
@@ -318,21 +321,21 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
         handleSearch();
       }
     }
-  };
+  }, [isAiGenerating, aiRegex, handleAiRegexSearch, handleSearch]);
 
-  const stopSearch = () => {
+  const stopSearch = useCallback(() => {
     onSearch(null); // 伪停止/清空状态
-  };
+  }, [onSearch]);
 
-  const insertRegexSnippet = (snippet) => {
+  const insertRegexSnippet = useCallback((snippet) => {
     dispatch({ type: 'SET_REGEX_SNIPPET', value: snippet });
     searchInputRef.current?.focus();
-  };
+  }, []);
 
   // 通用字段更新处理器
-  const handleFieldChange = (field, value) => {
+  const handleFieldChange = useCallback((field, value) => {
     dispatch({ type: 'SET_FIELD', field, value });
-  };
+  }, []);
 
   return (
     <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>

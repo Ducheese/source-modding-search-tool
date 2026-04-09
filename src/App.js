@@ -16,8 +16,71 @@ import LanguageIcon from '@mui/icons-material/Language';
 
 // 自定义组件
 import MainLayout from './components/MainLayout';
-import { COLOR_SCHEME_STORAGE_KEY, THEMES } from './utils/themeConfig';
+import { COLOR_SCHEME_STORAGE_KEY, getTheme, COLOR_SCHEMES } from './utils/themeConfig';
 import { LanguageProvider, useLanguage } from './utils/i18n';
+
+// ─────────────────────────────────────────────────────────────
+// Error Boundary（捕获渲染错误，防止白屏）
+// ─────────────────────────────────────────────────────────────
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          padding: '20px',
+          textAlign: 'center',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+        }}>
+          <h1 style={{ marginBottom: '16px', color: '#d32f2f' }}>出错了</h1>
+          <p style={{ marginBottom: '24px', color: '#666' }}>
+            应用遇到了一个错误。请尝试刷新页面。
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '10px 24px',
+              fontSize: '16px',
+              backgroundColor: '#1976d2',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            刷新页面
+          </button>
+          <details style={{ marginTop: '24px', maxWidth: '600px', overflow: 'auto' }}>
+            <summary style={{ cursor: 'pointer', color: '#999' }}>错误详情</summary>
+            <pre style={{ marginTop: '8px', fontSize: '12px', color: '#666', whiteSpace: 'pre-wrap' }}>
+              {this.state.error?.toString()}
+            </pre>
+          </details>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 // ─────────────────────────────────────────────────────────────
 // 色彩方案导入
@@ -52,7 +115,7 @@ const LangSwitcher = ({ showSnackbar }) => {
       showSnackbar(t('lang.switched', { name: label }), 'info');
       setPendingLang(null);
     }
-  }, [loadedLang]);
+  }, [loadedLang, pendingLang, showSnackbar, t, SUPPORTED_LANGS]);
 
   const handleToggle = (e) => setAnchorEl(prev => prev ? null : e.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -128,7 +191,7 @@ function AppInner({ darkMode, setDarkMode, schemeId, handleSetScheme }) {
     setSnackbarQueue(prev => prev.filter(item => item.id !== id));
   };
 
-  const theme = THEMES[schemeId][darkMode ? 1 : 0];
+  const theme = getTheme(schemeId, darkMode ? 'dark' : 'light');
 
   return (
     <ThemeSchemeContext.Provider value={{ schemeId, setSchemeId: handleSetScheme }}>
@@ -175,7 +238,9 @@ function AppInner({ darkMode, setDarkMode, schemeId, handleSetScheme }) {
             </IconButton>
           </div>
 
-          <MainLayout />
+          <ErrorBoundary>
+            <MainLayout />
+          </ErrorBoundary>
 
           {/* Snackbar 消息 */}
           {snackbarQueue.map((item) => (
@@ -229,7 +294,7 @@ function App() {
   // 配色方案
   const [schemeId, setSchemeId] = useState(() => {
     const saved = parseInt(localStorage.getItem(COLOR_SCHEME_STORAGE_KEY), 10);
-    return Number.isFinite(saved) && saved >= 0 && saved < THEMES.length ? saved : 0;
+    return Number.isFinite(saved) && saved >= 0 && saved < COLOR_SCHEMES.length ? saved : 0;
   });
 
   const handleSetScheme = (id) => {
