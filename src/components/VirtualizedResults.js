@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo, useEffect, useCallback, memo } from 'react';
+import React, { useRef, useMemo, memo, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { Box, Typography, IconButton, Chip, useTheme, alpha } from '@mui/material';
 import { ExpandMore, ExpandLess, CopyAll, FileOpen } from '@mui/icons-material';
 import { VariableSizeList as List, areEqual } from 'react-window';
@@ -129,7 +129,7 @@ const Row = memo(({ data, index, style }) => {
           borderBottom: isExpanded || isLast ? `1px solid ${theme.palette.divider}` : 'none',   // 底部边框条件渲染
         }}
       >
-        <IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleFile(file.path); }} sx={{ mr: 1 }}>
+        <IconButton size="small" onClick={(e) => { e.stopPropagation(); toggleFile(file.path, index); }} sx={{ mr: 1 }}>
           {isExpanded ? <ExpandLess /> : <ExpandMore />}
         </IconButton>
 
@@ -180,52 +180,25 @@ const Row = memo(({ data, index, style }) => {
 }, areEqual); // 使用 react-window 的 areEqual 进行性能优化
 
 
-// --- 主组件 ---
-const VirtualizedResults = ({ results }) => {
+// --- 主组件（受控）---
+// expandedFiles 和 onToggleFile 由父组件控制
+const VirtualizedResults = memo(forwardRef(({ results, expandedFiles, onToggleFile }, ref) => {
   const theme = useTheme();
   const showSnackbar = useSnackbar();
   const { t } = useLanguage();
   const listRef = useRef(null);
 
+  // 暴露给父组件的 API：用于在 setState 前预清缓存
+  useImperativeHandle(ref, () => ({
+    invalidateFrom(index = 0) {
+      listRef.current?.resetAfterIndex(index, false);
+    },
+  }), []);
+
   // 常量定义
   const HEADER_HEIGHT = 48;   // 文件头的高度，稍微调小一点，更精致
   const ROW_HEIGHT = 32;   // 和 ResultLine 里的保持一致
   const SEPARATOR_HEIGHT = 16;   // 分隔区域的高度
-
-  // 折叠展开状态
-  const [expandedFiles, setExpandedFiles] = useState(new Set());
-
-  // --- 关键修复：当数据变化时，强制重置列表缓存 ---
-  // 没有这段就会出现 "渲染错位"
-  // 注意：expandedFiles 变化由 toggleFile 同步处理，这里只监听 results
-  useEffect(() => {
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(0);
-    }
-  }, [results]);
-
-  // 初始化时默认展开所有文件（或者你可以改成默认折叠）
-  useEffect(() => {
-    if (results && results.files) {
-      // const allPaths = new Set(results.files.map(f => f.path));
-      // setExpandedFiles(allPaths);
-      setExpandedFiles(new Set());   // 默认折叠
-    }
-  }, [results]);
-
-  const toggleFile = useCallback((path) => {
-    setExpandedFiles(prev => {
-      const next = new Set(prev);
-      if (next.has(path)) next.delete(path);
-      else next.add(path);
-      return next;
-    });
-
-    // 这里重复写，是为了能更快的响应
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(0);
-    }
-  }, []);
 
   // --- 数据展平：第一层 ---
   // 只依赖 results，缓存每个文件的 match/context/separator 行
@@ -283,6 +256,14 @@ const VirtualizedResults = ({ results }) => {
     return rows;
   }, [results, expandedFiles, matchRowsMap]);
 
+  // --- 单文件展开/收纳：预 invalidate 缓存 ---
+  // 在触发 state 更新前先清掉缓存（不强制 forceUpdate）
+  // 这样下个 render 直接用干净缓存算布局，避免二次渲染
+  const handleToggleFile = useCallback((path, headerIndex) => {
+    listRef.current?.resetAfterIndex(headerIndex, false);
+    onToggleFile(path);
+  }, [onToggleFile]);
+
   // --- 根据type决定行高 ---
   const getItemSize = (index) => {
     const row = flatRows[index];
@@ -295,11 +276,11 @@ const VirtualizedResults = ({ results }) => {
   // 这样 Row 组件即使在外部定义，也能访问到内部的 state 和 hooks
   const itemData = useMemo(() => ({
     flatRows,
-    toggleFile,
+    toggleFile: handleToggleFile,
     theme,
     showSnackbar,
     t,
-  }), [flatRows, toggleFile, theme, showSnackbar, t]);
+  }), [flatRows, handleToggleFile, theme, showSnackbar, t]);
 
   return (
     <Box sx={{ flex: 1, height: '100%' }}>
@@ -321,6 +302,6 @@ const VirtualizedResults = ({ results }) => {
       </AutoSizer>
     </Box>
   );
-};
+}));
 
 export default VirtualizedResults;

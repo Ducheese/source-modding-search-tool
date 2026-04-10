@@ -650,6 +650,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       <Box sx={{ pt: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
         {!isSearching ? (
           <Button
+            key="start"
             variant="contained"
             size="large" // 更大的按钮
             startIcon={<Search />}
@@ -673,6 +674,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
           </Button>
         ) : (
           <Button
+            key="stop"
             variant="outlined"
             size="large"
             color="error"

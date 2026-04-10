@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback, useTransition } from 'react';
 import { Box, Typography, Chip, Button, Menu, MenuItem, useTheme, alpha, CircularProgress, Alert } from '@mui/material';
-import { Download, SmartToy } from '@mui/icons-material';
+import { Download, SmartToy, UnfoldMore, UnfoldLess } from '@mui/icons-material';
 import { exportResults } from '../utils/searchEngine';
 import AIChatDialog from './AIChatDialog';
 import VirtualizedResults from './VirtualizedResults';
@@ -13,6 +13,54 @@ const SearchResults = ({ results, isSearching, isAtBottom }) => {
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [aiMinimized, setAiMinimized] = useState(false);
   const [chatResults, setChatResults] = useState(null); // 对话绑定的结果快照
+
+  // 展开状态：唯一 source of truth
+  const [expandedFiles, setExpandedFiles] = useState(() => new Set());
+  const [isExpandPending, startExpandTransition] = useTransition();
+
+  // VirtualizedResults 的 ref，用于在 setState 前预清缓存
+  const virtualizedRef = useRef(null);
+
+  // 从 expandedFiles 派生三态：'none' | 'some' | 'all'
+  const filePaths = useMemo(() => results?.files?.map(f => f.path) ?? [], [results]);
+  const expandedCount = useMemo(() => {
+    let count = 0;
+    for (const path of filePaths) {
+      if (expandedFiles.has(path)) count++;
+    }
+    return count;
+  }, [filePaths, expandedFiles]);
+  const expandState = expandedCount === 0 ? 'none' : expandedCount === filePaths.length ? 'all' : 'some';
+
+  // 切换单个文件展开状态
+  const toggleFile = useCallback((path) => {
+    setExpandedFiles(prev => {
+      const next = new Set(prev);
+      if (next.has(path)) next.delete(path);
+      else next.add(path);
+      return next;
+    });
+  }, []);
+
+  // 展开/折叠全部
+  const expandAll = useCallback(() => {
+    if (expandState === 'all') return;
+    virtualizedRef.current?.invalidateFrom(0);
+    startExpandTransition(() => {
+      setExpandedFiles(new Set(filePaths));
+    });
+  }, [expandState, filePaths]);
+
+  const collapseAll = useCallback(() => {
+    if (expandState === 'none') return;
+    virtualizedRef.current?.invalidateFrom(0);
+    setExpandedFiles(new Set());
+  }, [expandState]);
+
+  const handleToggleExpandAll = useCallback(() => {
+    if (expandState === 'all') collapseAll();
+    else expandAll();
+  }, [expandState, collapseAll, expandAll]);
 
   // 搜索时显示的文本（在搜索开始时固定，避免闪烁）
   const searchingTextRef = useRef(0);
@@ -30,6 +78,13 @@ const SearchResults = ({ results, isSearching, isAtBottom }) => {
   useEffect(() => {
     setAnchorEl(null);
   }, [isSearching, results]);
+
+  // 搜索开始时清空展开状态（比 results 变化时更早，避免一帧闪烁）
+  useEffect(() => {
+    if (isSearching) {
+      setExpandedFiles(new Set());
+    }
+  }, [isSearching]);
 
   const handleExportClick = (event) => setAnchorEl(event.currentTarget);
   const handleExportClose = () => setAnchorEl(null);
@@ -98,7 +153,50 @@ const SearchResults = ({ results, isSearching, isAtBottom }) => {
       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ p: 2, borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-            <Typography variant="h6" fontWeight="700">{t('results.title')}</Typography>
+            {/* 左侧：标题 + 展开/折叠按钮 */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h6" fontWeight="700" sx={{ lineHeight: 1.2 }}>{t('results.title')}</Typography>
+              <Button
+                size="small"
+                variant="text"
+                onClick={handleToggleExpandAll}
+                disabled={isExpandPending && expandState !== 'all'}
+                startIcon={expandState === 'all' ? <UnfoldLess /> : <UnfoldMore />}
+                aria-label={expandState === 'all' ? t('results.collapseAll') : t('results.expandAll')}
+                sx={{
+                  minWidth: 0,
+                  px: 1,
+                  py: 0.5,
+                  borderRadius: 999,
+                  // 三态样式
+                  color: expandState === 'none'
+                    ? theme.palette.text.secondary
+                    : theme.palette.primary.main,
+                  bgcolor: expandState === 'some'
+                    ? alpha(theme.palette.primary.main, 0.08)
+                    : 'transparent',
+                  '&:hover': {
+                    bgcolor: alpha(theme.palette.primary.main, 0.12),
+                  },
+                  // 窄屏时只显示图标
+                  '.MuiButton-startIcon': { mr: { xs: 0, sm: 0.5 }, ml: 0 },
+                }}
+              >
+                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                  {expandState === 'all' ? t('results.collapseAll') : t('results.expandAll')}
+                </Box>
+                {expandState === 'some' && (
+                  <Typography
+                    component="span"
+                    variant="caption"
+                    sx={{ ml: 0.75, opacity: 0.72, display: { xs: 'none', md: 'inline' } }}
+                  >
+                    {expandedCount}/{filePaths.length}
+                  </Typography>
+                )}
+              </Button>
+            </Box>
+            {/* 右侧：AI 和导出按钮 */}
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Button size="small" variant="contained" startIcon={<SmartToy />} onClick={handleOpenChat}>
                 {t('results.sendToAi')}
@@ -119,7 +217,7 @@ const SearchResults = ({ results, isSearching, isAtBottom }) => {
             <Chip size="small" label={t('results.executionTime', { ms: results.executionTime })} />
           </Box>
         </Box>
-        <VirtualizedResults results={results} />
+        <VirtualizedResults ref={virtualizedRef} results={results} expandedFiles={expandedFiles} onToggleFile={toggleFile} />
       </Box>
     );
   }
