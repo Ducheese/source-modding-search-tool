@@ -6,13 +6,17 @@ export const searchInFiles = async (files, searchOptions) => {
 
   // 以前的复杂逻辑全部删除，直接调用 Rust
   // 须臾之间，结果即现
-  let rustResults = [];
+  let rustResponse = { files: [], filtered_file_count: 0 };
   try {
-    rustResults = await tauriAPI.searchInFiles(files, searchOptions);
+    rustResponse = await tauriAPI.searchInFiles(files, searchOptions);
   } catch (error) {
     console.error("Rust search error:", error);
     throw new Error(`Search failed: ${error}`);
   }
+
+  // Rust 返回的结构: { files: SearchResult[], filtered_file_count: usize }
+  const rustResults = rustResponse.files || [];
+  const filteredFileCount = rustResponse.filtered_file_count || 0;
 
   // 转换结果格式以适配现有的 UI
   const totalMatches = rustResults.reduce((acc, file) => acc + file.matches.length, 0);
@@ -20,7 +24,7 @@ export const searchInFiles = async (files, searchOptions) => {
   const results = {
     query: searchOptions.query,
     options: searchOptions,
-    totalFiles: files.length,
+    totalFiles: filteredFileCount, // 使用 Rust 返回的过滤后文件数
     matchedFiles: rustResults.length,
     totalMatches: totalMatches,
     files: rustResults,

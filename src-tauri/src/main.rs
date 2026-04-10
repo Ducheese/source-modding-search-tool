@@ -37,6 +37,13 @@ struct SearchResult {
     matches: Vec<MatchItem>,
 }
 
+// 搜索响应结构体，包含结果和统计信息
+#[derive(Serialize, Clone)]
+struct SearchResponse {
+    files: Vec<SearchResult>,
+    filtered_file_count: usize, // 过滤后实际参与搜索的文件数
+}
+
 #[derive(Serialize, Clone)]
 struct MatchItem {
     line_number: usize,
@@ -478,7 +485,7 @@ async fn read_file(path: String) -> Result<serde_json::Value, String> {
 async fn search_in_files(
     files: Vec<String>, // 这是从前端传来的、未经筛选的完整列表
     options: SearchOptions,
-) -> Result<Vec<SearchResult>, String> {
+) -> Result<SearchResponse, String> {
     
     // --- 【敕令核心】在此处设下结界！ ---
     let include_set = build_pattern_set(&options.include_pattern)?;
@@ -507,7 +514,9 @@ async fn search_in_files(
             true // 通过所有审判的，才是真正的勇士
         })
         .collect();
-    // --- 结界完成 ---
+
+      // 记录过滤后实际参与搜索的文件总数
+      let filtered_file_count = target_files.len();
 
     // 构造字节级正则，性能比起字符串正则更稳定
     let pattern = if options.use_regex {
@@ -679,7 +688,10 @@ async fn search_in_files(
         })
         .collect();
 
-    Ok(results)
+    Ok(SearchResponse {
+        files: results,
+        filtered_file_count,
+    })
 }
 
 async fn generate_ai_regex_internal(request: AiRegexRequest) -> anyhow::Result<AiRegexResponse> {
