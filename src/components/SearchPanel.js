@@ -205,6 +205,8 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
   const regexAbortedRef = useRef(false);
   // 用于中断正则解释：关闭正则模式时置为 true，响应回来时结果会被丢弃
   const explainAbortedRef = useRef(false);
+  // 用于取消搜索：每次搜索时递增，stopSearch 时也递增，旧版本的结果会被丢弃
+  const searchVersionRef = useRef(0);
 
   const showSnackbar = useSnackbar();
 
@@ -257,6 +259,9 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     saveSearchHistory(finalQuery);
     onSearchStart();
 
+    // 递增搜索版本号，记录当前版本
+    const currentVersion = ++searchVersionRef.current;
+
     try {
       const searchOptions = {
         query: finalQuery,
@@ -270,8 +275,15 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
       // 直接把完整的文件列表扔给后端，让它自己去筛选！
       const results = await searchInFiles(files, searchOptions);
+
+      // 检查版本号：如果不匹配说明搜索已被取消，丢弃结果
+      if (searchVersionRef.current !== currentVersion) return;
+
       onSearch(results);
     } catch (error) {
+      // 检查版本号：如果不匹配说明搜索已被取消，丢弃错误
+      if (searchVersionRef.current !== currentVersion) return;
+
       console.error('Search failed:', error);
       onSearch({ error: error.message });
     }
@@ -324,7 +336,9 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
   }, [isAiGenerating, aiRegex, handleAiRegexSearch, handleSearch]);
 
   const stopSearch = useCallback(() => {
-    onSearch(null); // 伪停止/清空状态
+    // 递增版本号，使正在进行的搜索结果被丢弃
+    searchVersionRef.current++;
+    onSearch(null); // 清空状态
   }, [onSearch]);
 
   const insertRegexSnippet = useCallback((snippet) => {

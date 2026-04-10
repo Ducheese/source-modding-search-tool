@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -199,7 +199,7 @@ const HelpDialog = ({ open, onClose }) => {
   const [isTesting, setIsTesting] = useState(false);
   const handleTabChange = (_, newValue) => setTabValue(newValue);
 
-  const [changelog, setChangelog] = useState(null);   // null=未加载, 'loading', 'error', [{tag, body}]
+  const [changelog, setChangelog] = useState(null);   // null=未加载, 'loading', 'error', 'ratelimit', [{ tag, name, body, date }]
   const [currentVersion, setCurrentVersion] = useState(null);
   const [hasUpdate, setHasUpdate] = useState(false);
   const [configPath, setConfigPath] = useState(null);
@@ -214,53 +214,77 @@ const HelpDialog = ({ open, onClose }) => {
 
   const markdownStyles = useMemo(() => getMarkdownStyles(theme), [theme]);
 
+  // 抽取 changelog 加载逻辑，首次打开和 retry 都调用
+  const loadChangelog = useCallback(async () => {
+    setChangelog('loading');
+    setHasUpdate(false);
+
+    const v = await getVersion().catch(() => null);
+    setCurrentVersion(v);
+
+    try {
+      const res = await fetch('https://api.github.com/repos/Ducheese/source-modding-search-tool/releases');
+      const data = await res.json();
+
+      if (!Array.isArray(data)) {
+        const isRateLimit = (data?.message ?? '').toLowerCase().includes('rate limit');
+        setChangelog(isRateLimit ? 'ratelimit' : 'error');
+        return;
+      }
+
+      const parsed = data.map(r => ({
+        tag: r.tag_name,
+        name: r.name || r.tag_name,
+        body: (r.body || t('help.changelog.noBody'))
+          .replace(/<img\b[^>]*>/gi, '')
+          .trim(),
+        date: r.published_at ? r.published_at.slice(0, 10) : null,
+      }));
+      setChangelog(parsed);
+
+      // 检查更新
+      const latestDate = parsed[0]?.date;
+      const currentRelease = parsed.find(r => r.tag.replace(/^v/, '') === v);
+      const currentDate = currentRelease?.date;
+      setHasUpdate(!!(latestDate && currentDate && latestDate > currentDate));
+    } catch {
+      setChangelog('error');
+    }
+  }, [t]);
+
+  // effect 1: 打开时加载 AI 设置
   useEffect(() => {
     if (!open) return;
     setAiSettings(loadAiSettings());
-    if (changelog !== null) return;
-
-    // 获取配置文件路径 - 只在首次打开帮助对话框时执行一次 - 因为 changelog !== null 会阻止后续执行
-    homeDir().then(home => {
-      if (home) {
-        // Windows: C:\Users\YourName\AppData\Local\com.sourcemodding.searchtool
-        const path = `${home}\\AppData\\Local\\com.sourcemodding.searchtool`;
-        setConfigPath(path);
-      }
-    }).catch((err) => {
-      console.error('Failed to find config folder:', err);
-    });
-
-    setChangelog('loading');
-    getVersion().catch(() => null).then(v => {
-      setCurrentVersion(v);
-      fetch('https://api.github.com/repos/Ducheese/source-modding-search-tool/releases')
-        .then(r => r.json())
-        .then(data => {
-          if (!Array.isArray(data)) {
-            const isRateLimit = data?.message?.toLowerCase().includes('rate limit');
-            setChangelog(isRateLimit ? 'ratelimit' : 'error');
-            return;
-          }
-          const parsed = data.map(r => ({
-            tag: r.tag_name,
-            name: r.name || r.tag_name,
-            body: (r.body || t('help.changelog.noBody'))
-              .replace(/<img\b[^>]*>/gi, '')   // HTML img 标签（含 GitHub 的非自闭合形式）
-              .trim(),
-            date: r.published_at ? r.published_at.slice(0, 10) : null,  // 只取 yyyy-mm-dd
-          }));
-          setChangelog(parsed);
-          // 检查更新：找到当前版本对应的 release 日期，和最新 release 日期比较
-          const latestDate = parsed[0]?.date;
-          const currentRelease = parsed.find(r => r.tag.replace(/^v/, '') === v);
-          const currentDate = currentRelease?.date;
-          if (latestDate && currentDate && latestDate > currentDate) {
-            setHasUpdate(true);
-          }
-        })
-        .catch(() => setChangelog('error'));
-    });
   }, [open]);
+
+  // effect 2: 获取配置文件路径（只执行一次）
+  useEffect(() => {
+    if (!open || configPath !== null) return;
+    homeDir()
+      .then(home => {
+        if (home) {
+          const path = `${home}\\AppData\\Local\\com.sourcemodding.searchtool`;
+          setConfigPath(path);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to find config folder:', err);
+      });
+  }, [open, configPath]);
+
+  // effect 3: 首次打开时加载 changelog
+  useEffect(() => {
+    if (!open || changelog !== null) return;
+    loadChangelog();
+  }, [open, changelog, loadChangelog]);
+
+  // effect 4: 关闭时重置错误态（下次打开可以自动重试）
+  useEffect(() => {
+    if (!open && (changelog === 'error' || changelog === 'ratelimit')) {
+      setChangelog(null);
+    }
+  }, [open, changelog]);
 
   const handleAiSettingChange = (field, value) => {
     setAiSettings(prev => {
@@ -640,14 +664,17 @@ const HelpDialog = ({ open, onClose }) => {
                 <CircularProgress size={28} />
               </Box>
             ) : changelog === 'ratelimit' ? (
-              <Alert severity="info">
+              <Alert
+                severity="info"
+                action={<Button size="small" onClick={loadChangelog}>{t('help.changelog.retry')}</Button>}
+              >
                 {t('help.changelog.rateLimit')}
                 {' '}<a href="https://github.com/Ducheese/source-modding-search-tool/releases" target="_blank" rel="noopener noreferrer">{t('help.changelog.rateLimitLink')}</a>
               </Alert>
             ) : changelog === 'error' ? (
               <Alert
                 severity="warning"
-                action={<Button size="small" onClick={() => setChangelog(null)}>{t('help.changelog.retry')}</Button>}
+                action={<Button size="small" onClick={loadChangelog}>{t('help.changelog.retry')}</Button>}
               >
                 {t('help.changelog.error')}
               </Alert>

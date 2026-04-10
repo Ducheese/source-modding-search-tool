@@ -264,7 +264,22 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
       // 对话框关闭 → 清理
       onMinimizedChange(false);
       activeRequestRef.current = null;
-      setIsStreaming(false);
+
+      // 如果有正在 streaming 的消息，finalize 它们
+      const hadStreaming = messagesRef.current.some(m => m.streaming);
+      if (hadStreaming) {
+        const nextMessages = messagesRef.current.map((m) => {
+          if (!m.streaming) return m;
+          return {
+            ...m,
+            streaming: false,
+            content: m.content || '**Interrupted**',
+          };
+        });
+        messagesRef.current = nextMessages;
+        setIsStreaming(false);
+        // 不需要 setMessages，因为对话框已关闭，下次打开时会 resetDialogState
+      }
     }
     // 如果 open 保持 true（如语言切换导致的重渲染），不做任何操作，保留 minimized 状态
   }, [open, resetDialogState, onMinimizedChange]);
@@ -283,9 +298,20 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
 
       // 后端报错
       if (payload.error) {
-        showSnackbar(payload.error, 'error');
-        setIsStreaming(false);
+        // 正确 finalize 那条 assistant message，而不是留下空消息
+        const nextMessages = messagesRef.current.map((m) => {
+          if (m.id !== meta.messageId) return m;
+          return {
+            ...m,
+            streaming: false,
+            content: `**Error:** ${payload.error}`,
+          };
+        });
+        messagesRef.current = nextMessages;
         cancelPendingUpdate();
+        setIsStreaming(false);
+        setMessages(nextMessages);
+        showSnackbar(payload.error, 'error');
         return;
       }
 
@@ -417,8 +443,19 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
         thinking_budget: thinkingBudget,
       });
     } catch {
-      showSnackbar(t('aiChat.startFailed'), 'error');
+      // 正确 finalize 那条 assistant message
+      const nextMessages = messagesRef.current.map((m) => {
+        if (m.id !== assistantId) return m;
+        return {
+          ...m,
+          streaming: false,
+          content: `**Error:** ${t('aiChat.startFailed')}`,
+        };
+      });
+      messagesRef.current = nextMessages;
+      setMessages(nextMessages);
       setIsStreaming(false);
+      showSnackbar(t('aiChat.startFailed'), 'error');
     }
   };
 
