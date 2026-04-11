@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"匹配文件数: {count}"
 		"results.totalMatches"	"匹配行数: {count}"
 		"results.executionTime"	"耗时: {ms}ms"
+		"results.expandAll"	"全部展开"
+		"results.collapseAll"	"全部收起"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"复制路径"

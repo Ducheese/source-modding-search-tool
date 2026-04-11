@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"Übereinstimmende Dateien: {count}"
 		"results.totalMatches"	"Übereinstimmende Zeilen: {count}"
 		"results.executionTime"	"Zeit: {ms}ms"
+		"results.expandAll"	"Alle aufklappen"
+		"results.collapseAll"	"Alle zuklappen"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"Pfad kopieren"

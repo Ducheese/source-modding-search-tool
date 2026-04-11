@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"相符檔案數：{count}"
 		"results.totalMatches"	"相符行數：{count}"
 		"results.executionTime"	"耗時：{ms}ms"
+		"results.expandAll"	"全部展開"
+		"results.collapseAll"	"全部折疊"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"複製路徑"

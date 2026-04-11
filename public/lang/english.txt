@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"Matched files: {count}"
 		"results.totalMatches"	"Matched lines: {count}"
 		"results.executionTime"	"Time: {ms}ms"
+		"results.expandAll"	"Expand All"
+		"results.collapseAll"	"Collapse All"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"Copy path"

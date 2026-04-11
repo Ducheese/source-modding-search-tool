@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"일치 파일: {count}"
 		"results.totalMatches"	"일치 줄: {count}"
 		"results.executionTime"	"시간: {ms}ms"
+		"results.expandAll"	"모두 펼치기"
+		"results.collapseAll"	"모두 접기"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"경로 복사"

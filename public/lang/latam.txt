@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"Archivos coincidentes: {count}"
 		"results.totalMatches"	"Líneas coincidentes: {count}"
 		"results.executionTime"	"Tiempo: {ms}ms"
+		"results.expandAll"	"Expandir todo"
+		"results.collapseAll"	"Contraer todo"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"Copiar ruta"

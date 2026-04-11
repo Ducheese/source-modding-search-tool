@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"一致ファイル数: {count}"
 		"results.totalMatches"	"一致行数: {count}"
 		"results.executionTime"	"処理時間: {ms}ms"
+		"results.expandAll"	"すべて展開"
+		"results.collapseAll"	"すべて折りたたむ"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"パスをコピー"

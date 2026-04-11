@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"File yang cocok: {count}"
 		"results.totalMatches"	"Baris yang cocok: {count}"
 		"results.executionTime"	"Waktu: {ms}ms"
+		"results.expandAll"	"Perluas semua"
+		"results.collapseAll"	"Ciutkan semua"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"Salin jalur"

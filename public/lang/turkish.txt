@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"Eşleşen dosya: {count}"
 		"results.totalMatches"	"Eşleşen satır: {count}"
 		"results.executionTime"	"Süre: {ms}ms"
+		"results.expandAll"	"Tümünü genişlet"
+		"results.collapseAll"	"Tümünü daralt"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"Yolu kopyala"

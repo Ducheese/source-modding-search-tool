@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"Файлів зі збігами: {count}"
 		"results.totalMatches"	"Рядків зі збігами: {count}"
 		"results.executionTime"	"Час: {ms}мс"
+		"results.expandAll"	"Розгорнути все"
+		"results.collapseAll"	"Згорнути все"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"Копіювати шлях"

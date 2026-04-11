@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"Pasujących plików: {count}"
 		"results.totalMatches"	"Pasujących wierszy: {count}"
 		"results.executionTime"	"Czas: {ms}ms"
+		"results.expandAll"	"Rozwiń wszystko"
+		"results.collapseAll"	"Zwiń wszystko"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"Kopiuj ścieżkę"

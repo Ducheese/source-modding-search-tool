@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"Файлов с совпадениями: {count}"
 		"results.totalMatches"	"Совпадающих строк: {count}"
 		"results.executionTime"	"Время: {ms}мс"
+		"results.expandAll"	"Развернуть всё"
+		"results.collapseAll"	"Свернуть всё"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"Копировать путь"

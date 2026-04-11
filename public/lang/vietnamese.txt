@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"Tệp khớp: {count}"
 		"results.totalMatches"	"Dòng khớp: {count}"
 		"results.executionTime"	"Thời gian: {ms}ms"
+		"results.expandAll"	"Mở rộng tất cả"
+		"results.collapseAll"	"Thu gọn tất cả"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"Sao chép đường dẫn"

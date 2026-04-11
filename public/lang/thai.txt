@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"ไฟล์ที่ตรงกัน: {count}"
 		"results.totalMatches"	"บรรทัดที่ตรงกัน: {count}"
 		"results.executionTime"	"เวลา: {ms}ms"
+		"results.expandAll"	"ขยายทั้งหมด"
+		"results.collapseAll"	"ย่อทั้งหมด"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"คัดลอกเส้นทาง"

@@ -6,6 +6,40 @@ import AIChatDialog from './AIChatDialog';
 import VirtualizedResults from './VirtualizedResults';
 import { useLanguage } from '../utils/i18n';
 
+// 抽离的展开/收起图标动画组件
+const AnimatedExpandIcon = ({ isAllExpanded }) => (
+  <Box
+    sx={{
+      position: 'relative',
+      width: 24,
+      height: 24,
+      flexShrink: 0,
+      lineHeight: 0,
+      transformOrigin: 'center',
+      transition: 'transform 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+      transform: isAllExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+      '& .icon-layer': {
+        position: 'absolute',
+        inset: 0,
+        display: 'grid',
+        placeItems: 'center',
+        transition: 'opacity 180ms ease',
+      },
+      '& .MuiSvgIcon-root': {
+        fontSize: 22,
+        display: 'block',
+      },
+    }}
+  >
+    <Box className="icon-layer" sx={{ opacity: isAllExpanded ? 0 : 1 }}>
+      <UnfoldMore aria-hidden="true" />
+    </Box>
+    <Box className="icon-layer" sx={{ opacity: isAllExpanded ? 1 : 0 }}>
+      <UnfoldLess aria-hidden="true" />
+    </Box>
+  </Box>
+);
+
 const SearchResults = ({ results, isSearching, isAtBottom }) => {
   const theme = useTheme();
   const { t } = useLanguage();
@@ -152,51 +186,12 @@ const SearchResults = ({ results, isSearching, isAtBottom }) => {
     mainContent = (
       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ p: 2, borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-            {/* 左侧：标题 + 展开/折叠按钮 */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="h6" fontWeight="700" sx={{ lineHeight: 1.2 }}>{t('results.title')}</Typography>
-              <Button
-                size="small"
-                variant="text"
-                onClick={handleToggleExpandAll}
-                disabled={isExpandPending && expandState !== 'all'}
-                startIcon={expandState === 'all' ? <UnfoldLess /> : <UnfoldMore />}
-                aria-label={expandState === 'all' ? t('results.collapseAll') : t('results.expandAll')}
-                sx={{
-                  minWidth: 0,
-                  px: 1,
-                  py: 0.5,
-                  borderRadius: 999,
-                  // 三态样式
-                  color: expandState === 'none'
-                    ? theme.palette.text.secondary
-                    : theme.palette.primary.main,
-                  bgcolor: expandState === 'some'
-                    ? alpha(theme.palette.primary.main, 0.08)
-                    : 'transparent',
-                  '&:hover': {
-                    bgcolor: alpha(theme.palette.primary.main, 0.12),
-                  },
-                  // 窄屏时只显示图标
-                  '.MuiButton-startIcon': { mr: { xs: 0, sm: 0.5 }, ml: 0 },
-                }}
-              >
-                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
-                  {expandState === 'all' ? t('results.collapseAll') : t('results.expandAll')}
-                </Box>
-                {expandState === 'some' && (
-                  <Typography
-                    component="span"
-                    variant="caption"
-                    sx={{ ml: 0.75, opacity: 0.72, display: { xs: 'none', md: 'inline' } }}
-                  >
-                    {expandedCount}/{filePaths.length}
-                  </Typography>
-                )}
-              </Button>
-            </Box>
-            {/* 右侧：AI 和导出按钮 */}
+
+          {/* 第一行：标题与全局操作 */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+            <Typography variant="h6" fontWeight="700" sx={{ lineHeight: 1.2 }}>
+              {t('results.title')}
+            </Typography>
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Button size="small" variant="contained" startIcon={<SmartToy />} onClick={handleOpenChat}>
                 {t('results.sendToAi')}
@@ -210,12 +205,61 @@ const SearchResults = ({ results, isSearching, isAtBottom }) => {
               </Menu>
             </Box>
           </Box>
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            <Chip size="small" label={t('results.totalFiles',   { count: results.totalFiles })} />
-            <Chip size="small" label={t('results.matchedFiles', { count: results.matchedFiles })} color="secondary" />
-            <Chip size="small" label={t('results.totalMatches', { count: results.totalMatches })} color="primary" />
-            <Chip size="small" label={t('results.executionTime', { ms: results.executionTime })} />
+
+          {/* 第二行：统计数据与列表视图控制 */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+            {/* 左侧：统计 Chips */}
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Chip size="small" label={t('results.totalFiles',   { count: results.totalFiles })} />
+              <Chip size="small" label={t('results.matchedFiles', { count: results.matchedFiles })} color="secondary" />
+              <Chip size="small" label={t('results.totalMatches', { count: results.totalMatches })} color="primary" />
+              <Chip size="small" label={t('results.executionTime', { ms: results.executionTime })} />
+            </Box>
+
+            {/* 右侧：展开/收起 控制器 */}
+            <Button
+              size="small"
+              variant="text"
+              onClick={handleToggleExpandAll}
+              disabled={isExpandPending && expandState !== 'all'}
+              disableRipple
+              startIcon={<AnimatedExpandIcon isAllExpanded={expandState === 'all'} />}
+              sx={{
+                minWidth: 0,
+                px: 1,
+                py: 0.5,
+                whiteSpace: 'nowrap',
+                color: expandState === 'none'
+                  ? theme.palette.text.secondary
+                  : theme.palette.primary.main,
+                '& .MuiButton-startIcon': {
+                  marginLeft: 0,
+                  marginRight: 0.5,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                },
+                '&:hover': {
+                  bgcolor: 'transparent',
+                  color: theme.palette.primary.dark,
+                },
+              }}
+            >
+              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                {expandState === 'all' ? t('results.collapseAll') : t('results.expandAll')}
+              </Box>
+              {expandState === 'some' && (
+                <Typography
+                  component="span"
+                  variant="caption"
+                  sx={{ ml: 0.5, fontWeight: 700 }}
+                >
+                  ({expandedCount}/{filePaths.length})
+                </Typography>
+              )}
+            </Button>
           </Box>
+
         </Box>
         <VirtualizedResults ref={virtualizedRef} results={results} expandedFiles={expandedFiles} onToggleFile={toggleFile} />
       </Box>

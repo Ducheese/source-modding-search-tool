@@ -119,6 +119,8 @@
 		"results.matchedFiles"	"Arquivos correspondentes: {count}"
 		"results.totalMatches"	"Linhas correspondentes: {count}"
 		"results.executionTime"	"Tempo: {ms}ms"
+		"results.expandAll"	"Expandir tudo"
+		"results.collapseAll"	"Recolher tudo"
 
 		// ── VirtualizedResults / ResultLine ───────────────────────────────
 		"result.copyPath"	"Copiar caminho"
