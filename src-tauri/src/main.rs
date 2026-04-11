@@ -123,6 +123,8 @@ struct AiRegexResponse {
 struct Feedback {
     #[serde(rename = "type")]  // 前端字段名为 type，Rust 映射到 feedback_type
     feedback_type: String,
+    #[serde(rename = "contributor", default)]
+    contributor_nickname: Option<String>,
     data: serde_json::Value,    // 使用 Value 支持任意 JSON 结构
     timestamp: String,
 }
@@ -898,23 +900,37 @@ async fn test_ai_connection(request: AiRegexRequest) -> Result<(), String> {
 }
 
 // Feedback input validation limits (synced with frontend MAX_LEN)
+const FEEDBACK_MAX_CONTRIBUTOR_NICKNAME_LEN: usize = 40;
 const FEEDBACK_MAX_FIELD_LEN: usize = 4_000;
 const FEEDBACK_MAX_TOTAL_LEN: usize = 12_000;
+
+// 单行输入清洗函数，把换行符、制表符替换成空格
+fn sanitize_single_line_input(value: &str) -> String {
+    value
+        .chars()
+        .map(|c| match c {
+            '\r' | '\n' | '\t' => ' ',
+            _ => c,
+        })
+        .collect()
+}
 
 /// Recursively validate string field lengths in feedback.data
 fn validate_feedback_lengths(data: &serde_json::Value, budget: &mut usize) -> Result<(), String> {
     match data {
         serde_json::Value::String(s) => {
-            if s.len() > FEEDBACK_MAX_FIELD_LEN {
+            // 更加健壮性的字数预算控制写法
+            let len = s.chars().count();
+            if len > FEEDBACK_MAX_FIELD_LEN {
                 return Err(format!(
                     "A feedback field exceeds the maximum length of {} characters.",
                     FEEDBACK_MAX_FIELD_LEN
                 ));
             }
-            *budget = budget.saturating_sub(s.len());
-            if *budget == 0 {
+            if len > *budget {
                 return Err("Total feedback payload is too large.".to_string());
             }
+            *budget -= len;
             Ok(())
         }
         serde_json::Value::Object(map) => {
@@ -951,6 +967,28 @@ async fn submit_feedback(feedback: Feedback) -> Result<(), String> {
         return Err("Invalid feedback type.".to_string());
     }
 
+    // 取出 + 清洗 + 去首尾空格
+    let contributor_nickname = sanitize_single_line_input(
+        feedback.contributor_nickname.as_deref().unwrap_or("")
+    )
+    .trim()
+    .to_string();
+
+    // 长度校验
+    if contributor_nickname.chars().count() > FEEDBACK_MAX_CONTRIBUTOR_NICKNAME_LEN {
+        return Err(format!(
+            "Contributor nickname exceeds the maximum length of {} characters.",
+            FEEDBACK_MAX_CONTRIBUTOR_NICKNAME_LEN
+        ));
+    }
+
+    // 空值兜底
+    let contributor_nickname = if contributor_nickname.is_empty() {
+        "Anonymous".to_string()
+    } else {
+        contributor_nickname
+    };
+
     let mut budget = FEEDBACK_MAX_TOTAL_LEN;
     validate_feedback_lengths(&feedback.data, &mut budget)?;
 
@@ -961,10 +999,18 @@ async fn submit_feedback(feedback: Feedback) -> Result<(), String> {
     // ==============================
     
     let formspree_endpoint = format!("https://formspree.io/f/{}", FORMSPREE_FORM_ID);
-    
-    // 构建表单数据 - 包含类型字段便于分类
+
+    let feedback_type_for_log = feedback.feedback_type.clone();
+    let language_for_log = feedback
+        .data
+        .get("language")
+        .and_then(|v| v.as_str())
+        .unwrap_or("-")
+        .to_string();
+
     let form_data = json!({
         "type": feedback.feedback_type,
+        "contributor": contributor_nickname.clone(),
         "data": feedback.data,
         "timestamp": feedback.timestamp,
     });
@@ -998,9 +1044,10 @@ async fn submit_feedback(feedback: Feedback) -> Result<(), String> {
     }
 
     info!(
-        "Feedback submitted: type={}, lang={}",
-        feedback.feedback_type,
-        feedback.data.get("language").and_then(|v| v.as_str()).unwrap_or("-")
+        "Feedback submitted: type={}, contributor={}, lang={}",
+        feedback_type_for_log,
+        contributor_nickname,
+        language_for_log
     );
 
     Ok(())

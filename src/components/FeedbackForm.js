@@ -21,6 +21,7 @@ import {
   useTheme,
   Divider,
   Button,
+  InputBase,
 } from '@mui/material';
 import {
   Send,
@@ -28,6 +29,7 @@ import {
   BugReport,
   Lightbulb,
   CheckCircle,
+  PersonOutline,
 } from '@mui/icons-material';
 import { SUPPORTED_LANGS } from '../utils/i18n';
 import { tauriAPI } from '../utils/tauriBridge';
@@ -60,10 +62,102 @@ const FEEDBACK_TYPES = [
 ];
 
 const MAX_LEN = {
+  contributorNickname: 40,
   title: 200,
   description: 4000,
   steps: 2000,
   suggestion: 4000,
+};
+
+const USER_IDENTITY_STORAGE_KEY = 'userID';
+const ANONYMOUS_CONTRIBUTOR_ID_PATTERN = /^User#[A-F0-9]{4}$/;
+
+// 生成、清洗、归一化、读取、保存。
+const createAnonymousContributorId = () => {
+  if (
+    typeof window !== 'undefined' &&
+    window.crypto &&
+    typeof window.crypto.getRandomValues === 'function'
+  ) {
+    const random = new Uint16Array(1);
+    window.crypto.getRandomValues(random);
+    return `User#${random[0].toString(16).toUpperCase().padStart(4, '0')}`;
+  }
+
+  const fallback = Math.floor(Math.random() * 0x10000);
+  return `User#${fallback.toString(16).toUpperCase().padStart(4, '0')}`;
+};
+
+const getContributorNicknameLength = (value) => Array.from(String(value ?? '')).length;
+
+const sanitizeContributorNicknameDraft = (value) => {
+  const cleaned = String(value ?? '').replace(/[\r\n\t]+/g, ' ');
+  const chars = Array.from(cleaned);
+  return chars.slice(0, MAX_LEN.contributorNickname).join('');
+};
+
+const normalizeContributorNickname = (value, anonymousId) => {
+  const normalized = sanitizeContributorNicknameDraft(value).trim();
+  return normalized || anonymousId;
+};
+
+const loadFeedbackIdentity = () => {
+  const fallbackAnonymousId = createAnonymousContributorId();
+
+  if (typeof window === 'undefined') {
+    return {
+      anonymousId: fallbackAnonymousId,
+      contributorNickname: fallbackAnonymousId,
+    };
+  }
+
+  try {
+    const raw = localStorage.getItem(USER_IDENTITY_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+
+    const anonymousId =
+      typeof parsed?.anonymousId === 'string' &&
+      ANONYMOUS_CONTRIBUTOR_ID_PATTERN.test(parsed.anonymousId)
+        ? parsed.anonymousId
+        : fallbackAnonymousId;
+
+    const draftNickname = sanitizeContributorNicknameDraft(parsed?.contributorNickname ?? '');
+    const contributorNickname = draftNickname.trim() || anonymousId;
+
+    return {
+      anonymousId,
+      contributorNickname,
+    };
+  } catch {
+    return {
+      anonymousId: fallbackAnonymousId,
+      contributorNickname: fallbackAnonymousId,
+    };
+  }
+};
+
+const saveFeedbackIdentity = (identity) => {
+  if (typeof window === 'undefined') return;
+
+  try {
+    const anonymousId =
+      typeof identity?.anonymousId === 'string' &&
+      ANONYMOUS_CONTRIBUTOR_ID_PATTERN.test(identity.anonymousId)
+        ? identity.anonymousId
+        : createAnonymousContributorId();
+
+    localStorage.setItem(
+      USER_IDENTITY_STORAGE_KEY,
+      JSON.stringify({
+        anonymousId,
+        contributorNickname: sanitizeContributorNicknameDraft(
+          identity?.contributorNickname ?? ''
+        ),
+      })
+    );
+  } catch {
+    // Ignore storage failures and keep the form usable
+  }
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -362,6 +456,147 @@ const TranslationFeedbackForm = ({ onSubmit, isSubmitting }) => {
 };
 
 // ─────────────────────────────────────────────────────────────
+// Contributor Identity Field
+// ─────────────────────────────────────────────────────────────
+
+const ContributorIdentityField = ({
+  anonymousId,
+  contributorNickname,
+  hasCustomContributorNickname,
+  onChange,
+  onBlur,
+  onReset,
+  isSubmitting,
+}) => {
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) auto' },
+        gap: 2,
+        alignItems: 'end',
+      }}
+    >
+      <Box>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          fontWeight={600}
+          sx={{ display: 'block', mb: 0.75 }}
+        >
+          Contributor Nickname
+        </Typography>
+
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            pb: 0.5,
+            transition: 'border-color 0.2s ease',
+            '&:focus-within': {
+              borderColor: 'primary.main',
+            },
+          }}
+        >
+          <PersonOutline
+            sx={{
+              fontSize: 18,
+              color: 'text.secondary',
+              flexShrink: 0,
+            }}
+          />
+
+          <InputBase
+            value={contributorNickname}
+            onChange={onChange}
+            onBlur={onBlur}
+            disabled={isSubmitting}
+            fullWidth
+            placeholder={anonymousId}
+            inputProps={{
+              'aria-label': 'Contributor Nickname',
+              spellCheck: false,
+              autoCapitalize: 'off',
+              autoCorrect: 'off',
+            }}
+            sx={{
+              flex: 1,
+              fontSize: 15,
+              '& input': {
+                p: 0,
+                lineHeight: 1.8,
+              },
+            }}
+          />
+
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ flexShrink: 0 }}
+          >
+            {getContributorNicknameLength(contributorNickname)}/{MAX_LEN.contributorNickname}
+          </Typography>
+        </Box>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ mt: 0.75, display: 'block' }}
+        >
+          Saved locally and attached to every submission. Leave the default anonymous ID if you prefer privacy.
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: { xs: 'flex-start', sm: 'flex-end' },
+          gap: 0.75,
+          minWidth: { sm: 210 },
+        }}
+      >
+        <Typography variant="caption" color="text.secondary">
+          Anonymous ID:{' '}
+          <Box
+            component="span"
+            sx={{
+              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+              color: 'text.primary',
+            }}
+          >
+            {anonymousId}
+          </Box>
+        </Typography>
+
+        <Typography
+          variant="caption"
+          color={hasCustomContributorNickname ? 'primary.main' : 'text.secondary'}
+        >
+          {hasCustomContributorNickname ? 'Using custom nickname' : 'Using anonymous ID'}
+        </Typography>
+
+        <Button
+          variant="text"
+          size="small"
+          onClick={onReset}
+          disabled={isSubmitting}
+          sx={{
+            minWidth: 0,
+            px: 0,
+            alignSelf: { xs: 'flex-start', sm: 'flex-end' },
+            visibility: hasCustomContributorNickname ? 'visible' : 'hidden',
+          }}
+        >
+          Use Anonymous ID
+        </Button>
+      </Box>
+    </Box>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────────────────────
 const FeedbackForm = () => {
@@ -370,6 +605,14 @@ const FeedbackForm = () => {
   const [feedbackType, setFeedbackType] = useState('translation');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const [contributorIdentity, setContributorIdentity] = useState(loadFeedbackIdentity);
+  const { anonymousId, contributorNickname } = contributorIdentity;
+  const effectiveContributorNickname = normalizeContributorNickname(
+    contributorNickname,
+    anonymousId
+  );
+  const hasCustomContributorNickname = effectiveContributorNickname !== anonymousId;
 
   // Ref for timeout cleanup
   const successTimeoutRef = useRef(null);
@@ -383,19 +626,70 @@ const FeedbackForm = () => {
     };
   }, []);
 
+  // 昵称输入框的完整事件处理逻辑 —— 输入、失焦、重置、自动持久化。
+  useEffect(() => {
+    saveFeedbackIdentity(contributorIdentity);
+  }, [contributorIdentity]);
+
+  const handleContributorNicknameChange = useCallback((event) => {
+    const nextValue = sanitizeContributorNicknameDraft(event.target.value);
+    setContributorIdentity((prev) => ({
+      ...prev,
+      contributorNickname: nextValue,
+    }));
+  }, []);
+
+  const handleContributorNicknameBlur = useCallback(() => {
+    setContributorIdentity((prev) => {
+      const normalized = normalizeContributorNickname(
+        prev.contributorNickname,
+        prev.anonymousId
+      );
+
+      return normalized === prev.contributorNickname
+        ? prev
+        : { ...prev, contributorNickname: normalized };
+    });
+  }, []);
+
+  const handleResetContributorNickname = useCallback(() => {
+    setContributorIdentity((prev) =>
+      prev.contributorNickname === prev.anonymousId
+        ? prev
+        : { ...prev, contributorNickname: prev.anonymousId }
+    );
+  }, []);
+
   const handleSubmitFeedback = useCallback(
     async (feedback) => {
+      const normalizedContributorNickname = normalizeContributorNickname(
+        contributorNickname,
+        anonymousId
+      );
+
+      if (normalizedContributorNickname !== contributorNickname) {
+        setContributorIdentity((prev) => ({
+          ...prev,
+          contributorNickname: normalizedContributorNickname,
+        }));
+      }
+
       setIsSubmitting(true);
       try {
         await tauriAPI.submitFeedback({
           ...feedback,
+          contributor: normalizedContributorNickname,
           timestamp: new Date().toISOString(),
         });
-        setShowSuccess(true);
 
-        // Store timeout ref for cleanup
-        successTimeoutRef.current = setTimeout(() => {
+        // Clear any existing timeout before setting new one
+        if (successTimeoutRef.current) {
+          clearTimeout(successTimeoutRef.current);
+        }
+        setShowSuccess(true);
+        successTimeoutRef.current = window.setTimeout(() => {
           setShowSuccess(false);
+          successTimeoutRef.current = null;
         }, 2500);
 
         return true;
@@ -408,7 +702,7 @@ const FeedbackForm = () => {
         setIsSubmitting(false);
       }
     },
-    [showSnackbar]
+    [showSnackbar, contributorNickname, anonymousId]
   );
 
   const renderFeedbackContent = useCallback(() => {
@@ -484,6 +778,16 @@ const FeedbackForm = () => {
       {/* Main form area */}
       <Fade in={!showSuccess} timeout={400}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <ContributorIdentityField
+            anonymousId={anonymousId}
+            contributorNickname={contributorNickname}
+            hasCustomContributorNickname={hasCustomContributorNickname}
+            onChange={handleContributorNicknameChange}
+            onBlur={handleContributorNicknameBlur}
+            onReset={handleResetContributorNickname}
+            isSubmitting={isSubmitting}
+          />
+
           {/* Interactive card navigation */}
           <Box sx={{ display: 'flex', gap: 2 }} role="radiogroup" aria-label="Feedback Type Selection">
             {FEEDBACK_TYPES.map((type) => {
