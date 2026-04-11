@@ -118,9 +118,18 @@ const LangSwitcher = ({ showSnackbar }) => {
   }, [loadedLang, pendingLang, showSnackbar, t, SUPPORTED_LANGS]);
 
   const handleToggle = (e) => setAnchorEl(prev => prev ? null : e.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+  const handleClose = () => {
+    if (document.activeElement) {
+      document.activeElement.blur();
+    }
+    setAnchorEl(null);
+  };
 
   const handleSelect = (newLang) => {
+    // 先移除焦点，再关闭菜单（避免 aria-hidden 警告）
+    if (document.activeElement) {
+      document.activeElement.blur();
+    }
     handleClose();
     if (newLang === lang) return;
     setPendingLang(newLang);

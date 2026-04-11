@@ -89,7 +89,7 @@ const MainLayout = () => {
           </Typography>
 
           <Tooltip title={t('layout.helpTooltip')}>
-            <IconButton onClick={() => setHelpOpen(true)} sx={{ color: 'primary.contrastText' }}>
+            <IconButton onClick={(e) => { e.currentTarget.blur(); setHelpOpen(true); }} sx={{ color: 'primary.contrastText' }}>
               <HelpOutline />
             </IconButton>
           </Tooltip>

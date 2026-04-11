@@ -514,7 +514,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
                     {/* 分类下的 Chips */}
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {category.items.map((snippet) => (
-                        <Tooltip key={snippet.label + snippet.value} title={t('search.insertSnippet', { value: snippet.value })}>
+                        <Tooltip key={snippet.label + snippet.value + useRegex} title={t('search.insertSnippet', { value: snippet.value })}>
                           <Chip
                             label={snippet.label}
                             size="small"

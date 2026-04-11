@@ -289,7 +289,7 @@ const TranslationFeedbackForm = ({ onSubmit, isSubmitting }) => {
   // Validation
   // ─────────────────────────────────────────────────────────────
   const trimmedSuggestion = suggestion.trim();
-  const isSameAsCurrent = trimmedSuggestion && trimmedSuggestion === currentTranslation.trim();
+  const isSameAsCurrent = !!trimmedSuggestion && trimmedSuggestion === currentTranslation.trim();
   const suggestionError = suggestionTouched && !trimmedSuggestion;
   const isValid = !!(
     selectedLang &&
