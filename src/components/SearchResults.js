@@ -210,7 +210,14 @@ const SearchResults = ({ results, isSearching, isAtBottom }) => {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
             {/* 左侧：统计 Chips */}
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              <Chip size="small" label={t('results.totalFiles',   { count: results.totalFiles })} />
+              <Chip
+                size="small"
+                label={
+                  results.inputFiles > results.totalFiles
+                    ? `${t('results.totalFiles', { count: results.totalFiles })} (-${results.inputFiles - results.totalFiles})`
+                    : t('results.totalFiles', { count: results.totalFiles })
+                }
+              />
               <Chip size="small" label={t('results.matchedFiles', { count: results.matchedFiles })} color="secondary" />
               <Chip size="small" label={t('results.totalMatches', { count: results.totalMatches })} color="primary" />
               <Chip size="small" label={t('results.executionTime', { ms: results.executionTime })} />

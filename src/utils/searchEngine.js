@@ -16,6 +16,7 @@ export const searchInFiles = async (files, searchOptions) => {
 
   // Rust 返回的结构: { files: SearchResult[], filtered_file_count: usize }
   const rustResults = rustResponse.files || [];
+  // filteredFileCount：通过 include/exclude 路径通配符过滤后、实际被搜索的文件数
   const filteredFileCount = rustResponse.filtered_file_count || 0;
 
   // 转换结果格式以适配现有的 UI
@@ -24,7 +25,8 @@ export const searchInFiles = async (files, searchOptions) => {
   const results = {
     query: searchOptions.query,
     options: searchOptions,
-    totalFiles: filteredFileCount, // 使用 Rust 返回的过滤后文件数
+    inputFiles: files.length,          // 传入搜索的文件总数（pattern 过滤前）
+    totalFiles: filteredFileCount,     // 实际被搜索的文件数（通过 include/exclude pattern 过滤后）
     matchedFiles: rustResults.length,
     totalMatches: totalMatches,
     files: rustResults,
