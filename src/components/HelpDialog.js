@@ -464,6 +464,7 @@ const HelpDialog = ({ open, onClose }) => {
               <ul>
                 <li dangerouslySetInnerHTML={{ __html: t('help.regex.rule1') }} />
                 <li dangerouslySetInnerHTML={{ __html: t('help.regex.rule2') }} />
+                <li dangerouslySetInnerHTML={{ __html: t('help.regex.rule3') }} />
               </ul>
             </Typography>
           </TabPanel>

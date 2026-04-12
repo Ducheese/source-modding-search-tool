@@ -176,7 +176,8 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"Đơn vị hiển thị tối thiểu là một dòng, và các neo đầu/cuối dòng được hỗ trợ. Tuy nhiên, từ góc nhìn backend, toàn bộ tệp được coi là một chuỗi dài với dòng mới được nhúng sẵn (<code>\\n</code> hoặc <code>\\r\\n</code>). Khuyến nghị:"
 		"help.regex.rule1"	"Sử dụng <code>[ \\t]*</code> thay vì <code>\\s*</code> khi khớp khoảng trắng tại ranh giới dòng, để tránh khớp không mong muốn giữa các dòng"
-		"help.regex.rule2"	"Công cụ byte-regex không hỗ trợ các xác nhận look-around: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> sẽ không hoạt động"
+		"help.regex.rule2"	"Công cụ regex không hỗ trợ các xác nhận look-around: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> sẽ không hoạt động"
+		"help.regex.rule3"	"Cho dù là tìm kiếm regex hay thường, mỗi tệp hiển thị tối đa 500 kết quả khớp đầu tiên"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"Trình tạo và giải thích regex AI yêu cầu phản hồi mô hình nhanh. Tránh các mô hình lớn hoặc các mô hình luôn bật chế độ suy nghĩ."

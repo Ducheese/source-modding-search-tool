@@ -176,7 +176,8 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"Minimalną jednostką wyświetlania jest pojedynczy wiersz, obsługiwane są kotwice początku/końca wiersza. Jednak z perspektywy backendu cały plik jest jednym długim ciągiem ze znakami nowej linii (<code>\\n</code> lub <code>\\r\\n</code>). Zalecenia:"
 		"help.regex.rule1"	"Używaj <code>[ \\t]*</code> zamiast <code>\\s*</code> przy dopasowywaniu białych znaków na granicach wierszy, aby uniknąć niezamierzonych dopasowań między wierszami"
-		"help.regex.rule2"	"Silnik regex bajtów nie obsługuje asercji (lookahead / lookbehind): <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> nie będą działać"
+		"help.regex.rule2"	"Silnik regex nie obsługuje asercji (lookahead / lookbehind): <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> nie będą działać"
+		"help.regex.rule3"	"Zarówno przy wyszukiwaniu regex, jak i zwykłym, każdy plik wyświetla maksymalnie pierwsze 500 dopasowań"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"Generator regex z AI i moduł wyjaśniający regexy wymagają szybkich odpowiedzi modelu. Unikaj dużych modeli lub modeli ze stale włączonym trybem rozumowania."

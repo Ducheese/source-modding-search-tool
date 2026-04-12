@@ -176,7 +176,8 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"Die kleinste Anzeigeeinheit ist eine einzelne Zeile, und Zeilenanfang-/-end-Anker werden unterstützt. Aus Backend-Perspektive wird die gesamte Datei jedoch als eine lange Zeichenkette mit eingebetteten Zeilenumbrüchen behandelt (<code>\\n</code> oder <code>\\r\\n</code>). Empfehlungen:"
 		"help.regex.rule1"	"Verwende <code>[ \\t]*</code> statt <code>\\s*</code> beim Abgleichen von Leerzeichen an Zeilengrenzen, um unbeabsichtigte zeilenübergreifende Treffer zu vermeiden"
-		"help.regex.rule2"	"Die Byte-Regex-Engine unterstützt keine Look-Around-Assertions: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> funktionieren nicht"
+		"help.regex.rule2"	"Die Regex-Engine unterstützt keine Look-Around-Assertions: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> funktionieren nicht"
+		"help.regex.rule3"	"Egal ob Regex- oder normale Suche, pro Datei werden maximal die ersten 500 Treffer angezeigt"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"AI-Regex-Generator und -Erklärer benötigen schnelle Modellantworten. Große Modelle oder Modelle mit ständig aktiviertem Denkmodus möglichst vermeiden."

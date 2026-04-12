@@ -176,7 +176,8 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"L'unité minimale d'affichage est une seule ligne, et les ancres de début/fin de ligne sont supportées. Cependant, du point de vue du backend, le fichier entier est traité comme une longue chaîne avec des sauts de ligne intégrés (<code>\\n</code> ou <code>\\r\\n</code>). Recommandations :"
 		"help.regex.rule1"	"Utilisez <code>[ \\t]*</code> au lieu de <code>\\s*</code> pour les espaces aux limites de lignes, afin d'éviter les correspondances inter-lignes non désirées"
-		"help.regex.rule2"	"Le moteur regex de bytes ne supporte pas les assertions de voisinage : <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> ne fonctionneront pas"
+		"help.regex.rule2"	"Le moteur regex ne supporte pas les assertions de voisinage : <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> ne fonctionneront pas"
+		"help.regex.rule3"	"Que ce soit en recherche regex ou normale, chaque fichier affiche au maximum les 500 premières correspondances"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"Le générateur et l'explicateur de regex AI nécessitent des réponses rapides du modèle. Évitez les grands modèles ou les modèles avec raisonnement toujours actif."

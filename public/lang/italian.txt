@@ -176,7 +176,8 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"L'unità minima di visualizzazione è una singola riga, e le ancore di inizio/fine riga sono supportate. Tuttavia, dal punto di vista del backend, l'intero file è trattato come una lunga stringa con interruzioni di riga incorporate (<code>\\n</code> o <code>\\r\\n</code>). Raccomandazioni:"
 		"help.regex.rule1"	"Usa <code>[ \\t]*</code> invece di <code>\\s*</code> per gli spazi ai limiti di riga, per evitare corrispondenze inter-riga indesiderate"
-		"help.regex.rule2"	"Il motore regex per byte non supporta le asserzioni lookaround: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> non funzioneranno"
+		"help.regex.rule2"	"Il motore regex non supporta le asserzioni lookaround: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> non funzioneranno"
+		"help.regex.rule3"	"Sia in ricerca regex che normale, ogni file visualizza al massimo le prime 500 corrispondenze"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"Il generatore e l'esplicatore di regex AI richiedono risposte rapide dal modello. Evita modelli grandi o con ragionamento sempre attivo."

@@ -176,7 +176,8 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"A unidade mínima de exibição é uma única linha, e âncoras de início/fim de linha são suportadas. No entanto, da perspectiva do backend, o arquivo inteiro é tratado como uma longa string com quebras de linha incorporadas (<code>\\n</code> ou <code>\\r\\n</code>). Recomendações:"
 		"help.regex.rule1"	"Use <code>[ \\t]*</code> em vez de <code>\\s*</code> ao corresponder espaços em branco nos limites de linha, para evitar correspondências não intencionais entre linhas"
-		"help.regex.rule2"	"O motor de regex de bytes não suporta lookaround (nem lookahead nem lookbehind): <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> não funcionarão"
+		"help.regex.rule2"	"O motor de regex não suporta lookaround (nem lookahead nem lookbehind): <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> não funcionarão"
+		"help.regex.rule3"	"Seja em pesquisa regex ou normal, cada arquivo mostra no máximo as primeiras 500 correspondências"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"O gerador e o explicador de regex com IA exigem respostas rápidas do modelo. Evite modelos grandes ou modelos com raciocínio sempre ativado."

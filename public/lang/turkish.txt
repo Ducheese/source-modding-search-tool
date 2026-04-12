@@ -176,7 +176,8 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"Minimum görüntüleme birimi tek bir satırdır ve satır başı/sonu çapaları desteklenir. Ancak arka uç perspektifinden, dosyanın tamamı içine gömülü yeni satır karakterleri (<code>\\n</code> veya <code>\\r\\n</code>) barındıran uzun bir dize olarak ele alınır. Öneriler:"
 		"help.regex.rule1"	"Satır sınırlarında boşluk eşleştirirken istenmeyen satırlar arası eşleşmeleri önlemek için <code>\\s*</code> yerine <code>[ \\t]*</code> kullanın"
-		"help.regex.rule2"	"Bayt (byte) regex motoru ileri/geriye dönük aramaları (look-around) desteklemez: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> çalışmayacaktır"
+		"help.regex.rule2"	"Regex motoru ileri/geriye dönük aramaları (look-around) desteklemez: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> çalışmayacaktır"
+		"help.regex.rule3"	"Regex veya normal arama olsun, her dosya en fazla ilk 500 eşleşmeyi gösterir"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"AI regex oluşturucu ve açıklayıcı için model yanıtlarının hızlı olması gerekir. Büyük modellerden veya düşünme modu sürekli açık olan modellerden kaçının."

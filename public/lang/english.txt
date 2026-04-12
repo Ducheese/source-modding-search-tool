@@ -176,7 +176,8 @@
 		// ── HelpDialog — regex tips tab ─────────────────────────────────────
 		"help.regex.intro"	"The minimum display unit is a single line, and line-start/end anchors are supported. However, from the backend's perspective, the entire file is treated as one long string with embedded newlines (<code>\\n</code> or <code>\\r\\n</code>). Recommendations:"
 		"help.regex.rule1"	"Use <code>[ \\t]*</code> instead of <code>\\s*</code> when matching whitespace at line boundaries, to avoid unintended cross-line matches"
-		"help.regex.rule2"	"The byte-regex engine does not support look-around assertions: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> will not work"
+		"help.regex.rule2"	"The regex engine does not support look-around assertions: <code>(?=...), (?!...), (?&lt;=...), (?&lt;!...)</code> will not work"
+		"help.regex.rule3"	"Whether using regex or regular search, each file displays a maximum of the first 500 matches"
 
 		// ── HelpDialog — AI config tab ──────────────────────────────────────
 		"help.aiConfig.desc"	"AI regex generator and explainer require fast model responses. Avoid large models or models with always-on reasoning."
