@@ -62,6 +62,7 @@ export const SUPPORTED_LANGS = [
   { id: 'italian', label: 'Italiano' },
   { id: 'portuguese', label: 'Português (Portugal)' },
   { id: 'spanish', label: 'Español (España)' },
+  { id: 'hindi', label: 'हिन्दी' },
 ];
 
 const BROWSER_TO_VALVE_MAP = {
@@ -94,6 +95,7 @@ const BROWSER_TO_VALVE_MAP = {
   'ja': 'japanese',
   'fr': 'french',
   'it': 'italian',
+  'hi': 'hindi',
 };
 
 const VALVE_TO_HTML_MAP = {
@@ -117,6 +119,7 @@ const VALVE_TO_HTML_MAP = {
   italian: 'it',
   portuguese: 'pt-PT',
   spanish: 'es',
+  hindi: 'hi',
 };
 
 // ─── 环境检测工具 ────────────────────────────────────────────────────────────
