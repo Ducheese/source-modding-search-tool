@@ -58,6 +58,7 @@ const ResultLine = memo(({
 
       {/* 2. 文本内容区域 (自适应宽度，内部横向滚动) */}
       <Box
+        className="thin-scrollbar"
         sx={{
           flex: 1,
           height: '100%',
@@ -70,17 +71,6 @@ const ResultLine = memo(({
           fontFamily: '"JetBrains Mono", Consolas, Monaco, "Courier New", monospace',   // 等宽字体是必须的
           fontSize: '0.875rem',
           color: isMatch ? theme.palette.text.primary : alpha(theme.palette.text.secondary, 0.3),
-          // 美化滚动条
-          '&::-webkit-scrollbar': {
-            height: '3px',   // 很细的滚动条
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: alpha(theme.palette.text.primary, 0.1),   // 以此为标准？
-            borderRadius: '2px',   // 圆角
-          },
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: 'transparent',
-          },
         }}
       >
         <span>  {/* ← 套一层，让 flex 只有一个子项，解决复制字全散开的问题 */}

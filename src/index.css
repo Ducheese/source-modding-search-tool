@@ -39,6 +39,20 @@ body {
   background-color: var(--scrollbar-thumb-hover-color);
 }
 
+/* 细滚动条类：用于 ResultLine 等需要细横向滚动条的组件 */
+.thin-scrollbar::-webkit-scrollbar {
+  height: 3px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color);
+  border-radius: 2px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 /* 全局缩进大小 */
 * {
   tab-size: 4;
