@@ -111,7 +111,7 @@
 		"results.emptyTitle"	"अभी कोई खोज नहीं"
 		"results.emptyHint"	"खोज शुरू करने के लिए कुछ दर्ज करें।"
 		"results.noMatchTitle"	"कोई परिणाम नहीं मिला"
-		"results.noMatchHint"	"खोजी गई फ़ाइलें: {count} — कोई परिणाम नहीं मिला।"
+		"results.noMatchHint"	"खोज की गई फ़ाइलें: {count} — कोई परिणाम नहीं मिला।"
 		"results.title"	"खोज परिणाम"
 		"results.sendToAi"	"AI को भेजें"
 		"results.export"	"निर्यात करें"
@@ -159,7 +159,7 @@
 		"help.tab.regex"	"Regex सुझाव"
 		"help.tab.aiConfig"	"AI मॉडल कॉन्फ़िगरेशन"
 		"help.tab.colorScheme"	"रंग योजना"
-		"help.tab.changelog"	"परिवर्तन सूची"
+		"help.tab.changelog"	"परिवर्तन लॉग"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
 		"help.intro"	"यह उपकरण Valve Source 1 इंजन (CS:S, CS:GO, L4D2, GMod आदि) के मॉड डेवलपर्स के लिए हल्का, उच्च-प्रदर्शन वाला <b>एकाधिक फ़ाइलों में टेक्स्ट खोज</b> समाधान है। समर्थित फ़ाइल प्रकार: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
@@ -223,7 +223,7 @@
 
 		// ── Color scheme labels ─────────────────────────────────────────────
 		"colorScheme.0.label"	"ऑरोरा बैंगनी"
-		"colorScheme.1.label"	"सकुरा गुलाबी"
+		"colorScheme.1.label"	"सकुरा वृष्टि"
 		"colorScheme.2.label"	"गहरा नीलहरित"
 		"colorScheme.3.label"	"राख अंगार"
 		"colorScheme.4.label"	"वन काई"
