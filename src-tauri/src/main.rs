@@ -1,7 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use rayon::prelude::*;
-use regex::bytes::RegexBuilder; // 注意：改为 bytes 的正则
+use regex::RegexBuilder; // 纯文本正则，性能与 bytes 版本相当，但保证 UTF-8 边界安全
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::fs::File;
@@ -383,6 +383,68 @@ fn is_binary(data: &[u8]) -> bool {
     content_inspector::inspect(&data[..len]).is_binary()
 }
 
+// ========== 纯文本搜索辅助函数 ==========
+
+/// 移除行尾的 \r（处理 Windows 换行）
+fn trim_trailing_cr(s: &str) -> &str {
+    s.strip_suffix('\r').unwrap_or(s)
+}
+
+/// 根据字节位置计算行号索引（二分查找，O(log N)）
+fn line_index_from_pos(newlines: &[usize], pos: usize) -> usize {
+    match newlines.binary_search(&pos) {
+        Ok(i) => i,
+        Err(i) => i,
+    }
+}
+
+/// 获取指定行的字节范围 [start, end)
+fn line_range(newlines: &[usize], text_len: usize, line_idx: usize) -> (usize, usize) {
+    let start = if line_idx == 0 { 0 } else { newlines[line_idx - 1] + 1 };
+    let end = if line_idx < newlines.len() { newlines[line_idx] } else { text_len };
+    (start, end)
+}
+
+/// 获取指定行的文本（已移除行尾 \r）
+fn get_line_text<'a>(text: &'a str, newlines: &[usize], line_idx: usize) -> &'a str {
+    let (start, end) = line_range(newlines, text.len(), line_idx);
+    trim_trailing_cr(&text[start..end])
+}
+
+/// 解码文件内容：BOM优先 -> UTF-8严格校验 -> chardetng兜底
+/// 返回 (文本内容, 编码名称)
+fn decode_text(bytes: &[u8]) -> (std::borrow::Cow<'_, str>, String) {
+    // 1. 检查 BOM（UTF-16 由 chardetng 处理，这里只处理 UTF-8 BOM）
+    if bytes.starts_with(&[0xEF, 0xBB, 0xBF]) {
+        // UTF-8 BOM
+        let text = std::str::from_utf8(&bytes[3..]).unwrap_or("");
+        return (std::borrow::Cow::Owned(text.to_string()), "UTF-8-BOM".to_string());
+    } else if bytes.starts_with(&[0xFF, 0xFE]) && !bytes.starts_with(&[0xFF, 0xFE, 0x00, 0x00]) {
+        // UTF-16 LE BOM（排除 UTF-32 LE，后者由 chardetng 处理）
+        let encoding = encoding_rs::UTF_16LE;
+        let (cow, _, _) = encoding.decode(bytes);
+        return (cow, "UTF-16LE".to_string());
+    } else if bytes.starts_with(&[0xFE, 0xFF]) {
+        // UTF-16 BE BOM
+        let encoding = encoding_rs::UTF_16BE;
+        let (cow, _, _) = encoding.decode(bytes);
+        return (cow, "UTF-16BE".to_string());
+    }
+
+    // 2. 尝试严格 UTF-8 解码（零拷贝）
+    if let Ok(s) = std::str::from_utf8(bytes) {
+        return (std::borrow::Cow::Borrowed(s), "UTF-8".to_string());
+    }
+
+    // 3. chardetng 兜底（可处理 UTF-32、GBK、Shift-JIS 等）
+    let mut detector = chardetng::EncodingDetector::new();
+    let head_len = bytes.len().min(8192);
+    detector.feed(&bytes[..head_len], true);
+    let encoding = detector.guess(None, true);
+    let (cow, _, _) = encoding.decode(bytes);
+    (cow, encoding.name().to_string())
+}
+
 // 1. 扫描目录：逻辑不变，但你可以把 FileDropZone.js 里的递归逻辑全移到这
 // 只要前端传文件夹路径，这里就负责递归到底
 #[tauri::command]
@@ -482,45 +544,40 @@ async fn read_file(path: String) -> Result<serde_json::Value, String> {
     }
 }
 
-// 4. 核心：基于 Mmap 和 Byte Regex 的极速搜索
+// 4. 核心：基于 Mmap 和纯文本正则的搜索
+// 关键原则：一旦解码成 &str，后续流程必须是纯文本操作
 #[tauri::command]
 async fn search_in_files(
-    files: Vec<String>, // 这是从前端传来的、未经筛选的完整列表
+    files: Vec<String>,
     options: SearchOptions,
 ) -> Result<SearchResponse, String> {
     
-    // --- 【敕令核心】在此处设下结界！ ---
     let include_set = build_pattern_set(&options.include_pattern)?;
     let exclude_set = build_pattern_set(&options.exclude_pattern)?;
 
-    // 从完整的 `files` 列表中，筛选出我们真正需要的“精锐之师”
     let target_files: Vec<String> = files
-        .into_par_iter() // 用 Rayon 并行过滤，即便列表很长也很快
+        .into_par_iter()
         .filter(|path_str| {
             let path = Path::new(path_str);
             
-            // 法则一：排除优先
             if let Some(exclude) = &exclude_set {
                 if exclude.is_match(path) {
                     return false;
                 }
             }
             
-            // 法则二：包含守则 (如果设置了的话)
             if let Some(include) = &include_set {
                 if !include.is_match(path) {
                     return false;
                 }
             }
             
-            true // 通过所有审判的，才是真正的勇士
+            true
         })
         .collect();
 
-      // 记录过滤后实际参与搜索的文件总数
-      let filtered_file_count = target_files.len();
+    let filtered_file_count = target_files.len();
 
-    // 构造字节级正则，性能比起字符串正则更稳定
     let pattern = if options.use_regex {
         options.query.clone()
     } else {
@@ -533,16 +590,17 @@ async fn search_in_files(
         pattern
     };
 
-    // 使用 bytes::RegexBuilder
+    // 使用 regex::RegexBuilder（纯文本正则，性能与 bytes 版本相当）
     let re = RegexBuilder::new(&final_pattern)
         .case_insensitive(!options.case_sensitive)
-        .multi_line(options.use_regex) // 支持匹配行首行尾。行尾情况比较复杂，存在\r\n和\n两种换行格式，此时的$只会匹配到\n之前的位置，也就是说\r被视为内容之一，而不是换行符。
-        .unicode(true) // 开启 unicode 支持以处理中文
+        .multi_line(options.use_regex)
+        .unicode(true)
         .build()
         .map_err(|e| format!("无效的正则表达式: {}", e))?;
 
-    // 【重点】现在，我们只对筛选后的 `target_files` 进行最终的审判！
-    let results: Vec<SearchResult> = target_files // <- 注意，用的是这个！
+    let context_lines = options.context_lines;
+
+    let results: Vec<SearchResult> = target_files
         .par_iter()
         .filter_map(|path_str| {
             let path = Path::new(path_str);
@@ -551,141 +609,113 @@ async fn search_in_files(
                 .with_context(|| format!("无法映射文件: {}", path.display()))
                 .ok()?;
 
-            // 二进制检查
-            if is_binary(&mmap) { return None; }
+            if is_binary(&mmap) {
+                return None;
+            }
 
-            // 编码检测与解码：统一转为 UTF-8，修复 GBK 等非 UTF-8 文件的乱码问题
-            let head_len = mmap.len().min(8192);
-            let mut detector = chardetng::EncodingDetector::new();
-            detector.feed(&mmap[..head_len], true);
-            let encoding = detector.guess(None, true);
-            let (cow, _, _) = encoding.decode(&mmap);
-            let content_bytes = cow.as_bytes();
-            
-            let mut matches: Vec<MatchItem> = Vec::new();
-            
-            // 为了高效获取上下文，我们先预计算所有换行符的位置。
-            // 这一步会消耗一些时间，但只执行一次，能让后续的行号和上下文查找变得极快且准确。
-            let newline_indices: Vec<usize> = content_bytes.iter()
+            // 解码：BOM优先 -> UTF-8严格校验 -> chardetng兜底
+            let (content_cow, _encoding) = decode_text(&mmap);
+            let content = content_cow.as_ref();
+
+            if content.is_empty() {
+                return None;
+            }
+
+            // 换行符位置索引（'\n' 是 ASCII 单字节，在 UTF-8 中字节位置安全）
+            let newline_indices: Vec<usize> = content
+                .as_bytes()
+                .iter()
                 .enumerate()
-                .filter(|(_, &b)| b == b'\n')
-                .map(|(i, _)| i)
+                .filter_map(|(i, &b)| if b == b'\n' { Some(i) } else { None })
                 .collect();
-            let total_lines = newline_indices.len() + if content_bytes.is_empty() { 0 } else { 1 };
 
-            // 在解码后的 UTF-8 字节上搜索
-            for mat in re.find_iter(content_bytes) {
-                if matches.len() >= 500 { break; } // 限制数量
+            let total_lines = newline_indices.len() + 1;
+            let mut matches: Vec<MatchItem> = Vec::new();
+            let mut last_line_number: Option<usize> = None;
 
-                let start = mat.start();
-
-                // **** 【上下文/行号获取的精髓部分】 ****
-
-                // 1. 确定匹配行号 (i) 和当前行在 newline_indices 中的索引 (line_idx)
-                // line_idx 是当前行前的换行符索引，用于定位
-                // 使用二分查找（Binary Search）在预计算的索引中定位，这是 O(log N) 的操作，比 O(N) 的遍历快得多！
-                let line_idx = match newline_indices.binary_search(&start) {
-                    Ok(i) => i,        // 匹配点正好在换行符上，通常不会发生
-                    Err(i) => i.min(newline_indices.len()), // 换行符的索引
-                };
-                
-                let line_number = line_idx + 1;
-
-                // 2. 确定当前行的起止位置
-                let line_start = if line_idx == 0 { 0 } else { newline_indices[line_idx - 1] + 1 };
-                let line_end = if line_idx >= newline_indices.len() { content_bytes.len() } else { newline_indices[line_idx] };
-                
-                // 3. 避免重复添加同一行的多个匹配
-                // 检查 matches 中最后一个元素的行号，如果相同，说明这一行已经被添加过了（包含了所有高亮），直接跳过
-                if let Some(last) = matches.last() {
-                    if last.line_number == line_number {
-                        continue;
-                    }
+            // 在 &str 上搜索，regex::Regex 返回的字节偏移是 UTF-8 安全边界
+            for mat in re.find_iter(content) {
+                if matches.len() >= 500 {
+                    break;
                 }
 
-                // 4. 生成高亮片段 (Segments) - 这就是你要的“后端处理正则切分”
-                // 我们需要对 *这一行* 再次运行正则，找出 *所有* 匹配项，然后切分
-                let line_bytes = &content_bytes[line_start..line_end];
+                let line_idx = line_index_from_pos(&newline_indices, mat.start());
+                let line_number = line_idx + 1;
+
+                // 同一行只收一次，前端展示这一行里所有高亮
+                if last_line_number == Some(line_number) {
+                    continue;
+                }
+                last_line_number = Some(line_number);
+
+                let line_text = get_line_text(content, &newline_indices, line_idx);
+
+                // 对当前行重新跑一遍正则，切出高亮 segments
                 let mut segments = Vec::new();
                 let mut last_idx = 0;
 
-                // 注意：re.find_iter 是基于整个 mmap 的。
-                // 为了只处理当前行，我们可以截取 line_bytes 并对其运行正则？
-                // 不，这样性能不好。我们已经有了 pattern，直接在 line_bytes 上跑一个新的 find_iter 即可。
-                // 这里的开销极小，因为 line_bytes 通常很短。
-                
-                for m in re.find_iter(line_bytes) {
-                    let m_start = m.start();
-                    let m_end = m.end();
-
-                    // 添加匹配前的普通文本
-                    if m_start > last_idx {
-                        let text = String::from_utf8_lossy(&line_bytes[last_idx..m_start]).to_string();
-                        segments.push(Segment { text, is_match: false });
+                for m in re.find_iter(line_text) {
+                    if m.start() > last_idx {
+                        segments.push(Segment {
+                            text: line_text[last_idx..m.start()].to_string(),
+                            is_match: false,
+                        });
                     }
-                    
-                    // 添加匹配文本
-                    let text = String::from_utf8_lossy(&line_bytes[m_start..m_end]).to_string();
-                    segments.push(Segment { text, is_match: true });
 
-                    last_idx = m_end;
+                    segments.push(Segment {
+                        text: line_text[m.start()..m.end()].to_string(),
+                        is_match: true,
+                    });
+
+                    last_idx = m.end();
                 }
 
-                // 添加剩余文本
-                if last_idx < line_bytes.len() {
-                    let mut text = String::from_utf8_lossy(&line_bytes[last_idx..]).to_string();
-                    // 移除末尾可能的 \r
-                    if text.ends_with('\r') { text.pop(); }
-                    segments.push(Segment { text, is_match: false });
+                if last_idx < line_text.len() {
+                    segments.push(Segment {
+                        text: line_text[last_idx..].to_string(),
+                        is_match: false,
+                    });
                 }
 
-                let context_lines = if options.context_lines == 0 { 1 } else { options.context_lines };
+                // 防止跨行正则导致本行切不出高亮时，整行为空
+                if segments.is_empty() {
+                    segments.push(Segment {
+                        text: line_text.to_string(),
+                        is_match: false,
+                    });
+                }
 
-                let get_line_text = |target_idx: usize| -> String {
-                    let target_start = if target_idx == 0 { 0 } else { newline_indices[target_idx - 1] + 1 };
-                    let target_end = if target_idx >= newline_indices.len() { content_bytes.len() } else { newline_indices[target_idx] };
-                    let mut text = String::from_utf8_lossy(&content_bytes[target_start..target_end]).to_string();
-                    if text.ends_with('\r') { text.pop(); }
-                    text
-                };
-
-                // 3. 提取多行上下文（Before/After）
                 let mut before = Vec::new();
                 let mut after = Vec::new();
 
-                if context_lines > 0 {
-                    for offset in (1..=context_lines).rev() {
-                        if line_idx >= offset {
-                            before.push(get_line_text(line_idx - offset));
-                        }
-                    }
-
-                    for offset in 1..=context_lines {
-                        let target_idx = line_idx + offset;
-                        if target_idx < total_lines {
-                            after.push(get_line_text(target_idx));
-                        }
+                for offset in (1..=context_lines).rev() {
+                    if line_idx >= offset {
+                        before.push(get_line_text(content, &newline_indices, line_idx - offset).to_string());
                     }
                 }
 
-                // **** 【上下文/行号获取的精髓部分】END ****
-                
+                for offset in 1..=context_lines {
+                    let target_idx = line_idx + offset;
+                    if target_idx < total_lines {
+                        after.push(get_line_text(content, &newline_indices, target_idx).to_string());
+                    }
+                }
+
                 matches.push(MatchItem {
                     line_number,
-                    segments, // 这里直接给前端片段
+                    segments,
                     context: MatchContext { before, after },
                 });
             }
 
-            // ... (结果返回逻辑不变) ...
-            if !matches.is_empty() {
+            if matches.is_empty() {
+                None
+            } else {
                 Some(SearchResult {
                     path: path_str.clone(),
                     name: path.file_name().unwrap_or_default().to_string_lossy().to_string(),
                     matches,
                 })
-            } else {
-                None
             }
         })
         .collect();
