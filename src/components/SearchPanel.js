@@ -37,7 +37,7 @@ import {
 import { searchInFiles } from '../utils/searchEngine';
 import { useSnackbar } from '../App';
 import { tauriAPI } from '../utils/tauriBridge';
-import { DEFAULT_AI_REGEX_PROMPT, DEFAULT_AI_EXPLAIN_PROMPT, loadAiSettings } from '../utils/aiDefaults';
+import { getDefaultPrompts, loadAiSettings } from '../utils/aiDefaults';
 import { useLanguage } from '../utils/i18n';
 
 // 使用 useReducer 整合所有状态配置
@@ -95,7 +95,7 @@ function searchReducer(state, action) {
 const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
   const theme = useTheme();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const REGEX_CATEGORIES = useMemo(() => [
     {
@@ -174,7 +174,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
 
   const explainRegex = useCallback(async (regexStr) => {
     if (!regexStr.trim()) return;
-    const settings = loadAiSettings();
+    const settings = loadAiSettings(lang);
     // 未配置 AI 则静默跳过，不打扰用户
     if (!settings.baseUrl || !settings.apiKey || (!settings.explainModelName && !settings.regexModelName)) return;
 
@@ -184,7 +184,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     try {
       const response = await tauriAPI.generateAiRegex({
         user_prompt: regexStr,
-        system_prompt: settings.explainPrompt || DEFAULT_AI_EXPLAIN_PROMPT,
+        system_prompt: settings.explainPrompt || getDefaultPrompts(lang).explainPrompt,
         api_key: settings.apiKey,
         base_url: settings.baseUrl,
         model_name: settings.explainModelName || settings.regexModelName,
@@ -197,7 +197,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     } finally {
       setIsExplaining(false);
     }
-  }, []);
+  }, [lang]);
 
   // 用于输入正则快捷方式
   const searchInputRef = useRef(null);
@@ -294,7 +294,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     const intent = searchQuery.trim();
     if (!intent || files.length === 0) return;
 
-    const settings = loadAiSettings();
+    const settings = loadAiSettings(lang);
     if (!settings.baseUrl || !settings.apiKey || !settings.regexModelName) {
       showSnackbar(t('search.aiConfigHint'), 'warning');
       return;
@@ -305,7 +305,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     try {
       const response = await tauriAPI.generateAiRegex({
         user_prompt: intent,
-        system_prompt: settings.regexPrompt || DEFAULT_AI_REGEX_PROMPT,
+        system_prompt: settings.regexPrompt || getDefaultPrompts(lang).regexPrompt,
         api_key: settings.apiKey,
         base_url: settings.baseUrl,
         model_name: settings.regexModelName,
@@ -322,7 +322,7 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
     } finally {
       setIsAiGenerating(false);
     }
-  }, [searchQuery, files, showSnackbar, t, handleSearch]);
+  }, [searchQuery, files, showSnackbar, t, handleSearch, lang]);
 
   const handleKeyPress = useCallback((e) => {
     if (e.key === 'Enter') {

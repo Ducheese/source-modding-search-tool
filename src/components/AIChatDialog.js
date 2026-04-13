@@ -18,7 +18,7 @@ import { Close, ExpandLess, ExpandMore, Lightbulb, Remove, Send, SmartToy } from
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useSnackbar } from '../App';
-import { DEFAULT_AI_CHAT_PROMPT, loadAiSettings } from '../utils/aiDefaults';
+import { getDefaultPrompts, loadAiSettings } from '../utils/aiDefaults';
 import { formatResultsForExport } from '../utils/searchEngine';
 import { tauriAPI } from '../utils/tauriBridge';
 import { listen } from '@tauri-apps/api/event';
@@ -183,7 +183,7 @@ const MessageMetrics = React.memo(({ metrics }) => {
 const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, isAtBottom }) => {
   const theme       = useTheme();
   const showSnackbar = useSnackbar();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   // ── State ──
   const [messages,   setMessages]   = useState([]);
@@ -226,8 +226,8 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
 
   /** 打开对话框时：重置所有状态，准备好上下文 */
   const resetDialogState = useCallback(() => {
-    const settings = loadAiSettings(); // 添加这一行
-    const hasContext = (settings.chatPrompt || DEFAULT_AI_CHAT_PROMPT).includes('{{context}}');
+    const settings = loadAiSettings(lang); // 添加这一行
+    const hasContext = (settings.chatPrompt || getDefaultPrompts(lang).chatPrompt).includes('{{context}}');
     const contextNotice = {
       id: `context-${Date.now()}`,
       role: 'info',
@@ -246,7 +246,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
     } catch {
       contextPromptRef.current = '';
     }
-  }, [results, t]);
+  }, [results, t, lang]);
 
   // ─── Effects ───────────────────────────────────────────────────────────────
 
@@ -380,7 +380,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
     const content = inputValue.trim();
     if (!content) return;
 
-    const settings = loadAiSettings();
+    const settings = loadAiSettings(lang);
     if (!settings.baseUrl || !settings.apiKey || (!settings.chatModelName && !settings.regexModelName)) {
       showSnackbar(t('aiChat.aiConfigHint'), 'warning');
       return;
@@ -422,7 +422,7 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
     // 1. 系统提示（含搜索结果上下文）
     // 2. 已完成的 user/assistant 消息（过滤掉还在 streaming 的，避免发送空内容）
     // 有个||是出于防御性编程的目的
-    const chatPrompt = (settings.chatPrompt || DEFAULT_AI_CHAT_PROMPT)
+    const chatPrompt = (settings.chatPrompt || getDefaultPrompts(lang).chatPrompt)
       .replace('{{context}}', contextPromptRef.current);
 
     const chatMessages = [

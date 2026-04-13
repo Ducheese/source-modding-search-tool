@@ -30,9 +30,7 @@ import { useLanguage } from '../utils/i18n';
 import { COLOR_SCHEMES } from '../utils/themeConfig';
 import { getMarkdownStyles } from '../utils/markdownStyles';
 import { 
-  DEFAULT_AI_REGEX_PROMPT, 
-  DEFAULT_AI_CHAT_PROMPT, 
-  DEFAULT_AI_EXPLAIN_PROMPT, 
+  getDefaultPrompts,
   loadAiSettings, 
   AI_SETTINGS_STORAGE_KEY 
 } from '../utils/aiDefaults';
@@ -195,7 +193,6 @@ const ReleaseEntry = ({ tag, name, body, date, markdownStyles, defaultExpanded =
 // ─────────────────────────────────────────────────────────────
 const HelpDialog = ({ open, onClose }) => {
   const [tabValue, setTabValue] = useState(0);
-  const [aiSettings, setAiSettings] = useState(loadAiSettings());
   const [isTesting, setIsTesting] = useState(false);
   const handleTabChange = (_, newValue) => setTabValue(newValue);
 
@@ -205,7 +202,9 @@ const HelpDialog = ({ open, onClose }) => {
   const [configPath, setConfigPath] = useState(null);
 
   const showSnackbar = useSnackbar();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  
+  const [aiSettings, setAiSettings] = useState(() => loadAiSettings(lang));
 
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -255,8 +254,8 @@ const HelpDialog = ({ open, onClose }) => {
   // effect 1: 打开时加载 AI 设置
   useEffect(() => {
     if (!open) return;
-    setAiSettings(loadAiSettings());
-  }, [open]);
+    setAiSettings(loadAiSettings(lang));
+  }, [open, lang]);
 
   // effect 2: 获取配置文件路径（只执行一次）
   useEffect(() => {
@@ -560,9 +559,10 @@ const HelpDialog = ({ open, onClose }) => {
                 <Button
                   variant="outlined"
                   onClick={() => {
-                      handleAiSettingChange('regexPrompt', DEFAULT_AI_REGEX_PROMPT)
-                      handleAiSettingChange('chatPrompt', DEFAULT_AI_CHAT_PROMPT)
-                      handleAiSettingChange('explainPrompt', DEFAULT_AI_EXPLAIN_PROMPT)
+                      const defaults = getDefaultPrompts(lang);
+                      handleAiSettingChange('regexPrompt', defaults.regexPrompt)
+                      handleAiSettingChange('chatPrompt', defaults.chatPrompt)
+                      handleAiSettingChange('explainPrompt', defaults.explainPrompt)
                     }
                   }
                 >
