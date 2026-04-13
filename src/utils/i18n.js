@@ -267,7 +267,7 @@ export const LanguageProvider = ({ children }) => {
 
   const setLang = useCallback((newLang) => {
     if (SUPPORTED_LANGS.some(l => l.id === newLang)) {
-      setLoadedLang(null); // 先重置，表示正在加载
+      // 不重置 loadedLang，让旧语言继续显示直到新语言加载完成
       setLangState(newLang);
       safeSetLocalStorage(LANGUAGE_STORAGE_KEY, newLang);
       safeSetDocumentLang(newLang);

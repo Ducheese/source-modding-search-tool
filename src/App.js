@@ -187,7 +187,7 @@ const LangSwitcher = ({ showSnackbar }) => {
 // ─────────────────────────────────────────────────────────────
 
 function AppInner({ darkMode, setDarkMode, schemeId, handleSetScheme }) {
-  const { t } = useLanguage();
+  const { t, loadedLang } = useLanguage();
 
   const [snackbarQueue, setSnackbarQueue] = useState([]);
 
@@ -201,6 +201,12 @@ function AppInner({ darkMode, setDarkMode, schemeId, handleSetScheme }) {
   };
 
   const theme = getTheme(schemeId, darkMode ? 'dark' : 'light');
+
+  // 仅初始加载时等待（loadedLang 初始为 null）
+  // 切换语言时 loadedLang 不重置，旧语言继续显示，无 loading
+  if (!loadedLang) {
+    return null;
+  }
 
   return (
     <ThemeSchemeContext.Provider value={{ schemeId, setSchemeId: handleSetScheme }}>
