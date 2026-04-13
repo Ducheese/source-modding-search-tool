@@ -514,11 +514,8 @@ async fn get_file_stats(file_paths: Vec<String>) -> Result<Vec<FileStats>, Strin
                 // 快速统计行数：并行计算换行符，比 .lines().count() 快几十倍
                 let lines = mmap.par_iter().filter(|&&b| b == b'\n').count() + 1;
 
-                // 探测编码（只取头部一部分，不要全量探测）
-                let head_len = mmap.len().min(8192); // 8KB
-                let mut detector = chardetng::EncodingDetector::new();
-                detector.feed(&mmap[..head_len], true);
-                let encoding = detector.guess(None, true).name().to_string();
+                // 统一使用 decode_text() 获取编码（UTF-8 优先，避免误判）
+                let (_, encoding) = decode_text(&mmap);
 
                 FileStats { size, lines, encoding, path: path_str.clone(), name }
             } else {
@@ -541,13 +538,9 @@ fn read_file_content(path: &Path) -> anyhow::Result<(String, String)> {
         return Ok((String::new(), "Binary".to_string()));
     }
 
-    // 使用 chardetng 进行精准的编码探测
-    let mut detector = chardetng::EncodingDetector::new();
-    detector.feed(&buffer, true);
-    let encoding = detector.guess(None, true);
-    
-    let (cow, _, _) = encoding.decode(&buffer);
-    Ok((cow.into_owned(), encoding.name().to_string()))
+    // 统一使用 decode_text() 解码（UTF-8 优先，避免误判）
+    let (cow, encoding) = decode_text(&buffer);
+    Ok((cow.into_owned(), encoding))
 }
 
 // 3. 读取单个文件内容
