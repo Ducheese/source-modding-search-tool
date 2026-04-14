@@ -1,599 +1,40 @@
 /**
  * FeedbackForm.js
- * General Feedback Panel Component
- * Supported feedback types:
- * - Translation feedback
- * - Bug report
- * - Feature request
+ * Orchestrator component for feedback submission
+ * Coordinates identity state, submission logic, and form rendering
  */
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Box,
-  TextField,
   Typography,
   Paper,
-  CircularProgress,
-  Autocomplete,
   Fade,
   alpha,
-  createFilterOptions,
   useTheme,
   Divider,
-  Button,
-  InputBase,
 } from '@mui/material';
 import {
-  Send,
   Translate,
   BugReport,
   Lightbulb,
   CheckCircle,
-  PersonOutline,
 } from '@mui/icons-material';
-import { SUPPORTED_LANGS } from '../utils/i18n';
-import { tauriAPI } from '../utils/tauriBridge';
 import { useSnackbar } from '../App';
-import { useTranslationKeys } from '../utils/useTranslationKeys';
+import { FEEDBACK_TYPES, BUG_FIELDS, FEATURE_FIELDS } from '../config/feedbackConfig';
+import { useFeedbackIdentity } from '../hooks/useFeedbackIdentity';
+import { useFeedbackSubmit } from '../hooks/useFeedbackSubmit';
+import TranslationFeedbackForm from './feedback/TranslationFeedbackForm';
+import ContributorIdentityField from './feedback/ContributorIdentityField';
 import SimpleFeedbackForm from './SimpleFeedbackForm';
 
 // ─────────────────────────────────────────────────────────────
-// Feedback Types Configuration
+// Icon mapping for feedback types
 // ─────────────────────────────────────────────────────────────
-const FEEDBACK_TYPES = [
-  {
-    id: 'translation',
-    label: 'Translation',
-    icon: Translate,
-    description: 'Help us improve translation quality.',
-  },
-  {
-    id: 'bug',
-    label: 'Bug Report',
-    icon: BugReport,
-    description: 'Report an issue you encountered.',
-  },
-  {
-    id: 'feature',
-    label: 'Feature Request',
-    icon: Lightbulb,
-    description: 'Suggest a new feature.',
-  },
-];
-
-const MAX_LEN = {
-  contributorNickname: 40,
-  title: 200,
-  description: 4000,
-  steps: 2000,
-  suggestion: 4000,
-};
-
-const USER_IDENTITY_STORAGE_KEY = 'userID';
-const ANONYMOUS_CONTRIBUTOR_ID_PATTERN = /^User#[A-F0-9]{4}$/;
-
-// 生成、清洗、归一化、读取、保存。
-const createAnonymousContributorId = () => {
-  if (
-    typeof window !== 'undefined' &&
-    window.crypto &&
-    typeof window.crypto.getRandomValues === 'function'
-  ) {
-    const random = new Uint16Array(1);
-    window.crypto.getRandomValues(random);
-    return `User#${random[0].toString(16).toUpperCase().padStart(4, '0')}`;
-  }
-
-  const fallback = Math.floor(Math.random() * 0x10000);
-  return `User#${fallback.toString(16).toUpperCase().padStart(4, '0')}`;
-};
-
-const getContributorNicknameLength = (value) => Array.from(String(value ?? '')).length;
-
-const sanitizeContributorNicknameDraft = (value) => {
-  const cleaned = String(value ?? '').replace(/[\r\n\t]+/g, ' ');
-  const chars = Array.from(cleaned);
-  return chars.slice(0, MAX_LEN.contributorNickname).join('');
-};
-
-const normalizeContributorNickname = (value, anonymousId) => {
-  const normalized = sanitizeContributorNicknameDraft(value).trim();
-  return normalized || anonymousId;
-};
-
-const loadFeedbackIdentity = () => {
-  const fallbackAnonymousId = createAnonymousContributorId();
-
-  if (typeof window === 'undefined') {
-    return {
-      anonymousId: fallbackAnonymousId,
-      contributorNickname: fallbackAnonymousId,
-    };
-  }
-
-  try {
-    const raw = localStorage.getItem(USER_IDENTITY_STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : {};
-
-    const anonymousId =
-      typeof parsed?.anonymousId === 'string' &&
-      ANONYMOUS_CONTRIBUTOR_ID_PATTERN.test(parsed.anonymousId)
-        ? parsed.anonymousId
-        : fallbackAnonymousId;
-
-    const draftNickname = sanitizeContributorNicknameDraft(parsed?.contributorNickname ?? '');
-    const contributorNickname = draftNickname.trim() || anonymousId;
-
-    return {
-      anonymousId,
-      contributorNickname,
-    };
-  } catch {
-    return {
-      anonymousId: fallbackAnonymousId,
-      contributorNickname: fallbackAnonymousId,
-    };
-  }
-};
-
-const saveFeedbackIdentity = (identity) => {
-  if (typeof window === 'undefined') return;
-
-  try {
-    const anonymousId =
-      typeof identity?.anonymousId === 'string' &&
-      ANONYMOUS_CONTRIBUTOR_ID_PATTERN.test(identity.anonymousId)
-        ? identity.anonymousId
-        : createAnonymousContributorId();
-
-    localStorage.setItem(
-      USER_IDENTITY_STORAGE_KEY,
-      JSON.stringify({
-        anonymousId,
-        contributorNickname: sanitizeContributorNicknameDraft(
-          identity?.contributorNickname ?? ''
-        ),
-      })
-    );
-  } catch {
-    // Ignore storage failures and keep the form usable
-  }
-};
-
-// ─────────────────────────────────────────────────────────────
-// Simple Feedback Form Fields Configuration
-// ─────────────────────────────────────────────────────────────
-const BUG_FIELDS = {
-  title: {
-    name: 'title',
-    label: 'Bug Title',
-    placeholder: 'Brief description of the issue',
-    multiline: false,
-    maxLength: MAX_LEN.title,
-    required: true,
-  },
-  description: {
-    name: 'description',
-    label: 'Description',
-    placeholder: 'What happened? What did you expect?',
-    multiline: true,
-    minRows: 3,
-    maxRows: 6,
-    maxLength: MAX_LEN.description,
-    required: true,
-  },
-  steps: {
-    name: 'steps',
-    label: 'Steps to Reproduce (Optional)',
-    placeholder: '1. Open app\n2. Click on...\n3. See error',
-    multiline: true,
-    minRows: 3,
-    maxRows: 6,
-    maxLength: MAX_LEN.steps,
-    required: false,
-  },
-};
-
-const FEATURE_FIELDS = {
-  title: {
-    name: 'title',
-    label: 'Feature Title',
-    placeholder: 'Brief description of the feature',
-    multiline: false,
-    maxLength: MAX_LEN.title,
-    required: true,
-  },
-  description: {
-    name: 'description',
-    label: 'Description',
-    placeholder: 'Why would it be useful?',
-    multiline: true,
-    minRows: 3,
-    maxRows: 6,
-    maxLength: MAX_LEN.description,
-    required: true,
-  },
-};
-
-// ─────────────────────────────────────────────────────────────
-// Translation Feedback Form
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Translation key autocomplete component with custom rendering
- */
-const TranslationKeyAutocomplete = ({ keyOptions, selectedKey, onChange, isLoading, error }) => {
-  const filterOptions = createFilterOptions({ stringify: (opt) => `${opt.key} ${opt.value}` });
-
-  return (
-    <Autocomplete
-      fullWidth
-      options={keyOptions}
-      value={keyOptions.find((opt) => opt.key === selectedKey) ?? null}
-      onChange={(_, val) => onChange(val?.key ?? null)}
-      loading={isLoading}
-      disabled={isLoading || keyOptions.length === 0}
-      filterOptions={filterOptions}
-      getOptionLabel={(opt) => opt.key}
-      isOptionEqualToValue={(opt, val) => opt.key === val.key}
-      renderOption={(props, opt) => (
-        <li {...props} key={opt.key}>
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="body2" fontWeight={500}>
-              {opt.key}
-            </Typography>
-            {opt.value && (
-              <Typography variant="caption" color="text.secondary">
-                {opt.value.slice(0, 60)}
-                {opt.value.length > 60 ? '…' : ''}
-              </Typography>
-            )}
-          </Box>
-        </li>
-      )}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label="Search Translation Key"
-          size="small"
-          error={!!error}
-          helperText={error ? 'Failed to load translation keys. Please try again.' : undefined}
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <>
-                {isLoading && <CircularProgress size={16} />}
-                {params.InputProps.endAdornment}
-              </>
-            ),
-          }}
-        />
-      )}
-    />
-  );
-};
-
-/**
- * Translation feedback form component
- */
-const TranslationFeedbackForm = ({ onSubmit, isSubmitting }) => {
-  const [selectedLang, setSelectedLang] = useState('');
-  const [selectedKey, setSelectedKey] = useState(null);
-  const [suggestion, setSuggestion] = useState('');
-  const [suggestionTouched, setSuggestionTouched] = useState(false);
-
-  const { translationMap, keyOptions, isLoading, error } = useTranslationKeys(selectedLang);
-  const currentTranslation = selectedKey ? translationMap.get(selectedKey) ?? '' : '';
-
-  // ─────────────────────────────────────────────────────────────
-  // Validation
-  // ─────────────────────────────────────────────────────────────
-  const trimmedSuggestion = suggestion.trim();
-  const isSameAsCurrent = !!trimmedSuggestion && trimmedSuggestion === currentTranslation.trim();
-  const suggestionError = suggestionTouched && !trimmedSuggestion;
-  const isValid = !!(
-    selectedLang &&
-    selectedKey &&
-    trimmedSuggestion &&
-    suggestion.length <= MAX_LEN.suggestion &&
-    !isSameAsCurrent
-  );
-
-  // ─────────────────────────────────────────────────────────────
-  // Handlers
-  // ─────────────────────────────────────────────────────────────
-  const handleLanguageChange = useCallback((lang) => {
-    setSelectedLang(lang?.id ?? '');
-    setSelectedKey(null);
-    setSuggestion('');
-    setSuggestionTouched(false);
-  }, []);
-
-  const handleKeyChange = useCallback((key) => {
-    setSelectedKey(key);
-    setSuggestion('');
-    setSuggestionTouched(false);
-  }, []);
-
-  const handleSuggestionChange = useCallback((value) => {
-    setSuggestion(value);
-  }, []);
-
-  const handleSuggestionBlur = useCallback(() => {
-    setSuggestionTouched(true);
-  }, []);
-
-  const handleSubmit = useCallback(
-    async (e) => {
-      e.preventDefault();
-      // Mark suggestion as touched when attempting to submit
-      setSuggestionTouched(true);
-      if (!selectedLang || !selectedKey || !trimmedSuggestion || isSubmitting || isSameAsCurrent) return;
-      const ok = await onSubmit({
-        type: 'translation',
-        data: {
-          language: selectedLang,
-          key: selectedKey,
-          currentTranslation,
-          suggestedTranslation: trimmedSuggestion,
-        },
-      });
-      if (ok) {
-        setSelectedKey(null);
-        setSuggestion('');
-        setSuggestionTouched(false);
-      }
-    },
-    [selectedLang, selectedKey, trimmedSuggestion, currentTranslation, onSubmit, isSubmitting, isSameAsCurrent]
-  );
-
-  return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-        <Autocomplete
-          options={SUPPORTED_LANGS}
-          value={SUPPORTED_LANGS.find((lang) => lang.id === selectedLang) ?? null}
-          onChange={(_, val) => handleLanguageChange(val)}
-          getOptionLabel={(opt) => opt.label}
-          isOptionEqualToValue={(opt, val) => opt.id === val.id}
-          sx={{ flex: 1, minWidth: 240 }}
-          size="small"
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Select Language"
-            />
-          )}
-        />
-
-        {selectedLang && (
-          <TranslationKeyAutocomplete
-            keyOptions={keyOptions}
-            selectedKey={selectedKey}
-            onChange={handleKeyChange}
-            isLoading={isLoading}
-            error={error}
-          />
-        )}
-      </Box>
-
-      {/* Visual comparison group: original -> suggestion */}
-      {selectedKey && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Box>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontWeight={600}
-              display="block"
-              sx={{ mb: 1 }}
-            >
-              Current Translation
-            </Typography>
-            <Box
-              sx={{
-                p: 1.5,
-                bgcolor: 'action.hover',
-                borderRadius: 1,
-                border: '1px solid',
-                borderColor: 'divider',
-              }}
-            >
-              <Typography variant="body2">
-                {currentTranslation || <em>(Empty)</em>}
-              </Typography>
-            </Box>
-          </Box>
-
-          <Box>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontWeight={600}
-              display="block"
-              sx={{ mb: 1 }}
-            >
-              Suggested Translation
-            </Typography>
-            <TextField
-              value={suggestion}
-              onChange={(e) => handleSuggestionChange(e.target.value)}
-              onBlur={handleSuggestionBlur}
-              multiline
-              minRows={3}
-              maxRows={6}
-              fullWidth
-              error={suggestionError || suggestion.length > MAX_LEN.suggestion || isSameAsCurrent}
-              helperText={
-                suggestionError
-                  ? 'This field is required'
-                  : isSameAsCurrent
-                    ? 'Suggested translation must be different from current translation'
-                    : `${suggestion.length}/${MAX_LEN.suggestion}`
-              }
-              placeholder="Enter a more natural or accurate translation..."
-              disabled={isSubmitting}
-              size="small"
-            />
-          </Box>
-        </Box>
-      )}
-
-      {selectedKey && (
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={!isValid || isSubmitting}
-            startIcon={isSubmitting ? <CircularProgress size={16} /> : <Send />}
-          >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
-          </Button>
-        </Box>
-      )}
-    </Box>
-  );
-};
-
-// ─────────────────────────────────────────────────────────────
-// Contributor Identity Field
-// ─────────────────────────────────────────────────────────────
-
-const ContributorIdentityField = ({
-  anonymousId,
-  contributorNickname,
-  hasCustomContributorNickname,
-  onChange,
-  onBlur,
-  onReset,
-  isSubmitting,
-}) => {
-  return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) auto' },
-        gap: 2,
-        alignItems: 'end',
-      }}
-    >
-      <Box>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          fontWeight={600}
-          sx={{ display: 'block', mb: 0.75 }}
-        >
-          Contributor Nickname
-        </Typography>
-
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-            pb: 0.5,
-            transition: 'border-color 0.2s ease',
-            '&:focus-within': {
-              borderColor: 'primary.main',
-            },
-          }}
-        >
-          <PersonOutline
-            sx={{
-              fontSize: 18,
-              color: 'text.secondary',
-              flexShrink: 0,
-            }}
-          />
-
-          <InputBase
-            value={contributorNickname}
-            onChange={onChange}
-            onBlur={onBlur}
-            disabled={isSubmitting}
-            fullWidth
-            placeholder={anonymousId}
-            inputProps={{
-              'aria-label': 'Contributor Nickname',
-              spellCheck: false,
-              autoCapitalize: 'off',
-              autoCorrect: 'off',
-            }}
-            sx={{
-              flex: 1,
-              fontSize: 15,
-              '& input': {
-                p: 0,
-                lineHeight: 1.8,
-              },
-            }}
-          />
-
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ flexShrink: 0 }}
-          >
-            {getContributorNicknameLength(contributorNickname)}/{MAX_LEN.contributorNickname}
-          </Typography>
-        </Box>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{ mt: 0.75, display: 'block' }}
-        >
-          Saved locally and attached to every submission. Leave the default anonymous ID if you prefer privacy.
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: { xs: 'flex-start', sm: 'flex-end' },
-          gap: 0.75,
-          minWidth: { sm: 210 },
-        }}
-      >
-        <Typography variant="caption" color="text.secondary">
-          Anonymous ID:{' '}
-          <Box
-            component="span"
-            sx={{
-              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
-              color: 'text.primary',
-            }}
-          >
-            {anonymousId}
-          </Box>
-        </Typography>
-
-        <Typography
-          variant="caption"
-          color={hasCustomContributorNickname ? 'primary.main' : 'text.secondary'}
-        >
-          {hasCustomContributorNickname ? 'Using custom nickname' : 'Using anonymous ID'}
-        </Typography>
-
-        <Button
-          variant="text"
-          size="small"
-          onClick={onReset}
-          disabled={isSubmitting}
-          sx={{
-            minWidth: 0,
-            px: 0,
-            alignSelf: { xs: 'flex-start', sm: 'flex-end' },
-            visibility: hasCustomContributorNickname ? 'visible' : 'hidden',
-          }}
-        >
-          Use Anonymous ID
-        </Button>
-      </Box>
-    </Box>
-  );
+const ICON_MAP = {
+  Translate,
+  BugReport,
+  Lightbulb,
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -603,120 +44,51 @@ const FeedbackForm = () => {
   const theme = useTheme();
   const showSnackbar = useSnackbar();
   const [feedbackType, setFeedbackType] = useState('translation');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
 
-  const [contributorIdentity, setContributorIdentity] = useState(loadFeedbackIdentity);
-  const { anonymousId, contributorNickname } = contributorIdentity;
-  const effectiveContributorNickname = normalizeContributorNickname(
+  // Identity state management
+  const {
+    anonymousId,
     contributorNickname,
-    anonymousId
-  );
-  const hasCustomContributorNickname = effectiveContributorNickname !== anonymousId;
+    effectiveNickname,
+    hasCustomNickname,
+    onChange: handleNicknameChange,
+    onBlur: handleNicknameBlur,
+    onReset: handleNicknameReset,
+    setIdentity,
+  } = useFeedbackIdentity();
 
-  // Ref for timeout cleanup
-  const successTimeoutRef = useRef(null);
+  // Submission logic
+  const { isSubmitting, showSuccess, handleSubmit } = useFeedbackSubmit({ showSnackbar });
 
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (successTimeoutRef.current) {
-        clearTimeout(successTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // 昵称输入框的完整事件处理逻辑 —— 输入、失焦、重置、自动持久化。
-  useEffect(() => {
-    saveFeedbackIdentity(contributorIdentity);
-  }, [contributorIdentity]);
-
-  const handleContributorNicknameChange = useCallback((event) => {
-    const nextValue = sanitizeContributorNicknameDraft(event.target.value);
-    setContributorIdentity((prev) => ({
-      ...prev,
-      contributorNickname: nextValue,
-    }));
-  }, []);
-
-  const handleContributorNicknameBlur = useCallback(() => {
-    setContributorIdentity((prev) => {
-      const normalized = normalizeContributorNickname(
-        prev.contributorNickname,
-        prev.anonymousId
-      );
-
-      return normalized === prev.contributorNickname
-        ? prev
-        : { ...prev, contributorNickname: normalized };
-    });
-  }, []);
-
-  const handleResetContributorNickname = useCallback(() => {
-    setContributorIdentity((prev) =>
-      prev.contributorNickname === prev.anonymousId
-        ? prev
-        : { ...prev, contributorNickname: prev.anonymousId }
-    );
-  }, []);
-
-  const handleSubmitFeedback = useCallback(
+  // Wrap submit to handle normalization before calling handleSubmit
+  const wrappedSubmit = useCallback(
     async (feedback) => {
-      const normalizedContributorNickname = normalizeContributorNickname(
-        contributorNickname,
-        anonymousId
-      );
-
-      if (normalizedContributorNickname !== contributorNickname) {
-        setContributorIdentity((prev) => ({
+      const normalized = effectiveNickname;
+      // Sync normalized nickname back to identity state if changed
+      if (normalized !== contributorNickname) {
+        setIdentity((prev) => ({
           ...prev,
-          contributorNickname: normalizedContributorNickname,
+          contributorNickname: normalized,
         }));
       }
-
-      setIsSubmitting(true);
-      try {
-        await tauriAPI.submitFeedback({
-          ...feedback,
-          contributor: normalizedContributorNickname,
-          timestamp: new Date().toISOString(),
-        });
-
-        // Clear any existing timeout before setting new one
-        if (successTimeoutRef.current) {
-          clearTimeout(successTimeoutRef.current);
-        }
-        setShowSuccess(true);
-        successTimeoutRef.current = window.setTimeout(() => {
-          setShowSuccess(false);
-          successTimeoutRef.current = null;
-        }, 2500);
-
-        return true;
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        showSnackbar(errorMessage || 'Failed to submit feedback.', 'error');
-        return false;
-      } finally {
-        setIsSubmitting(false);
-      }
+      return handleSubmit({ contributor: normalized, feedback });
     },
-    [showSnackbar, contributorNickname, anonymousId]
+    [effectiveNickname, contributorNickname, setIdentity, handleSubmit]
   );
 
+  // Render feedback content based on type
   const renderFeedbackContent = useCallback(() => {
     const commonProps = { isSubmitting };
 
     switch (feedbackType) {
       case 'translation':
-        return <TranslationFeedbackForm onSubmit={handleSubmitFeedback} {...commonProps} />;
+        return <TranslationFeedbackForm onSubmit={wrappedSubmit} {...commonProps} />;
 
       case 'bug':
         return (
           <SimpleFeedbackForm
             {...commonProps}
-            onSubmit={(formData) => handleSubmitFeedback({ type: 'bug', data: formData })}
+            onSubmit={(formData) => wrappedSubmit({ type: 'bug', data: formData })}
             submitLabel="Submit"
             submitLoadingLabel="Submitting..."
             fields={BUG_FIELDS}
@@ -727,7 +99,7 @@ const FeedbackForm = () => {
         return (
           <SimpleFeedbackForm
             {...commonProps}
-            onSubmit={(formData) => handleSubmitFeedback({ type: 'feature', data: formData })}
+            onSubmit={(formData) => wrappedSubmit({ type: 'feature', data: formData })}
             submitLabel="Submit"
             submitLoadingLabel="Submitting..."
             fields={FEATURE_FIELDS}
@@ -737,7 +109,7 @@ const FeedbackForm = () => {
       default:
         return null;
     }
-  }, [feedbackType, isSubmitting, handleSubmitFeedback]);
+  }, [feedbackType, isSubmitting, wrappedSubmit]);
 
   return (
     <Box sx={{ position: 'relative', minHeight: 400 }}>
@@ -781,17 +153,17 @@ const FeedbackForm = () => {
           <ContributorIdentityField
             anonymousId={anonymousId}
             contributorNickname={contributorNickname}
-            hasCustomContributorNickname={hasCustomContributorNickname}
-            onChange={handleContributorNicknameChange}
-            onBlur={handleContributorNicknameBlur}
-            onReset={handleResetContributorNickname}
+            hasCustomContributorNickname={hasCustomNickname}
+            onChange={handleNicknameChange}
+            onBlur={handleNicknameBlur}
+            onReset={handleNicknameReset}
             isSubmitting={isSubmitting}
           />
 
           {/* Interactive card navigation */}
           <Box sx={{ display: 'flex', gap: 2 }} role="radiogroup" aria-label="Feedback Type Selection">
             {FEEDBACK_TYPES.map((type) => {
-              const Icon = type.icon;
+              const Icon = ICON_MAP[type.icon] || type.icon;
               const isSelected = feedbackType === type.id;
               return (
                 <Paper
