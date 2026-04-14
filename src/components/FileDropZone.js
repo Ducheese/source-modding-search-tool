@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Box,
   Paper,
@@ -14,166 +14,43 @@ import {
   FolderOpen,
   Description,
 } from '@mui/icons-material';
-import { tauriAPI } from '../utils/tauriBridge';
-import { listen } from '@tauri-apps/api/event';
 import { useLanguage } from '../utils/i18n';
+import { useFileScanner } from '../hooks/useFileScanner';
 
-// 支持的文件格式（提升到模块顶层，避免每次渲染都重建）
-const SUPPORTED_EXTENSIONS = ['.sp', '.cfg', '.ini', '.txt', '.vmt', '.qc', '.inc', '.lua', '.log', '.vdf', '.scr', '.res', '.nut'];
-
+/**
+ * 文件拖放区域组件
+ * 支持拖放文件/文件夹、选择文件、选择文件夹
+ */
 const FileDropZone = ({ onFilesAdded }) => {
-  // 允许你在任何函数组件中，无需通过 Prop 层层传递，就能直接访问最近的 ThemeProvider 组件提供的主题对象。
   const theme = useTheme();
   const { t } = useLanguage();
 
-  // 状态变量
-  const [isDragOver, setIsDragOver] = useState(false);
+  // 错误提示状态
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
 
-  // 显示错误提示，把两行代码包含成一个函数
-  const showErrorAlert = (message) => {
+  const showErrorAlert = useCallback((message) => {
     setAlertMessage(message);
     setShowAlert(true);
-  };
+  }, []);
 
-  // 校验文件格式
-  const validateFileFormat = (fileName) => {
-    const ext = '.' + fileName.split('.').pop().toLowerCase();
-    return SUPPORTED_EXTENSIONS.includes(ext);
-  };
+  // 使用文件扫描 hook
+  const { selectFiles, selectFolder, isDragOver, setIsDragOver } = useFileScanner({
+    onFilesAdded,
+    showErrorAlert,
+    t,
+  });
 
-  // 监听 Tauri 的全局拖拽事件
-  useEffect(() => {
-    // listen 返回一个 Promise，resolve 后返回 unlisten 函数
-    const unlistenPromise = listen('tauri://file-drop', async (event) => {
-      setIsDragOver(false);
-      const paths = event.payload;
-      if (!paths || paths.length === 0) return;
-
-      let finalFiles = [];
-
-      // 直接把这堆路径扔给 Rust，让 Rust 去判断是文件还是文件夹并递归
-      // 你需要在 Rust 端稍微修改 scan_directory 让他接受 Vec<String> 或者前端循环调
-      // 这里为了最快改动，我们假设前端简单判断
-
-      for (const path of paths) {
-        // 让 Rust 来决定它是文件还是文件夹并返回所有子文件
-        // 这一步是关键：不要在 JS 里做 fs 操作
-        // 即使是单个文件，也可以传给 scan_directory (Rust端改为处理单个文件的情况即可)
-        // 或者你调用 Rust 的 fs.metadata (如果有暴露)
-
-        // 既然你之前已经写了 scanDirectory 接口，那就利用它：
-        // 哪怕它是个文件，传给 walkdir 也是能工作的（通常）
-        try {
-          const scanned = await tauriAPI.scanDirectory(path);
-          // 这里过滤后缀名最好也在 Rust 做，但 JS 做也行，因为量级变小了
-          scanned.forEach(subPath => {
-            const subName = subPath.split(/[\\/]/).pop();
-            if (validateFileFormat(subName)) {
-              finalFiles.push({ name: subName, path: subPath, isFile: true });
-            }
-          });
-        } catch (e) {
-          console.error(e);
-        }
-      }
-
-      if (finalFiles.length > 0) {
-        onFilesAdded(finalFiles); // 这次添加的是没有 stats 的
-        // FileList 组件会负责去获取 stats，所以这里不需要管
-      }
-    });
-
-    // cleanup: 调用 unlisten 函数移除事件监听
-    return () => {
-      unlistenPromise.then(unlisten => unlisten());
-    };
-  }, [onFilesAdded]);
-
-  const handleSelectFiles = useCallback(async () => {
-    try {
-      // Tauri file dialog 允许在调用时设置文件过滤器，但这会阻止用户选择我们不支持的文件。
-      // 但为了统一的错误提示，我们还是在前端手动过滤和提示。
-      const filePaths = await tauriAPI.selectFiles();
-      if (filePaths.length > 0) {
-        const validFiles = [];
-        const invalidFiles = [];
-
-        filePaths.forEach(path => {
-          const fileName = path.split(/[\\/]/).pop(); // 使用正则表达式匹配两种路径分隔符
-          if (validateFileFormat(fileName)) {
-            validFiles.push({
-              path,
-              name: fileName,
-              isFile: true,
-            });
-          } else {
-            invalidFiles.push(fileName);
-          }
-        });
-
-        if (invalidFiles.length > 0) {
-          const message = `${t('dropzone.errorTitle')}\n${invalidFiles.join(', ')}\n\n${t('dropzone.errorSupportedTypes')} ${SUPPORTED_EXTENSIONS.join(', ')}`;
-          showErrorAlert(message);
-        }
-
-        if (validFiles.length > 0) {
-          onFilesAdded(validFiles);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to select files:', error);
-    }
-  }, [onFilesAdded, t]);
-
-  const handleSelectFolder = useCallback(async () => {
-    try {
-      const folderPath = await tauriAPI.selectFolder();
-      if (folderPath) {
-        const scannedFiles = await tauriAPI.scanDirectory(folderPath);
-        const validFiles = [];
-        const invalidFiles = [];
-
-        scannedFiles.forEach(path => {
-          const fileName = path.split(/[\\/]/).pop(); // 使用正则表达式匹配两种路径分隔符
-          if (validateFileFormat(fileName)) {
-            validFiles.push({
-              path,
-              name: fileName,
-              isFile: true,
-            });
-          } else {
-            invalidFiles.push(fileName);
-          }
-        });
-
-        if (invalidFiles.length > 0) {
-          const message = `${t('dropzone.errorFolderTitle')}\n${invalidFiles.slice(0, 5).join(', ')}${invalidFiles.length > 5 ? '...' : ''}\n\n${t('dropzone.errorSupportedTypes')} ${SUPPORTED_EXTENSIONS.join(', ')}`;
-          showErrorAlert(message);
-        }
-
-        if (validFiles.length > 0) {
-          onFilesAdded(validFiles);
-        } else {
-          showErrorAlert(t('dropzone.errorNoFiles'));
-        }
-      }
-    } catch (error) {
-      console.error('Failed to select folder:', error);
-    }
-  }, [onFilesAdded, t]);
-
-  // 文件拖放（Drag and Drop）操作的事件处理函数
+  // 文件拖放事件处理
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
     setIsDragOver(true);
-  }, []);
+  }, [setIsDragOver]);
 
   const handleDragLeave = useCallback((e) => {
     e.preventDefault();
     setIsDragOver(false);
-  }, []);
+  }, [setIsDragOver]);
 
   return (
     <Paper
@@ -193,7 +70,7 @@ const FileDropZone = ({ onFilesAdded }) => {
       elevation={0}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      // 注意：Tauri 的 file-drop 事件是全局的，这里的 onDrop 主要是为了阻止浏览器默认行为
+      // Tauri 的 file-drop 事件是全局的，这里的 onDrop 主要是阻止浏览器默认行为
       onDrop={(e) => { e.preventDefault(); setIsDragOver(false); }}
     >
       <Box
@@ -224,18 +101,18 @@ const FileDropZone = ({ onFilesAdded }) => {
           </Typography>
         </Box>
 
-        <Box 
-          sx={{ 
-            display: 'flex', 
-            gap: 2, 
-            flexWrap: 'wrap', 
-            justifyContent: 'center' 
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+            flexWrap: 'wrap',
+            justifyContent: 'center',
           }}
         >
           <Button
             variant="contained"
             startIcon={<Description />}
-            onClick={handleSelectFiles}
+            onClick={selectFiles}
             size="small"
           >
             {t('dropzone.selectFiles')}
@@ -243,7 +120,7 @@ const FileDropZone = ({ onFilesAdded }) => {
           <Button
             variant="outlined"
             startIcon={<FolderOpen />}
-            onClick={handleSelectFolder}
+            onClick={selectFolder}
             size="small"
           >
             {t('dropzone.selectFolder')}
@@ -251,7 +128,7 @@ const FileDropZone = ({ onFilesAdded }) => {
         </Box>
       </Box>
 
-      {/* 单独定义的错误提示 */}
+      {/* 错误提示 */}
       <Snackbar
         open={showAlert}
         autoHideDuration={4000}

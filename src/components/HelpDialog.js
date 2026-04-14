@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -22,18 +22,15 @@ import { Close, Help, CheckCircle, ExpandMore, ExpandLess, Error, Feedback } fro
 import { tauriAPI } from '../utils/tauriBridge';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getVersion } from '@tauri-apps/api/app';
 import { homeDir } from '@tauri-apps/api/path';
 
 import { useSnackbar, useThemeScheme } from '../App';
 import { useLanguage } from '../utils/i18n';
 import { COLOR_SCHEMES } from '../utils/themeConfig';
 import { getMarkdownStyles } from '../utils/markdownStyles';
-import { 
-  getDefaultPrompts,
-  loadAiSettings, 
-  AI_SETTINGS_STORAGE_KEY 
-} from '../utils/aiDefaults';
+import { getDefaultPrompts } from '../utils/aiDefaults';
+import { useAiSettings } from '../hooks/useAiSettings';
+import { useChangelog } from '../hooks/useChangelog';
 import FeedbackForm from './FeedbackForm';
 
 // ─────────────────────────────────────────────────────────────
@@ -84,20 +81,17 @@ const SchemeCard = ({ scheme, selected, darkMode, onClick }) => {
           minWidth: 88,
         }}
       >
-        {/* 色块预览 */}
         <Box sx={{ display: 'flex', gap: 0.75 }}>
-          {/* 主色 */}
           <Box
             sx={{
               width: 36,
               height: 36,
               borderRadius: '50%',
               bgcolor: primary,
-              boxShadow: `0 2px 6px ${primary}88`,     // 据说是 MD3 的 Tonal Shadow 做法，不过挺有质感的，像在发光一样
+              boxShadow: `0 2px 6px ${primary}88`,
               border: '2px solid rgba(255,255,255,0.25)',
             }}
           />
-          {/* 副色 */}
           <Box
             sx={{
               width: 20,
@@ -112,7 +106,6 @@ const SchemeCard = ({ scheme, selected, darkMode, onClick }) => {
           />
         </Box>
 
-        {/* 名称 */}
         <Typography
           variant="caption"
           fontWeight={selected ? 700 : 400}
@@ -121,7 +114,6 @@ const SchemeCard = ({ scheme, selected, darkMode, onClick }) => {
           {t(scheme.labelKey)}
         </Typography>
 
-        {/* 已选中角标 */}
         {selected && (
           <CheckCircle
             sx={{
@@ -193,71 +185,24 @@ const ReleaseEntry = ({ tag, name, body, date, markdownStyles, defaultExpanded =
 // ─────────────────────────────────────────────────────────────
 const HelpDialog = ({ open, onClose }) => {
   const [tabValue, setTabValue] = useState(0);
-  const [isTesting, setIsTesting] = useState(false);
-  const handleTabChange = (_, newValue) => setTabValue(newValue);
-
-  const [changelog, setChangelog] = useState(null);   // null=未加载, 'loading', 'error', 'ratelimit', [{ tag, name, body, date }]
-  const [currentVersion, setCurrentVersion] = useState(null);
-  const [hasUpdate, setHasUpdate] = useState(false);
   const [configPath, setConfigPath] = useState(null);
 
   const showSnackbar = useSnackbar();
   const { t, lang } = useLanguage();
-  
-  const [aiSettings, setAiSettings] = useState(() => loadAiSettings(lang));
 
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
-  
-  const { schemeId, setSchemeId } = useThemeScheme();
 
+  const { schemeId, setSchemeId } = useThemeScheme();
   const markdownStyles = useMemo(() => getMarkdownStyles(theme), [theme]);
 
-  // 抽取 changelog 加载逻辑，首次打开和 retry 都调用
-  const loadChangelog = useCallback(async () => {
-    setChangelog('loading');
-    setHasUpdate(false);
+  // 使用 hooks
+  const { settings: aiSettings, setField: setAiSetting, resetPrompts, testConnection, isTesting } = useAiSettings({ lang, open });
+  const { releases, currentVersion, hasUpdate, isLoading, isError, isRateLimited, load: loadChangelog } = useChangelog({ open, t });
 
-    const v = await getVersion().catch(() => null);
-    setCurrentVersion(v);
+  const handleTabChange = (_, newValue) => setTabValue(newValue);
 
-    try {
-      const res = await fetch('https://api.github.com/repos/Ducheese/source-modding-search-tool/releases');
-      const data = await res.json();
-
-      if (!Array.isArray(data)) {
-        const isRateLimit = (data?.message ?? '').toLowerCase().includes('rate limit');
-        setChangelog(isRateLimit ? 'ratelimit' : 'error');
-        return;
-      }
-
-      const parsed = data.map(r => ({
-        tag: r.tag_name,
-        name: r.name || r.tag_name,
-        body: (r.body || t('help.changelog.noBody'))
-          .replace(/<img\b[^>]*>/gi, '')
-          .trim(),
-        date: r.published_at ? r.published_at.slice(0, 10) : null,
-      }));
-      setChangelog(parsed);
-
-      // 检查更新
-      const latestDate = parsed[0]?.date;
-      const currentRelease = parsed.find(r => r.tag.replace(/^v/, '') === v);
-      const currentDate = currentRelease?.date;
-      setHasUpdate(!!(latestDate && currentDate && latestDate > currentDate));
-    } catch {
-      setChangelog('error');
-    }
-  }, [t]);
-
-  // effect 1: 打开时加载 AI 设置
-  useEffect(() => {
-    if (!open) return;
-    setAiSettings(loadAiSettings(lang));
-  }, [open, lang]);
-
-  // effect 2: 获取配置文件路径（只执行一次）
+  // 获取配置文件路径
   useEffect(() => {
     if (!open || configPath !== null) return;
     homeDir()
@@ -272,62 +217,17 @@ const HelpDialog = ({ open, onClose }) => {
       });
   }, [open, configPath]);
 
-  // effect 3: 首次打开时加载 changelog
-  useEffect(() => {
-    if (!open || changelog !== null) return;
-    loadChangelog();
-  }, [open, changelog, loadChangelog]);
-
-  // effect 4: 关闭时重置错误态（下次打开可以自动重试）
-  useEffect(() => {
-    if (!open && (changelog === 'error' || changelog === 'ratelimit')) {
-      setChangelog(null);
-    }
-  }, [open, changelog]);
-
-  const handleAiSettingChange = (field, value) => {
-    setAiSettings(prev => {
-      const next = { ...prev, [field]: value };
-      localStorage.setItem(AI_SETTINGS_STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
-  };
-
-  const handleTestConnection = async () => {
-    if (!aiSettings.baseUrl.trim() || !aiSettings.apiKey.trim() || 
-    (!aiSettings.regexModelName.trim() && !aiSettings.chatModelName.trim() && !aiSettings.explainModelName.trim())) {
-      showSnackbar(t('help.fillRequired'), 'warning');
-      return;
-    }
-
-    setIsTesting(true);
-    try {
-      await tauriAPI.testAiConnection({
-        user_prompt: 'Reply with OK only',
-        system_prompt: 'You are a test assistant. Reply directly with what the user requests, no extra information.',
-        api_key: aiSettings.apiKey,
-        base_url: aiSettings.baseUrl,
-        model_name: aiSettings.regexModelName || aiSettings.chatModelName || aiSettings.explainModelName,
-      });
-      showSnackbar(t('help.connectionSuccess'), 'success');
-    } catch (error) {
-      showSnackbar(t('help.connectionFailed'), 'error');
-    } finally {
-      setIsTesting(false);
-    }
-  };
+  const handleTestConnection = () => testConnection(showSnackbar, t);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
 
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
-          {/* 标题部分 */}
           <Typography variant="h6" component="h1" fontWeight="700" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Help sx={{ color: 'primary.main' }} />
             {t('help.title')}
           </Typography>
-          {/* 关闭按钮部分 */}
           <IconButton onClick={onClose}>
             <Close />
           </IconButton>
@@ -335,9 +235,8 @@ const HelpDialog = ({ open, onClose }) => {
       </DialogTitle>
 
       <DialogContent dividers>
-        {/* 介绍 / 说明 / 配置存储：选中大模型接入配置、配色方案、更新日志、翻译反馈 Tab 时隐藏 */}
+        {/* 介绍 / 说明 / 配置存储 */}
         {(tabValue !== 2 && tabValue !== 3 && tabValue !== 4 && tabValue !== 5) && <>
-        {/* 介绍 */}
         <Box sx={{ mb: 3, px: 1, display: 'flex', alignItems: 'flex-start', gap: 3 }}>
           <Box
             component="img"
@@ -348,12 +247,10 @@ const HelpDialog = ({ open, onClose }) => {
           <Typography dangerouslySetInnerHTML={{ __html: t('help.intro') }} />
         </Box>
 
-        {/* 说明 */}
         <Box sx={{ mb: 3, px: 1 }}>
           <Typography>{t('help.usage')}</Typography>
         </Box>
 
-        {/* 配置存储 */}
         <Box sx={{ mb: 2, px: 1 }}>
           <Typography>
             {(() => {
@@ -381,7 +278,6 @@ const HelpDialog = ({ open, onClose }) => {
                       opacity: configPath ? 1 : 0.6,
                       fontFamily: 'Consolas, "Courier New", monospace',
                       fontSize: '0.9em',
-                      // wordBreak: 'break-all',
                     }}
                   >
                     {displayPath}
@@ -392,54 +288,29 @@ const HelpDialog = ({ open, onClose }) => {
             })()}
           </Typography>
         </Box>
-
         </>}
 
-        {/* ── Tabs ── */}
+        {/* Tabs */}
         <Box>
 
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
-              <Tab label={t('help.tab.pathFilter')}
-              sx={{ 
-                whiteSpace: 'normal', // 允许换行
-                maxWidth: 180
-              }}/>
-              <Tab label={t('help.tab.regex')}
-              sx={{ 
-                whiteSpace: 'normal', // 允许换行
-                maxWidth: 180
-              }}/>
-              <Tab label={t('help.tab.aiConfig')}
-              sx={{ 
-                whiteSpace: 'normal', // 允许换行
-                maxWidth: 180
-              }}/>
-              <Tab label={t('help.tab.colorScheme')}
-              sx={{ 
-                whiteSpace: 'normal', // 允许换行
-                maxWidth: 180
-              }}/>
+              <Tab label={t('help.tab.pathFilter')} sx={{ whiteSpace: 'normal', maxWidth: 180 }}/>
+              <Tab label={t('help.tab.regex')} sx={{ whiteSpace: 'normal', maxWidth: 180 }}/>
+              <Tab label={t('help.tab.aiConfig')} sx={{ whiteSpace: 'normal', maxWidth: 180 }}/>
+              <Tab label={t('help.tab.colorScheme')} sx={{ whiteSpace: 'normal', maxWidth: 180 }}/>
               <Tab label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   {t('help.tab.changelog')}
                   {hasUpdate && <Error sx={{ fontSize: 16, color: 'error.main' }} />}
                 </Box>
-              }
-              sx={{ 
-                whiteSpace: 'normal', // 允许换行
-                maxWidth: 180
-              }}/>
+              } sx={{ whiteSpace: 'normal', maxWidth: 180 }}/>
               <Tab label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <Feedback sx={{ fontSize: 16 }} />
                   Feedback
                 </Box>
-              }
-              sx={{ 
-                whiteSpace: 'normal', // 允许换行
-                maxWidth: 180
-              }}/>
+              } sx={{ whiteSpace: 'normal', maxWidth: 180 }}/>
             </Tabs>
           </Box>
 
@@ -472,7 +343,6 @@ const HelpDialog = ({ open, onClose }) => {
           <TabPanel value={tabValue} index={2}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
 
-              {/* 说明文字 */}
               <Typography variant="body2" color="text.secondary">
                 {t('help.aiConfig.desc')}
               </Typography>
@@ -480,7 +350,7 @@ const HelpDialog = ({ open, onClose }) => {
               <TextField
                 label="API Base Url"
                 value={aiSettings.baseUrl}
-                onChange={(e) => handleAiSettingChange('baseUrl', e.target.value)}
+                onChange={(e) => setAiSetting('baseUrl', e.target.value)}
                 placeholder="https://openrouter.ai/api/v1"
                 helperText={t('help.apiBaseUrlHelper')}
                 size="small"
@@ -489,7 +359,7 @@ const HelpDialog = ({ open, onClose }) => {
               <TextField
                 label="API Key"
                 value={aiSettings.apiKey}
-                onChange={(e) => handleAiSettingChange('apiKey', e.target.value)}
+                onChange={(e) => setAiSetting('apiKey', e.target.value)}
                 type="password"
                 placeholder="sk-xxx"
                 helperText={t('help.apiKeyHelper')}
@@ -500,7 +370,7 @@ const HelpDialog = ({ open, onClose }) => {
                 <TextField
                   label={t('help.regexModel')}
                   value={aiSettings.regexModelName}
-                  onChange={(e) => handleAiSettingChange('regexModelName', e.target.value)}
+                  onChange={(e) => setAiSetting('regexModelName', e.target.value)}
                   placeholder="qwen/qwen3.5-9b"
                   helperText={t('help.regexModelHelper')}
                   size="small"
@@ -510,7 +380,7 @@ const HelpDialog = ({ open, onClose }) => {
                 <TextField
                   label={t('help.chatModel')}
                   value={aiSettings.chatModelName}
-                  onChange={(e) => handleAiSettingChange('chatModelName', e.target.value)}
+                  onChange={(e) => setAiSetting('chatModelName', e.target.value)}
                   placeholder="deepseek/deepseek-v3.2"
                   helperText={t('help.chatModelHelper')}
                   size="small"
@@ -520,7 +390,7 @@ const HelpDialog = ({ open, onClose }) => {
                 <TextField
                   label={t('help.explainModel')}
                   value={aiSettings.explainModelName}
-                  onChange={(e) => handleAiSettingChange('explainModelName', e.target.value)}
+                  onChange={(e) => setAiSetting('explainModelName', e.target.value)}
                   placeholder="qwen/qwen3.5-9b"
                   helperText={t('help.explainModelHelper')}
                   size="small"
@@ -531,7 +401,7 @@ const HelpDialog = ({ open, onClose }) => {
               <TextField
                 label={t('help.regexPromptLabel')}
                 value={aiSettings.regexPrompt}
-                onChange={(e) => handleAiSettingChange('regexPrompt', e.target.value)}
+                onChange={(e) => setAiSetting('regexPrompt', e.target.value)}
                 helperText={t('help.regexPromptHelper')}
                 multiline
                 minRows={6}
@@ -540,7 +410,7 @@ const HelpDialog = ({ open, onClose }) => {
               <TextField
                 label={t('help.chatPromptLabel')}
                 value={aiSettings.chatPrompt}
-                onChange={(e) => handleAiSettingChange('chatPrompt', e.target.value)}
+                onChange={(e) => setAiSetting('chatPrompt', e.target.value)}
                 helperText={t('help.chatPromptHelper')}
                 multiline
                 minRows={6}
@@ -549,54 +419,32 @@ const HelpDialog = ({ open, onClose }) => {
               <TextField
                 label={t('help.explainPromptLabel')}
                 value={aiSettings.explainPrompt}
-                onChange={(e) => handleAiSettingChange('explainPrompt', e.target.value)}
+                onChange={(e) => setAiSetting('explainPrompt', e.target.value)}
                 helperText={t('help.explainPromptHelper')}
                 multiline
                 minRows={6}
                 maxRows={18}
               />
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                      const defaults = getDefaultPrompts(lang);
-                      handleAiSettingChange('regexPrompt', defaults.regexPrompt)
-                      handleAiSettingChange('chatPrompt', defaults.chatPrompt)
-                      handleAiSettingChange('explainPrompt', defaults.explainPrompt)
-                    }
-                  }
-                >
+                <Button variant="outlined" onClick={resetPrompts}>
                   {t('help.resetPrompts')}
                 </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleTestConnection}
-                  disabled={isTesting}
-                >
+                <Button variant="contained" onClick={handleTestConnection} disabled={isTesting}>
                   {isTesting ? t('help.testing') : t('help.testConnection')}
                 </Button>
               </Box>
             </Box>
           </TabPanel>
 
-          {/* Tab 3 — 外观设置（配色方案） */}
+          {/* Tab 3 — 配色方案 */}
           <TabPanel value={tabValue} index={3}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
 
-              {/* 说明文字 */}
               <Typography variant="body2" color="text.secondary">
                 {t('help.colorScheme.desc')}
               </Typography>
 
-              {/* 配色卡片行 */}
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 2,
-                  alignItems: 'flex-start',
-                }}
-              >
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-start' }}>
                 {COLOR_SCHEMES.map((scheme) => (
                   <SchemeCard
                     key={scheme.id}
@@ -611,44 +459,24 @@ const HelpDialog = ({ open, onClose }) => {
                 ))}
               </Box>
 
-              {/* 当前配色的色值预览 */}
-              <Box
-                sx={{
-                  p: 2,
-                  borderRadius: 2,
-                  border: `1px solid ${theme.palette.divider}`,
-                  bgcolor: 'background.paper',
-                  // width: 'fit-content',  // 如果要自适应宽度
-                }}
-              >
+              <Box sx={{ p: 2, borderRadius: 2, border: `1px solid ${theme.palette.divider}`, bgcolor: 'background.paper' }}>
                 <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
                   {t('help.colorScheme.current', { label: t(COLOR_SCHEMES[schemeId].labelKey), desc: COLOR_SCHEMES[schemeId].desc })}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                   {[
-                    { label: 'Primary',        color: theme.palette.primary.main },
-                    { label: 'Pri. Dark',      color: theme.palette.primary.dark },
-                    { label: 'Secondary',      color: theme.palette.secondary.main },
-                    { label: 'Sec. Dark',      color: theme.palette.secondary.dark },
-                    { label: 'Background',     color: theme.palette.background.default },
-                    { label: 'Surface',        color: theme.palette.background.paper },
-                    { label: 'Error',          color: theme.palette.error.main },
+                    { label: 'Primary', color: theme.palette.primary.main },
+                    { label: 'Pri. Dark', color: theme.palette.primary.dark },
+                    { label: 'Secondary', color: theme.palette.secondary.main },
+                    { label: 'Sec. Dark', color: theme.palette.secondary.dark },
+                    { label: 'Background', color: theme.palette.background.default },
+                    { label: 'Surface', color: theme.palette.background.paper },
+                    { label: 'Error', color: theme.palette.error.main },
                   ].map(({ label, color }) => (
                     <Tooltip title={color} arrow key={label}>
                       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, width: 56 }}>
-                        <Box
-                          sx={{
-                            width: 32,
-                            height: 32,
-                            borderRadius: 1,
-                            bgcolor: color,
-                            border: `1px solid ${theme.palette.divider}`,
-                            boxShadow: 1,
-                          }}
-                        />
-                        <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.secondary' }}>
-                          {label}
-                        </Typography>
+                        <Box sx={{ width: 32, height: 32, borderRadius: 1, bgcolor: color, border: `1px solid ${theme.palette.divider}`, boxShadow: 1 }} />
+                        <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.secondary' }}>{label}</Typography>
                       </Box>
                     </Tooltip>
                   ))}
@@ -660,28 +488,22 @@ const HelpDialog = ({ open, onClose }) => {
 
           {/* Tab 4 — 更新日志 */}
           <TabPanel value={tabValue} index={4}>
-            {changelog === null || changelog === 'loading' ? (
+            {isLoading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
                 <CircularProgress size={28} />
               </Box>
-            ) : changelog === 'ratelimit' ? (
-              <Alert
-                severity="info"
-                action={<Button size="small" onClick={loadChangelog}>{t('help.changelog.retry')}</Button>}
-              >
+            ) : isRateLimited ? (
+              <Alert severity="info" action={<Button size="small" onClick={loadChangelog}>{t('help.changelog.retry')}</Button>}>
                 {t('help.changelog.rateLimit')}
                 {' '}<a href="https://github.com/Ducheese/source-modding-search-tool/releases" target="_blank" rel="noopener noreferrer">{t('help.changelog.rateLimitLink')}</a>
               </Alert>
-            ) : changelog === 'error' ? (
-              <Alert
-                severity="warning"
-                action={<Button size="small" onClick={loadChangelog}>{t('help.changelog.retry')}</Button>}
-              >
+            ) : isError ? (
+              <Alert severity="warning" action={<Button size="small" onClick={loadChangelog}>{t('help.changelog.retry')}</Button>}>
                 {t('help.changelog.error')}
               </Alert>
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                {changelog.map(({ tag, name, body, date }, index) => (
+                {releases.map(({ tag, name, body, date }, index) => (
                   <ReleaseEntry
                     key={tag} tag={tag} name={name} body={body} date={date}
                     markdownStyles={markdownStyles} t={t} defaultExpanded={index === 0 && hasUpdate}
