@@ -464,17 +464,22 @@ fn decode_text(bytes: &[u8]) -> (std::borrow::Cow<'_, str>, String) {
     (cow, encoding.name().to_string())
 }
 
-// 1. 扫描目录：逻辑不变，但你可以把 FileDropZone.js 里的递归逻辑全移到这
+// 1. 扫描目录：使用 spawn_blocking 包装阻塞式 WalkDir
+// 明确表示这是阻塞 IO 操作，避免阻塞 Tauri 的异步运行时
 // 只要前端传文件夹路径，这里就负责递归到底
 #[tauri::command]
 async fn scan_directory(dir_path: String) -> Result<Vec<String>, String> {
-    let files: Vec<String> = WalkDir::new(dir_path)
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.file_type().is_file())
-        .map(|e| e.path().to_string_lossy().into_owned())
-        .collect();
-    Ok(files)
+    tauri::async_runtime::spawn_blocking(move || {
+        let files: Vec<String> = WalkDir::new(dir_path)
+            .into_iter()
+            .filter_map(|e| e.ok())
+            .filter(|e| e.file_type().is_file())
+            .map(|e| e.path().to_string_lossy().into_owned())
+            .collect();
+        Ok::<Vec<String>, String>(files)
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 // 2. 极速获取文件状态
