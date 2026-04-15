@@ -9,7 +9,7 @@ import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettingsStorage';
  * @param {string} options.lang - 当前语言
  * @returns {{ explain: function, isExplaining: boolean, explanation: string, abort: function, clear: function }}
  */
-export function useRegexExplanation({ t, lang }) {
+export function useAiRegexExplainer({ t, lang }) {
   const [explanation, setExplanation] = useState('');
   const [isExplaining, setIsExplaining] = useState(false);
   const abortedRef = useRef(false);

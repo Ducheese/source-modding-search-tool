@@ -10,7 +10,7 @@ import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettingsStorage';
  * @param {string} options.lang - 当前语言
  * @returns {{ generate: function, isGenerating: boolean, abort: function }}
  */
-export function useAiRegex({ showSnackbar, t, lang }) {
+export function useAiRegexGenerator({ showSnackbar, t, lang }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const abortedRef = useRef(false);
 
