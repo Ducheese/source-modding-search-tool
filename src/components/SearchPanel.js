@@ -36,8 +36,8 @@ import { useSnackbar } from '../contexts/SnackbarContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useSearchHistory } from '../hooks/useSearchHistory';
 import { useSearchForm } from '../hooks/useSearchForm';
-import { useAiRegex } from '../hooks/useAiRegex';
-import { useRegexExplanation } from '../hooks/useRegexExplanation';
+import { useAiRegexGenerator } from '../hooks/useAiRegexGenerator';
+import { useAiRegexExplainer } from '../hooks/useAiRegexExplainer';
 import { getRegexCategories } from '../config/regexCategories';
 
 /**
@@ -51,8 +51,8 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
   // 使用 hooks 管理状态
   const { history: searchHistory, save: saveSearchHistory } = useSearchHistory();
   const { state, setField, insertSnippet } = useSearchForm();
-  const { generate: generateAiRegex, isGenerating: isAiGenerating, abort: abortAiRegex } = useAiRegex({ showSnackbar, t, lang });
-  const { explain: explainRegex, isExplaining, explanation: regexExplanation, abort: abortExplanation, clear: clearExplanation } = useRegexExplanation({ t, lang });
+  const { generate: generateAiRegex, isGenerating: isAiGenerating, abort: abortAiRegex } = useAiRegexGenerator({ showSnackbar, t, lang });
+  const { explain: explainRegex, isExplaining, explanation: regexExplanation, abort: abortExplanation, clear: clearExplanation } = useAiRegexExplainer({ t, lang });
 
   const { searchQuery, caseSensitive, wholeWord, useRegex, includePattern, excludePattern, moreContext, contextLines, aiRegex } = state;
 

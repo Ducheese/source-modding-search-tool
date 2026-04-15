@@ -15,9 +15,6 @@ import {
   Divider,
 } from '@mui/material';
 import {
-  Translate,
-  BugReport,
-  Lightbulb,
   CheckCircle,
 } from '@mui/icons-material';
 import { useSnackbar } from '../contexts/SnackbarContext';
@@ -27,15 +24,6 @@ import { useFeedbackSubmit } from '../hooks/useFeedbackSubmit';
 import TranslationFeedbackForm from './feedback/TranslationFeedbackForm';
 import ContributorIdentityField from './feedback/ContributorIdentityField';
 import SimpleFeedbackForm from './feedback/SimpleFeedbackForm';
-
-// ─────────────────────────────────────────────────────────────
-// Icon mapping for feedback types
-// ─────────────────────────────────────────────────────────────
-const ICON_MAP = {
-  Translate,
-  BugReport,
-  Lightbulb,
-};
 
 // ─────────────────────────────────────────────────────────────
 // Main Component
@@ -163,7 +151,7 @@ const FeedbackForm = () => {
           {/* Interactive card navigation */}
           <Box sx={{ display: 'flex', gap: 2 }} role="radiogroup" aria-label="Feedback Type Selection">
             {FEEDBACK_TYPES.map((type) => {
-              const Icon = ICON_MAP[type.icon] || type.icon;
+              const Icon = type.icon;
               const isSelected = feedbackType === type.id;
               return (
                 <Paper

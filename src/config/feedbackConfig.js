@@ -3,6 +3,8 @@
  * Contains feedback types, field definitions, and length limits
  */
 
+import { Translate, BugReport, Lightbulb } from '@mui/icons-material';
+
 // ─────────────────────────────────────────────────────────────
 // Feedback Types Configuration
 // ─────────────────────────────────────────────────────────────
@@ -10,19 +12,19 @@ export const FEEDBACK_TYPES = [
   {
     id: 'translation',
     label: 'Translation',
-    icon: 'Translate',
+    icon: Translate,
     description: 'Help us improve translation quality.',
   },
   {
     id: 'bug',
     label: 'Bug Report',
-    icon: 'BugReport',
+    icon: BugReport,
     description: 'Report an issue you encountered.',
   },
   {
     id: 'feature',
     label: 'Feature Request',
-    icon: 'Lightbulb',
+    icon: Lightbulb,
     description: 'Suggest a new feature.',
   },
 ];

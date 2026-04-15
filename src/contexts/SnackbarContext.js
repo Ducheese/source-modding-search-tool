@@ -1,26 +1,59 @@
-import { createContext, useContext } from 'react';
-
-/**
- * @typedef {(message: string, severity?: 'success' | 'warning' | 'error' | 'info') => void} ShowSnackbarFunction
- */
+import { createContext, useContext, useState, useCallback } from 'react';
+import { Snackbar, Alert, Slide } from '@mui/material';
 
 /**
  * Snackbar 上下文
- * 用于在组件树中共享 showSnackbar 函数
- * 
- * @type {import('react').Context<ShowSnackbarFunction | undefined>}
+ * 内部管理 snackbar 状态并渲染
  */
+
 const SnackbarContext = createContext();
 
 /**
  * Snackbar Provider
- * @type {import('react').Provider<ShowSnackbarFunction>}
+ * 内部管理 snackbar 状态和渲染
  */
-export const SnackbarProvider = SnackbarContext.Provider;
+export const SnackbarProvider = ({ children }) => {
+  const [activeSnackbar, setActiveSnackbar] = useState(null);
+
+  const showSnackbar = useCallback((message, severity = 'info') => {
+    const id = Date.now();
+    setActiveSnackbar({ id, message, severity });
+  }, []);
+
+  const closeSnackbar = useCallback(() => {
+    setActiveSnackbar(null);
+  }, []);
+
+  return (
+    <SnackbarContext.Provider value={showSnackbar}>
+      {children}
+      
+      {activeSnackbar && (
+        <Snackbar
+          key={activeSnackbar.id}
+          open={true}
+          autoHideDuration={2000}
+          onClose={closeSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          TransitionComponent={Slide}
+          TransitionProps={{ direction: 'up' }}
+        >
+          <Alert
+            onClose={closeSnackbar}
+            severity={activeSnackbar.severity}
+            sx={{ minWidth: '200px' }}
+          >
+            {activeSnackbar.message}
+          </Alert>
+        </Snackbar>
+      )}
+    </SnackbarContext.Provider>
+  );
+};
 
 /**
- * 获取 Snackbar 上下文值的 Hook
- * @returns {ShowSnackbarFunction} showSnackbar 函数
+ * 获取 showSnackbar 函数的 Hook
+ * @returns {function(string, string?): void} showSnackbar(message, severity?)
  * @throws {Error} 如果在 SnackbarProvider 外使用
  */
 export const useSnackbar = () => {
