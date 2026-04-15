@@ -220,7 +220,12 @@ const HelpDialog = ({ open, onClose }) => {
   const handleTestConnection = () => testConnection();
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={() => {
+      if (document.activeElement) {
+        document.activeElement.blur();
+      }
+      onClose();
+    }} maxWidth="md" fullWidth>
 
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -228,7 +233,12 @@ const HelpDialog = ({ open, onClose }) => {
             <Help sx={{ color: 'primary.main' }} />
             {t('help.title')}
           </Typography>
-          <IconButton onClick={onClose}>
+          <IconButton onClick={() => {
+            if (document.activeElement) {
+              document.activeElement.blur();
+            }
+            onClose();
+          }}>
             <Close />
           </IconButton>
         </Box>

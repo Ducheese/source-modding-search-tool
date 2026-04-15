@@ -228,6 +228,10 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
     <Dialog
       open={open && !minimized}
       onClose={(event, reason) => {
+        // 先移除焦点，再关闭（避免 aria-hidden 警告）
+        if (document.activeElement) {
+          document.activeElement.blur();
+        }
         if (reason === 'backdropClick') {
           onMinimizedChange(true);
         } else {
@@ -250,7 +254,12 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
               </IconButton>
             </Tooltip>
             <Tooltip title={t('aiChat.close')}>
-              <IconButton onClick={onClose}>
+              <IconButton onClick={() => {
+                if (document.activeElement) {
+                  document.activeElement.blur();
+                }
+                onClose();
+              }}>
                 <Close />
               </IconButton>
             </Tooltip>
