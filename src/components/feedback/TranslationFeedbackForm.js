@@ -8,7 +8,7 @@ import {
   Autocomplete,
 } from '@mui/material';
 import { Send } from '@mui/icons-material';
-import { SUPPORTED_LANGS } from '../../utils/i18n';
+import { SUPPORTED_LANGS } from '../../config/languages';
 import { useTranslationKeys } from '../../hooks/useTranslationKeys';
 import { MAX_LEN } from '../../config/feedbackConfig';
 import TranslationKeyAutocomplete from './TranslationKeyAutocomplete';

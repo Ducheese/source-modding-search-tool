@@ -35,7 +35,7 @@ export const MAX_LEN = {
   title: 200,
   description: 4000,
   steps: 2000,
-  suggestion: 4000,
+  suggestion: 2000,
 };
 
 // ─────────────────────────────────────────────────────────────

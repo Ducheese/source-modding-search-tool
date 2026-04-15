@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Box, Typography, IconButton, alpha, useTheme } from '@mui/material';
 import { ContentCopy } from '@mui/icons-material';
-import { useLanguage } from '../utils/i18n';
+import { useLanguage } from '../contexts/LanguageContext';
 
 // 原子组件：渲染一行代码（包含行号、内容、复制行按钮）
 const ResultLine = memo(({

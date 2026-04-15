@@ -16,7 +16,7 @@ import SearchResults from './SearchResults';
 
 import { HelpOutline } from '@mui/icons-material';
 import HelpDialog from './HelpDialog';
-import { useLanguage } from '../utils/i18n';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const MainLayout = () => {
   const theme = useTheme();

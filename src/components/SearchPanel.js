@@ -33,7 +33,7 @@ import {
 } from '@mui/icons-material';
 import { searchInFiles } from '../utils/searchEngine';
 import { useSnackbar } from '../contexts/SnackbarContext';
-import { useLanguage } from '../utils/i18n';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useSearchHistory } from '../hooks/useSearchHistory';
 import { useSearchForm } from '../hooks/useSearchForm';
 import { useAiRegex } from '../hooks/useAiRegex';

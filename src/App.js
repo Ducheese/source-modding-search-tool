@@ -26,7 +26,7 @@ import { ThemeSchemeProvider } from './contexts/ThemeSchemeContext';
 
 // Utils
 import { getTheme } from './utils/themeFactory';
-import { LanguageProvider, useLanguage } from './utils/i18n';
+import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 
 // ─────────────────────────────────────────────────────────────
 // App 内层（已能访问 ThemeProvider 和 SnackbarContext）

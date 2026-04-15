@@ -26,7 +26,7 @@ import {
 } from '@mui/icons-material';
 import { useSnackbar } from '../contexts/SnackbarContext';
 import { tauriAPI } from '../utils/tauriBridge';
-import { useLanguage } from '../utils/i18n';
+import { useLanguage } from '../contexts/LanguageContext';
 
 // --- 子组件：单独的文件行 (Memo化以极致性能) ---
 const FileRow = memo(({ data, index, style }) => {

@@ -19,7 +19,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useSnackbar } from '../contexts/SnackbarContext';
 import { getMarkdownStyles } from '../utils/markdownStyles';
-import { useLanguage } from '../utils/i18n';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useAiChatSession } from '../hooks/useAiChatSession';
 
 // ─── 子组件（用 React.memo 避免已完成消息的重复渲染）────────────────────────

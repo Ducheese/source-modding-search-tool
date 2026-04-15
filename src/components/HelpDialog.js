@@ -26,7 +26,7 @@ import { homeDir } from '@tauri-apps/api/path';
 
 import { useSnackbar } from '../contexts/SnackbarContext';
 import { useThemeScheme } from '../contexts/ThemeSchemeContext';
-import { useLanguage } from '../utils/i18n';
+import { useLanguage } from '../contexts/LanguageContext';
 import { COLOR_SCHEMES } from '../config/colorSchemes';
 import { getMarkdownStyles } from '../utils/markdownStyles';
 import { useAiSettings } from '../hooks/useAiSettings';

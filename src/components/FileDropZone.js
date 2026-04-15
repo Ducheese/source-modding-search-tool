@@ -14,7 +14,7 @@ import {
   FolderOpen,
   Description,
 } from '@mui/icons-material';
-import { useLanguage } from '../utils/i18n';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useFileScanner } from '../hooks/useFileScanner';
 
 /**

@@ -6,7 +6,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { useSnackbar } from '../contexts/SnackbarContext';
 import { tauriAPI } from '../utils/tauriBridge';
 import ResultLine from './ResultLine';
-import { useLanguage } from '../utils/i18n';
+import { useLanguage } from '../contexts/LanguageContext';
 
 // 注入跑马灯动画样式
 // 技巧：移动 -50% 距离，前提是内容也是双倍的

@@ -6,7 +6,7 @@ import {
   alpha,
 } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
-import { useLanguage } from '../utils/i18n';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useSnackbar } from '../contexts/SnackbarContext';
 
 /**
