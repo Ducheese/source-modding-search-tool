@@ -197,7 +197,7 @@ const HelpDialog = ({ open, onClose }) => {
   const markdownStyles = useMemo(() => getMarkdownStyles(theme), [theme]);
 
   // 使用 hooks
-  const { settings: aiSettings, setField: setAiSetting, resetPrompts, testConnection, isTesting } = useAiSettings({ lang, open });
+  const { settings: aiSettings, setField: setAiSetting, resetPrompts, testConnection, isTesting } = useAiSettings({ lang, open, showSnackbar, t });
   const { releases, currentVersion, hasUpdate, isLoading, isError, isRateLimited, load: loadChangelog } = useChangelog({ open, t });
 
   const handleTabChange = (_, newValue) => setTabValue(newValue);
@@ -217,7 +217,7 @@ const HelpDialog = ({ open, onClose }) => {
       });
   }, [open, configPath]);
 
-  const handleTestConnection = () => testConnection(showSnackbar, t);
+  const handleTestConnection = () => testConnection();
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

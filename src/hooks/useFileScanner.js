@@ -8,7 +8,7 @@ import { filterValidFiles, getSupportedExtensions } from '../utils/fileUtils';
  * 处理 Tauri 全局拖拽事件和文件/文件夹选择
  * @param {Object} options
  * @param {function} options.onFilesAdded - 文件添加回调
- * @param {function} options.showErrorAlert - 显示错误提示
+ * @param {function} options.showErrorAlert - 显示错误提示（用于多行错误详情）
  * @param {function} options.t - 翻译函数
  * @returns {{ selectFiles: function, selectFolder: function, isDragOver: boolean }}
  */
@@ -17,7 +17,18 @@ export function useFileScanner({ onFilesAdded, showErrorAlert, t }) {
 
   // 监听 Tauri 全局拖拽事件
   useEffect(() => {
-    const unlistenPromise = listen('tauri://file-drop', async (event) => {
+    // 拖拽悬停：设置 isDragOver = true
+    const unlistenHoverPromise = listen('tauri://file-drop-hover', () => {
+      setIsDragOver(true);
+    });
+
+    // 拖拽取消：设置 isDragOver = false
+    const unlistenCancelledPromise = listen('tauri://file-drop-cancelled', () => {
+      setIsDragOver(false);
+    });
+
+    // 拖拽落下：处理文件并设置 isDragOver = false
+    const unlistenDropPromise = listen('tauri://file-drop', async (event) => {
       setIsDragOver(false);
       const paths = event.payload;
       if (!paths?.length) return;
@@ -44,7 +55,9 @@ export function useFileScanner({ onFilesAdded, showErrorAlert, t }) {
     });
 
     return () => {
-      unlistenPromise.then(unlisten => unlisten());
+      unlistenHoverPromise.then(unlisten => unlisten());
+      unlistenCancelledPromise.then(unlisten => unlisten());
+      unlistenDropPromise.then(unlisten => unlisten());
     };
   }, [onFilesAdded, showErrorAlert, t]);
 

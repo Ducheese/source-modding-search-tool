@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { open } from '@tauri-apps/api/dialog';
 import { open as openShell } from '@tauri-apps/api/shell';
+import { SUPPORTED_EXTENSIONS } from '../config/supportedFiles';
 
 // ─────────────────────────────────────────────────────────────
 // 统一错误处理层
@@ -49,7 +50,7 @@ export const tauriAPI = {
       multiple: true,
       filters: [{
         name: 'Source Files',
-        extensions: ['sp', 'cfg', 'ini', 'txt', 'vmt', 'qc', 'inc', 'lua', 'log', 'vdf', 'scr', 'res', 'nut']
+        extensions: SUPPORTED_EXTENSIONS
       }]
     });
     return selected === null ? [] : (Array.isArray(selected) ? selected : [selected]);

@@ -25,7 +25,7 @@ const FileDropZone = ({ onFilesAdded }) => {
   const theme = useTheme();
   const { t } = useLanguage();
 
-  // 错误提示状态
+  // 错误提示状态（用于显示多行错误详情）
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
 
@@ -128,7 +128,7 @@ const FileDropZone = ({ onFilesAdded }) => {
         </Box>
       </Box>
 
-      {/* 错误提示 */}
+      {/* 错误提示（用于显示多行错误详情） */}
       <Snackbar
         open={showAlert}
         autoHideDuration={4000}

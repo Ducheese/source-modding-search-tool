@@ -1,5 +1,5 @@
+import { AI_SETTINGS_STORAGE_KEY } from '../config/storageKeys';
 import {
-  AI_SETTINGS_STORAGE_KEY,
   CHINESE_LANGS,
   DEFAULT_AI_REGEX_PROMPT,
   DEFAULT_AI_CHAT_PROMPT,
@@ -31,6 +31,21 @@ export const getDefaultPrompts = (lang) => {
 
 export const loadAiSettings = (lang) => {
   const defaults = getDefaultPrompts(lang);
+  
+  // SSR 兼容性检查
+  if (typeof window === 'undefined') {
+    return {
+      baseUrl: '',
+      apiKey: '',
+      regexModelName: '',
+      chatModelName: '',
+      explainModelName: '',
+      regexPrompt:   defaults.regexPrompt,
+      chatPrompt:    defaults.chatPrompt,
+      explainPrompt: defaults.explainPrompt,
+    };
+  }
+  
   const raw = localStorage.getItem(AI_SETTINGS_STORAGE_KEY);
   if (!raw) {
     return {

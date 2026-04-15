@@ -3,11 +3,10 @@
  * 用于 FileDropZone 和 FileList 组件
  */
 
-// 支持的文件格式
-const SUPPORTED_EXTENSIONS = [
-  '.sp', '.cfg', '.ini', '.txt', '.vmt', '.qc', 
-  '.inc', '.lua', '.log', '.vdf', '.scr', '.res', '.nut'
-];
+import { SUPPORTED_EXTENSIONS } from '../config/supportedFiles';
+
+// 带点前缀的扩展名列表（用于匹配）
+const SUPPORTED_EXTENSIONS_WITH_DOT = SUPPORTED_EXTENSIONS.map(ext => `.${ext}`);
 
 /**
  * 从完整路径中提取文件名
@@ -25,7 +24,7 @@ export function getFileName(path) {
  */
 export function isSupportedFile(fileName) {
   const ext = '.' + fileName.split('.').pop().toLowerCase();
-  return SUPPORTED_EXTENSIONS.includes(ext);
+  return SUPPORTED_EXTENSIONS_WITH_DOT.includes(ext);
 }
 
 /**
@@ -63,9 +62,9 @@ export function filterValidFiles(paths) {
 }
 
 /**
- * 获取支持的文件扩展名列表（用于提示）
+ * 获取支持的文件扩展名列表（用于提示，带点前缀）
  * @returns {string[]}
  */
 export function getSupportedExtensions() {
-  return [...SUPPORTED_EXTENSIONS];
+  return [...SUPPORTED_EXTENSIONS_WITH_DOT];
 }

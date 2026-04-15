@@ -8,7 +8,28 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { parseVdf } from '../utils/vdfParser';
 
 // Global cache that persists across component unmounts
+// with LRU eviction to prevent memory leaks
+const MAX_CACHE_SIZE = 10;
 const globalTranslationCache = new Map();
+
+/**
+ * Add entry to cache with LRU eviction
+ * @param {string} key
+ * @param {Map} value
+ */
+const cacheSet = (key, value) => {
+  // If key already exists, delete it first (to move it to end for LRU)
+  if (globalTranslationCache.has(key)) {
+    globalTranslationCache.delete(key);
+  }
+  // Evict oldest entries if cache is full
+  while (globalTranslationCache.size >= MAX_CACHE_SIZE) {
+    // Map iterators return entries in insertion order
+    const oldestKey = globalTranslationCache.keys().next().value;
+    globalTranslationCache.delete(oldestKey);
+  }
+  globalTranslationCache.set(key, value);
+};
 
 /**
  * Convert translation map to sorted key options array
@@ -80,8 +101,8 @@ export const useTranslationKeys = (langId) => {
         });
       }
 
-      // Cache the result in global cache
-      globalTranslationCache.set(langId, tokensMap);
+      // Cache the result in global cache (with LRU eviction)
+      cacheSet(langId, tokensMap);
       setTranslationMap(tokensMap);
       setKeyOptions(toKeyOptions(tokensMap));
     } catch (err) {

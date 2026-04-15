@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   loadFeedbackIdentity,
   saveFeedbackIdentity,
@@ -24,8 +24,15 @@ export function useFeedbackIdentity() {
   const [identity, setIdentity] = useState(loadFeedbackIdentity);
   const { anonymousId, contributorNickname } = identity;
 
-  // Auto-persist to localStorage
+  // Track initial render to avoid unnecessary localStorage write
+  const isInitialMountRef = useRef(true);
+
+  // Auto-persist to localStorage (skip on initial mount)
   useEffect(() => {
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false;
+      return;
+    }
     saveFeedbackIdentity(identity);
   }, [identity]);
 

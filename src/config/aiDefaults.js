@@ -1,7 +1,7 @@
 import { AI_SETTINGS_STORAGE_KEY } from './storageKeys';
 
-// 重新导出以保持向后兼容
-export { AI_SETTINGS_STORAGE_KEY };
+// 注意：AI_SETTINGS_STORAGE_KEY 不再从此处导出
+// 请直接从 './storageKeys' 导入
 
 // ─────────────────────────────────────────────────────────────────────────────────────
 // 英文提示词

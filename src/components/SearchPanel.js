@@ -36,7 +36,8 @@ import { useSnackbar } from '../contexts/SnackbarContext';
 import { useLanguage } from '../utils/i18n';
 import { useSearchHistory } from '../hooks/useSearchHistory';
 import { useSearchForm } from '../hooks/useSearchForm';
-import { useAiRegex, useRegexExplanation } from '../hooks/useAiRegex';
+import { useAiRegex } from '../hooks/useAiRegex';
+import { useRegexExplanation } from '../hooks/useRegexExplanation';
 import { getRegexCategories } from '../utils/regexCategories';
 
 /**

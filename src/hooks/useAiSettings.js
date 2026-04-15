@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { AI_SETTINGS_STORAGE_KEY } from '../config/aiDefaults';
+import { AI_SETTINGS_STORAGE_KEY } from '../config/storageKeys';
 import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettings';
 import { tauriAPI } from '../utils/tauriBridge';
 
@@ -8,9 +8,11 @@ import { tauriAPI } from '../utils/tauriBridge';
  * @param {Object} options
  * @param {string} options.lang - 当前语言
  * @param {boolean} options.open - 对话框是否打开（用于在打开时重新加载设置）
+ * @param {function} options.showSnackbar - 显示提示的函数
+ * @param {function} options.t - 翻译函数
  * @returns {{ settings: object, setField: function, resetPrompts: function, testConnection: function, isTesting: boolean }}
  */
-export function useAiSettings({ lang, open } = {}) {
+export function useAiSettings({ lang, open, showSnackbar, t } = {}) {
   const [settings, setSettings] = useState(() => loadAiSettings(lang));
   const [isTesting, setIsTesting] = useState(false);
 
@@ -36,7 +38,7 @@ export function useAiSettings({ lang, open } = {}) {
     setField('explainPrompt', defaults.explainPrompt);
   }, [lang, setField]);
 
-  const testConnection = useCallback(async (showSnackbar, t) => {
+  const testConnection = useCallback(async () => {
     if (!settings.baseUrl?.trim() || !settings.apiKey?.trim() || 
         (!settings.regexModelName?.trim() && !settings.chatModelName?.trim() && !settings.explainModelName?.trim())) {
       showSnackbar?.(t('help.fillRequired'), 'warning');
@@ -60,7 +62,7 @@ export function useAiSettings({ lang, open } = {}) {
     } finally {
       setIsTesting(false);
     }
-  }, [settings]);
+  }, [settings, showSnackbar, t]);
 
   return { settings, setField, resetPrompts, testConnection, isTesting };
 }

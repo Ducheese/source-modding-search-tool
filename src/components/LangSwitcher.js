@@ -7,12 +7,14 @@ import {
 } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useLanguage } from '../utils/i18n';
+import { useSnackbar } from '../contexts/SnackbarContext';
 
 /**
  * 语言切换按钮组件
  * 显示语言下拉菜单，支持切换界面语言
  */
-const LangSwitcher = ({ showSnackbar }) => {
+const LangSwitcher = () => {
+  const showSnackbar = useSnackbar();
   const { lang, setLang, SUPPORTED_LANGS, t, loadedLang } = useLanguage();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);

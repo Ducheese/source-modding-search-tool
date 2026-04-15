@@ -1,5 +1,5 @@
 // Material UI组件库
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   IconButton,
   Snackbar,
@@ -37,10 +37,10 @@ function AppInner({ darkMode, setDarkMode, schemeId, handleSetScheme }) {
 
   const [snackbarQueue, setSnackbarQueue] = useState([]);
 
-  const showSnackbar = (message, severity = 'info') => {
+  const showSnackbar = useCallback((message, severity = 'info') => {
     const id = Date.now();
     setSnackbarQueue([{ id, message, severity }]);
-  };
+  }, []);
 
   const closeSnackbar = (id) => {
     setSnackbarQueue(prev => prev.filter(item => item.id !== id));
@@ -73,7 +73,7 @@ function AppInner({ darkMode, setDarkMode, schemeId, handleSetScheme }) {
             }}
           >
             {/* 语言切换下拉 */}
-            <LangSwitcher showSnackbar={showSnackbar} />
+            <LangSwitcher />
 
             {/* 深浅色模式切换 */}
             <IconButton
