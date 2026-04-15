@@ -1,54 +1,18 @@
-import { tauriAPI } from './tauriBridge';
+/**
+ * 搜索结果导出工具
+ * 格式化和下载搜索结果
+ */
 
-// 现在的 JS 只是一个发号施令的公主，脏活累活都给 Rust 做
-export const searchInFiles = async (files, searchOptions) => {
-  const startTime = Date.now();
-
-  // 以前的复杂逻辑全部删除，直接调用 Rust
-  // 须臾之间，结果即现
-  let rustResponse = { files: [], filtered_file_count: 0 };
-  try {
-    rustResponse = await tauriAPI.searchInFiles(files, searchOptions);
-  } catch (error) {
-    console.error("Rust search error:", error);
-    throw new Error(`Search failed: ${error}`);
-  }
-
-  // Rust 返回的结构: { files: SearchResult[], filtered_file_count: usize }
-  const rustResults = rustResponse.files || [];
-  // filteredFileCount：通过 include/exclude 路径通配符过滤后、实际被搜索的文件数
-  const filteredFileCount = rustResponse.filtered_file_count || 0;
-
-  // 转换结果格式以适配现有的 UI
-  const totalMatches = rustResults.reduce((acc, file) => acc + file.matches.length, 0);
-
-  const results = {
-    query: searchOptions.query,
-    options: searchOptions,
-    inputFiles: files.length,          // 传入搜索的文件总数（pattern 过滤前）
-    totalFiles: filteredFileCount,     // 实际被搜索的文件数（通过 include/exclude pattern 过滤后）
-    matchedFiles: rustResults.length,
-    totalMatches: totalMatches,
-    files: rustResults,
-    executionTime: Date.now() - startTime,
-  };
-
-  return results;
+const getLineText = (segments) => {
+  if (!segments) return '';
+  return segments.map(s => s.text).join('');
 };
 
-// 导出功能逻辑保持不变，因为这只是纯文本处理，不涉及繁重计算
 export const formatResultsForExport = (results, format = 'txt', t = null) => {
-  // Helper: use t() if available, otherwise use the fallback string
   const s = (key, fallback) => (t ? t(key) : fallback);
   if (!results || results.files.length === 0) {
     throw new Error(s('export.noResults', 'No search results to export'));
   }
-
-  // --- 新增辅助函数：把 segments 还原回纯文本 ---
-  const getLineText = (segments) => {
-    if (!segments) return '';
-    return segments.map(s => s.text).join('');
-  };
 
   let content = '';
   const timestamp = new Date().toLocaleString();
@@ -70,14 +34,13 @@ export const formatResultsForExport = (results, format = 'txt', t = null) => {
       content += `${'='.repeat(file.path.length + 4)}\n\n`;
 
       file.matches.forEach(match => {
-        content += `${s('export.line', 'Line')} ${match.line_number}:\n`; // 注意：Rust返回的是 snake_case
+        content += `${s('export.line', 'Line')} ${match.line_number}:\n`;
         if (match.context.before && match.context.before.length > 0) {
           const startLine = match.line_number - match.context.before.length;
           match.context.before.forEach((line, idx) => {
             content += `  ${startLine + idx}: ${line}\n`;
           });
         }
-        // --- 修复点：使用 getLineText 替代 match.line ---
         content += `> ${match.line_number}: ${getLineText(match.segments)}\n`;
         if (match.context.after && match.context.after.length > 0) {
           match.context.after.forEach((line, idx) => {
@@ -113,7 +76,6 @@ export const formatResultsForExport = (results, format = 'txt', t = null) => {
             content += `${startLine + idx}: ${line}\n`;
           });
         }
-        // --- 修复点：使用 getLineText 替代 match.line ---
         content += `${match.line_number}: ${getLineText(match.segments)}\n`;
         if (match.context.after && match.context.after.length > 0) {
           match.context.after.forEach((line, idx) => {

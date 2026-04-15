@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useTransition } from 'react';
 import { Box, Typography, Chip, Button, Menu, MenuItem, useTheme, alpha, CircularProgress, Alert } from '@mui/material';
 import { Download, SmartToy, UnfoldMore, UnfoldLess } from '@mui/icons-material';
-import { exportResults } from '../utils/searchEngine';
+import { exportResults } from '../utils/resultExport';
 import AIChatDialog from './AIChatDialog';
 import VirtualizedResults from './VirtualizedResults';
 import { useLanguage } from '../contexts/LanguageContext';

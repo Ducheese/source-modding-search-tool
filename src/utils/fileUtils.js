@@ -68,3 +68,62 @@ export function filterValidFiles(paths) {
 export function getSupportedExtensions() {
   return [...SUPPORTED_EXTENSIONS_WITH_DOT];
 }
+
+// ─────────────────────────────────────────────────────────────
+// 文件信息格式化
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * 格式化文件大小
+ * @param {number} bytes - 字节数
+ * @returns {string} 格式化后的字符串
+ */
+export function formatFileSize(bytes) {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+/**
+ * 截断路径显示
+ * @param {string} path - 完整路径
+ * @param {number} maxLength - 最大长度
+ * @returns {string} 截断后的路径
+ */
+export function truncatePath(path, maxLength = 40) {
+  if (!path || path.length <= maxLength) return path;
+  const parts = path.split(/[\\/]/);
+  if (parts.length <= 2) return path;
+  return '…\\' + parts[parts.length - 2] + '\\' + parts[parts.length - 1];
+}
+
+/**
+ * 根据编码类型返回对应的颜色
+ * @param {string} encoding - 编码类型
+ * @returns {'success' | 'warning' | 'info' | 'default'} MUI Chip 颜色
+ */
+export function getEncodingColor(encoding) {
+  const cleanEncoding = encoding?.toLowerCase().replace(/ with bom/i, '');
+
+  switch (cleanEncoding) {
+    case 'utf-8':
+    case 'utf8':
+    case 'ascii':
+      return 'success';
+    case 'gbk':
+    case 'gb2312':
+    case 'gb18030':
+      return 'warning';
+    case 'utf-16':
+    case 'utf-16le':
+    case 'utf-16be':
+      return 'info';
+    default:
+      if (cleanEncoding && (cleanEncoding.includes('windows-') || cleanEncoding.includes('shift-jis'))) {
+        return 'warning';
+      }
+      return 'default';
+  }
+}

@@ -31,7 +31,7 @@ import {
   ExpandLess,
   ExpandMore,
 } from '@mui/icons-material';
-import { searchInFiles } from '../utils/searchEngine';
+import { searchInFiles } from '../utils/searchService';
 import { useSnackbar } from '../contexts/SnackbarContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useSearchHistory } from '../hooks/useSearchHistory';
