@@ -31,9 +31,9 @@ class ErrorBoundary extends React.Component {
           textAlign: 'center',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}>
-          <h1 style={{ marginBottom: '16px', color: '#d32f2f' }}>出错了</h1>
+          <h1 style={{ marginBottom: '16px', color: '#d32f2f' }}>Error Occurred</h1>
           <p style={{ marginBottom: '24px', color: '#666' }}>
-            应用遇到了一个错误。请尝试刷新页面。
+            An error occurred. Please try refreshing the page.
           </p>
           <button
             onClick={() => window.location.reload()}
@@ -47,10 +47,10 @@ class ErrorBoundary extends React.Component {
               cursor: 'pointer',
             }}
           >
-            刷新页面
+            Refresh Page
           </button>
           <details style={{ marginTop: '24px', maxWidth: '600px', overflow: 'auto' }}>
-            <summary style={{ cursor: 'pointer', color: '#999' }}>错误详情</summary>
+            <summary style={{ cursor: 'pointer', color: '#999' }}>Error Details</summary>
             <pre style={{ marginTop: '8px', fontSize: '12px', color: '#666', whiteSpace: 'pre-wrap' }}>
               {this.state.error?.toString()}
             </pre>

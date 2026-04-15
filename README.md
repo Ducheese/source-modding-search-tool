@@ -89,44 +89,75 @@ npm run tauri build
 ```
 source-modding-search-tool/
 ├── public/
-│   ├── fonts/            # 字体但是目前为空
-│   ├── lang/             # 语言文件
+│   ├── fonts/
+│   ├── lang/             # 多语言 VDF 文件
 │   ├── logos/
-│   └── index.html        # HTML 模板
+│   └── index.html
 ├── src/
-│   ├── components/       # React 前端
+│   ├── components/       # React 组件
 │   │   ├── AIChatDialog.js
+│   │   ├── ErrorBoundary.js
 │   │   ├── FeedbackForm.js
 │   │   ├── FileDropZone.js
 │   │   ├── FileList.js
 │   │   ├── HelpDialog.js
+│   │   ├── LangSwitcher.js
 │   │   ├── MainLayout.js
 │   │   ├── ResultLine.js
 │   │   ├── SearchPanel.js
 │   │   ├── SearchResults.js
-│   │   ├── SimpleFeedbackForm.js
-│   │   └── VirtualizedResults.js
+│   │   ├── VirtualizedResults.js
+│   │   └── feedback/     # 反馈表单子组件
+│   │       ├── ContributorIdentityField.js
+│   │       ├── SimpleFeedbackForm.js
+│   │       ├── TranslationFeedbackForm.js
+│   │       └── TranslationKeyAutocomplete.js
+│   ├── hooks/            # 自定义 React Hooks
+│   │   ├── useAiChatSession.js
+│   │   ├── useAiRegex.js
+│   │   ├── useAiSettings.js
+│   │   ├── useChangelog.js
+│   │   ├── useFeedbackIdentity.js
+│   │   ├── useFeedbackSubmit.js
+│   │   ├── useFileScanner.js
+│   │   ├── useRegexExplanation.js
+│   │   ├── useSearchForm.js
+│   │   ├── useSearchHistory.js
+│   │   └── useTranslationKeys.js
+│   ├── contexts/         # React Context
+│   │   ├── SnackbarContext.js
+│   │   └── ThemeSchemeContext.js
 │   ├── utils/            # 工具函数
-│   │   ├── aiDefaults.js
+│   │   ├── aiSettings.js
+│   │   ├── chatContextSerializer.js
+│   │   ├── feedbackIdentity.js
+│   │   ├── fileUtils.js
 │   │   ├── i18n.js
 │   │   ├── markdownStyles.js
+│   │   ├── parseThinkChunk.js
+│   │   ├── regexCategories.js
 │   │   ├── searchEngine.js
 │   │   ├── tauriBridge.js
-│   │   ├── themeConfig.js
-│   │   ├── useTranslationKeys.js
+│   │   ├── themeFactory.js
 │   │   └── vdfParser.js
-│   ├── App.js            # 主应用组件
-│   ├── index.css         # 全局样式
-│   └── index.js          # 应用入口
+│   ├── config/           # 配置常量
+│   │   ├── aiDefaults.js
+│   │   ├── colorSchemes.js
+│   │   ├── feedbackConfig.js
+│   │   ├── storageKeys.js
+│   │   └── supportedFiles.js
+│   ├── App.js
+│   ├── index.css
+│   └── index.js
 ├── src-tauri/            # Rust 后端
 │   ├── icons/
 │   │   └── icon.ico
-│   └── src/
+│   ├── src/
 │   │   └── main.rs
 │   ├── build.rs
 │   ├── Cargo.toml
 │   └── tauri.conf.json
-├── test/                 # 测试用文本生成脚本、现成文本
+├── test/
 ├── package.json
 └── README.md
 ```

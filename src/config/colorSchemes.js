@@ -269,17 +269,3 @@ export const COLOR_SCHEMES = [
     darkSecondary: '#FFE082',
   },
 ];
-
-// ─────────────────────────────────────────────────────────────
-// 兼容旧接口：THEMES 数组（懒加载代理）
-// ─────────────────────────────────────────────────────────────
-
-// 使用 Proxy 实现懒加载，保持 THEMES[schemeId][modeIndex] 的访问方式兼容
-export const THEMES = new Array(SCHEME_PALETTES.length);
-
-for (let i = 0; i < SCHEME_PALETTES.length; i++) {
-  THEMES[i] = [
-    { __lazy: true, schemeId: i, mode: 'light' },
-    { __lazy: true, schemeId: i, mode: 'dark' },
-  ];
-}

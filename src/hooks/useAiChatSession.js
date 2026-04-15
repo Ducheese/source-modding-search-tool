@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { tauriAPI } from '../utils/tauriBridge';
-import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettings';
+import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettingsStorage';
 import { parseThinkChunk } from '../utils/parseThinkChunk';
 import { serializeResultsForAi } from '../utils/chatContextSerializer';
 
@@ -160,12 +160,12 @@ export function useAiChatSession({ results, lang, t, showSnackbar }) {
 
   // 发送消息
   const sendMessage = useCallback(async (content, { enableThinking: thinking, thinkingBudget: budget } = {}) => {
-    if (isStreaming || !content?.trim()) return;
+    if (isStreaming || !content?.trim()) return false;
 
     const settings = loadAiSettings(lang);
     if (!settings.baseUrl || !settings.apiKey || (!settings.chatModelName && !settings.regexModelName)) {
       showSnackbar?.(t('aiChat.aiConfigHint'), 'warning');
-      return;
+      return false;
     }
 
     const now = new Date();
@@ -220,6 +220,7 @@ export function useAiChatSession({ results, lang, t, showSnackbar }) {
         enable_thinking: thinking ?? enableThinking,
         thinking_budget: budget ?? thinkingBudget,
       });
+      return true;
     } catch {
       const updatedMessages = messagesRef.current.map((m) => {
         if (m.id !== assistantId) return m;
@@ -229,6 +230,7 @@ export function useAiChatSession({ results, lang, t, showSnackbar }) {
       setMessages(updatedMessages);
       setIsStreaming(false);
       showSnackbar?.(t('aiChat.startFailed'), 'error');
+      return false;
     }
   }, [isStreaming, lang, showSnackbar, t, enableThinking, thinkingBudget]);
 

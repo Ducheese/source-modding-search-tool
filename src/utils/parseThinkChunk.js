@@ -9,8 +9,8 @@
  * 优化点：先用 indexOf('<') 跳过纯文本段，避免逐字符迭代（对长思考链有 5~10x 加速）。
  */
 
-const OPEN  = '<think\>';
-const CLOSE = '</think\>';
+const OPEN  = '<think>';
+const CLOSE = '</think>';
 
 /**
  * 解析流式 chunk，支持 <think\>...</think\> 标签

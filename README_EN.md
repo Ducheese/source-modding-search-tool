@@ -90,43 +90,74 @@ npm run tauri build
 source-modding-search-tool/
 ├── public/
 │   ├── fonts/
-│   ├── lang/             # Language VDF
+│   ├── lang/             # Language VDF files
 │   ├── logos/
-│   └── index.html        # HTML template
+│   └── index.html
 ├── src/
-│   ├── components/       # React frontend
+│   ├── components/       # React components
 │   │   ├── AIChatDialog.js
+│   │   ├── ErrorBoundary.js
 │   │   ├── FeedbackForm.js
 │   │   ├── FileDropZone.js
 │   │   ├── FileList.js
 │   │   ├── HelpDialog.js
+│   │   ├── LangSwitcher.js
 │   │   ├── MainLayout.js
 │   │   ├── ResultLine.js
 │   │   ├── SearchPanel.js
 │   │   ├── SearchResults.js
-│   │   ├── SimpleFeedbackForm.js
-│   │   └── VirtualizedResults.js
+│   │   ├── VirtualizedResults.js
+│   │   └── feedback/     # Feedback form sub-components
+│   │       ├── ContributorIdentityField.js
+│   │       ├── SimpleFeedbackForm.js
+│   │       ├── TranslationFeedbackForm.js
+│   │       └── TranslationKeyAutocomplete.js
+│   ├── hooks/            # Custom React Hooks
+│   │   ├── useAiChatSession.js
+│   │   ├── useAiRegex.js
+│   │   ├── useAiSettings.js
+│   │   ├── useChangelog.js
+│   │   ├── useFeedbackIdentity.js
+│   │   ├── useFeedbackSubmit.js
+│   │   ├── useFileScanner.js
+│   │   ├── useRegexExplanation.js
+│   │   ├── useSearchForm.js
+│   │   ├── useSearchHistory.js
+│   │   └── useTranslationKeys.js
+│   ├── contexts/         # React Context
+│   │   ├── SnackbarContext.js
+│   │   └── ThemeSchemeContext.js
 │   ├── utils/            # Utility functions
-│   │   ├── aiDefaults.js
+│   │   ├── aiSettings.js
+│   │   ├── chatContextSerializer.js
+│   │   ├── feedbackIdentity.js
+│   │   ├── fileUtils.js
 │   │   ├── i18n.js
 │   │   ├── markdownStyles.js
+│   │   ├── parseThinkChunk.js
+│   │   ├── regexCategories.js
 │   │   ├── searchEngine.js
 │   │   ├── tauriBridge.js
-│   │   ├── themeConfig.js
-│   │   ├── useTranslationKeys.js
+│   │   ├── themeFactory.js
 │   │   └── vdfParser.js
-│   ├── App.js            # Main application component
-│   ├── index.css         # Global styles
-│   └── index.js          # Application entry point
+│   ├── config/           # Configuration constants
+│   │   ├── aiDefaults.js
+│   │   ├── colorSchemes.js
+│   │   ├── feedbackConfig.js
+│   │   ├── storageKeys.js
+│   │   └── supportedFiles.js
+│   ├── App.js
+│   ├── index.css
+│   └── index.js
 ├── src-tauri/            # Rust backend
 │   ├── icons/
 │   │   └── icon.ico
-│   └── src/
+│   ├── src/
 │   │   └── main.rs
 │   ├── build.rs
 │   ├── Cargo.toml
 │   └── tauri.conf.json
-├── test/                 # Test text generation scripts, ready-made text
+├── test/
 ├── package.json
 └── README.md
 ```

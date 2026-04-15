@@ -22,8 +22,13 @@ export const ThemeSchemeProvider = ThemeSchemeContext.Provider;
 
 /**
  * 获取主题配色方案上下文值的 Hook
- * @returns {ThemeSchemeContextValue | undefined} 包含 schemeId 和 setSchemeId 的对象
+ * @returns {ThemeSchemeContextValue} 包含 schemeId 和 setSchemeId 的对象
+ * @throws {Error} 如果在 ThemeSchemeProvider 外使用
  */
-export const useThemeScheme = () => useContext(ThemeSchemeContext);
+export const useThemeScheme = () => {
+  const context = useContext(ThemeSchemeContext);
+  if (!context) throw new Error('useThemeScheme must be used within a ThemeSchemeProvider');
+  return context;
+};
 
 export default ThemeSchemeContext;

@@ -20,8 +20,13 @@ export const SnackbarProvider = SnackbarContext.Provider;
 
 /**
  * 获取 Snackbar 上下文值的 Hook
- * @returns {ShowSnackbarFunction | undefined} showSnackbar 函数
+ * @returns {ShowSnackbarFunction} showSnackbar 函数
+ * @throws {Error} 如果在 SnackbarProvider 外使用
  */
-export const useSnackbar = () => useContext(SnackbarContext);
+export const useSnackbar = () => {
+  const context = useContext(SnackbarContext);
+  if (!context) throw new Error('useSnackbar must be used within a SnackbarProvider');
+  return context;
+};
 
 export default SnackbarContext;

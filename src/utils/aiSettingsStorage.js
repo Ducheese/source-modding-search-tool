@@ -7,7 +7,7 @@ import {
   DEFAULT_AI_REGEX_PROMPT_ZH,
   DEFAULT_AI_CHAT_PROMPT_ZH,
   DEFAULT_AI_EXPLAIN_PROMPT_ZH,
-} from '../config/aiDefaults';
+} from '../config/aiPromptDefaults';
 
 /**
  * 根据当前语言返回对应的三份默认提示词。

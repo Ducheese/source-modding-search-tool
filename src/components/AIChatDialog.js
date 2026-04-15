@@ -150,8 +150,10 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
     if (isStreaming || !inputValue.trim()) return;
 
     const content = inputValue.trim();
-    setInputValue('');
-    await sendMessage(content, { enableThinking, thinkingBudget });
+    const success = await sendMessage(content, { enableThinking, thinkingBudget });
+    if (success) {
+      setInputValue('');
+    }
   };
 
   const handleKeyDown = (event) => {

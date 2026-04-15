@@ -35,15 +35,15 @@ import { LanguageProvider, useLanguage } from './utils/i18n';
 function AppInner({ darkMode, setDarkMode, schemeId, handleSetScheme }) {
   const { t, loadedLang } = useLanguage();
 
-  const [snackbarQueue, setSnackbarQueue] = useState([]);
+  const [activeSnackbar, setActiveSnackbar] = useState([]);
 
   const showSnackbar = useCallback((message, severity = 'info') => {
     const id = Date.now();
-    setSnackbarQueue([{ id, message, severity }]);
+    setActiveSnackbar([{ id, message, severity }]);
   }, []);
 
   const closeSnackbar = (id) => {
-    setSnackbarQueue(prev => prev.filter(item => item.id !== id));
+    setActiveSnackbar(prev => prev.filter(item => item.id !== id));
   };
 
   const theme = getTheme(schemeId, darkMode ? 'dark' : 'light');
@@ -104,7 +104,7 @@ function AppInner({ darkMode, setDarkMode, schemeId, handleSetScheme }) {
           </ErrorBoundary>
 
           {/* Snackbar 消息 */}
-          {snackbarQueue.map((item) => (
+          {activeSnackbar.map((item) => (
             <Snackbar
               key={item.id}
               open={true}

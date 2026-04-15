@@ -38,7 +38,7 @@ import { useSearchHistory } from '../hooks/useSearchHistory';
 import { useSearchForm } from '../hooks/useSearchForm';
 import { useAiRegex } from '../hooks/useAiRegex';
 import { useRegexExplanation } from '../hooks/useRegexExplanation';
-import { getRegexCategories } from '../utils/regexCategories';
+import { getRegexCategories } from '../config/regexCategories';
 
 /**
  * 搜索面板组件
@@ -73,6 +73,11 @@ const SearchPanel = ({ files, onSearch, onSearchStart, isSearching }) => {
       explainRegex(searchQuery);
     }
   }, [isSearching, searchQuery, useRegex, aiRegex, explainRegex]);
+
+  // // searchQuery 变化时清空旧解释，防止显示陈旧内容
+  // useEffect(() => {
+  //   clearExplanation();
+  // }, [searchQuery, clearExplanation]);
 
   // 关闭正则模式时中断解释
   useEffect(() => {
