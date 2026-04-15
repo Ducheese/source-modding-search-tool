@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { tauriAPI } from '../utils/tauriBridge';
-import { getDefaultPrompts, loadAiSettings } from '../utils/aiDefaults';
+import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettings';
 import { parseThinkChunk } from '../utils/parseThinkChunk';
 import { serializeResultsForAi } from '../utils/chatContextSerializer';
 

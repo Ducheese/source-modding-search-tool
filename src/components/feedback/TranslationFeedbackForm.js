@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { Send } from '@mui/icons-material';
 import { SUPPORTED_LANGS } from '../../utils/i18n';
-import { useTranslationKeys } from '../../utils/useTranslationKeys';
+import { useTranslationKeys } from '../../hooks/useTranslationKeys';
 import { MAX_LEN } from '../../config/feedbackConfig';
 import TranslationKeyAutocomplete from './TranslationKeyAutocomplete';
 

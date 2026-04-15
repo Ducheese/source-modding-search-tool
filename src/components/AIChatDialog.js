@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Box,
   Fab,
@@ -17,7 +17,7 @@ import {
 import { Close, ExpandLess, ExpandMore, Lightbulb, Remove, Send, SmartToy } from '@mui/icons-material';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useSnackbar } from '../App';
+import { useSnackbar } from '../contexts/SnackbarContext';
 import { getMarkdownStyles } from '../utils/markdownStyles';
 import { useLanguage } from '../utils/i18n';
 import { useAiChatSession } from '../hooks/useAiChatSession';

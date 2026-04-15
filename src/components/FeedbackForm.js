@@ -20,13 +20,13 @@ import {
   Lightbulb,
   CheckCircle,
 } from '@mui/icons-material';
-import { useSnackbar } from '../App';
+import { useSnackbar } from '../contexts/SnackbarContext';
 import { FEEDBACK_TYPES, BUG_FIELDS, FEATURE_FIELDS } from '../config/feedbackConfig';
 import { useFeedbackIdentity } from '../hooks/useFeedbackIdentity';
 import { useFeedbackSubmit } from '../hooks/useFeedbackSubmit';
 import TranslationFeedbackForm from './feedback/TranslationFeedbackForm';
 import ContributorIdentityField from './feedback/ContributorIdentityField';
-import SimpleFeedbackForm from './SimpleFeedbackForm';
+import SimpleFeedbackForm from './feedback/SimpleFeedbackForm';
 
 // ─────────────────────────────────────────────────────────────
 // Icon mapping for feedback types

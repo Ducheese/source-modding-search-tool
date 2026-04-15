@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
+import { SEARCH_HISTORY_STORAGE_KEY } from '../config/storageKeys';
 
-export const SEARCH_HISTORY_STORAGE_KEY = 'searchHistory';
 const MAX_HISTORY_SIZE = 30;
 
 /**

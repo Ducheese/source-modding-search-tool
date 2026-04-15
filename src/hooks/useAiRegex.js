@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { tauriAPI } from '../utils/tauriBridge';
-import { getDefaultPrompts, loadAiSettings } from '../utils/aiDefaults';
+import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettings';
 
 /**
  * AI 生成正则表达式 Hook

@@ -35,7 +35,7 @@ import { parseVdf } from './vdfParser';
 
 // ─── 常量与映射 ──────────────────────────────────────────────────────────────
 
-export const LANGUAGE_STORAGE_KEY = 'languagePreference';
+import { LANGUAGE_STORAGE_KEY } from '../config/storageKeys';
 
 // 插值正则：匹配 {key} 但忽略 {{context}}
 // 提升到模块顶层，避免每次 t() 调用都重新编译

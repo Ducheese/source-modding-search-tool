@@ -5,6 +5,7 @@ import { exportResults } from '../utils/searchEngine';
 import AIChatDialog from './AIChatDialog';
 import VirtualizedResults from './VirtualizedResults';
 import { useLanguage } from '../utils/i18n';
+import { useSnackbar } from '../contexts/SnackbarContext';
 
 // 抽离的展开/收起图标动画组件
 const AnimatedExpandIcon = ({ isAllExpanded }) => (

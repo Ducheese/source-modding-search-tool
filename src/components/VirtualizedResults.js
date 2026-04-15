@@ -3,7 +3,7 @@ import { Box, Typography, IconButton, Chip, useTheme, alpha } from '@mui/materia
 import { ExpandMore, ExpandLess, CopyAll, FileOpen } from '@mui/icons-material';
 import { VariableSizeList as List, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { useSnackbar } from '../App';
+import { useSnackbar } from '../contexts/SnackbarContext';
 import { tauriAPI } from '../utils/tauriBridge';
 import ResultLine from './ResultLine';
 import { useLanguage } from '../utils/i18n';

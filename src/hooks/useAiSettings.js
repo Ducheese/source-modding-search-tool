@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { getDefaultPrompts, loadAiSettings, AI_SETTINGS_STORAGE_KEY } from '../utils/aiDefaults';
+import { AI_SETTINGS_STORAGE_KEY } from '../config/aiDefaults';
+import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettings';
 import { tauriAPI } from '../utils/tauriBridge';
 
 /**

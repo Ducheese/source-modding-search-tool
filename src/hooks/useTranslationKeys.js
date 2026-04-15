@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { parseVdf } from './vdfParser';
+import { parseVdf } from '../utils/vdfParser';
 
 // Global cache that persists across component unmounts
 const globalTranslationCache = new Map();

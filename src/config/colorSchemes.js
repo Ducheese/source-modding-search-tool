@@ -1,28 +1,24 @@
-import { createTheme } from '@mui/material/styles';
-
 // ─────────────────────────────────────────────────────────────
 // 配色方案定义（符合 Google Material Design 2 规范）
 // ─────────────────────────────────────────────────────────────
-
-export const COLOR_SCHEME_STORAGE_KEY = 'colorScheme';
 
 // ─────────────────────────────────────────────────────────────
 // 通用配置（所有配色方案共享）
 // ─────────────────────────────────────────────────────────────
 
 // 通用的 typography 配置
-const COMMON_TYPOGRAPHY = {
+export const COMMON_TYPOGRAPHY = {
   fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
 };
 
 // 通用的 components 配置（浅色模式）
-const COMMON_COMPONENTS_LIGHT = {
+export const COMMON_COMPONENTS_LIGHT = {
   MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
   MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
 };
 
 // 通用的 components 配置（深色模式）
-const COMMON_COMPONENTS_DARK = {
+export const COMMON_COMPONENTS_DARK = {
   MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
   MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
 };
@@ -32,7 +28,7 @@ const COMMON_COMPONENTS_DARK = {
 // ─────────────────────────────────────────────────────────────
 
 // 每个 scheme 的 palette 配置 [lightPalette, darkPalette]
-const SCHEME_PALETTES = [
+export const SCHEME_PALETTES = [
   // 方案 0：极光紫（MD2 Deep Purple 500 / Teal 200）
   [
     {
@@ -188,40 +184,6 @@ const SCHEME_PALETTES = [
 ];
 
 // ─────────────────────────────────────────────────────────────
-// 懒加载主题获取
-// ─────────────────────────────────────────────────────────────
-
-// 主题缓存
-const themeCache = {};
-
-/**
- * 获取主题（懒加载 + 缓存）
- * @param {number} schemeId - 方案 ID (0-7)
- * @param {'light' | 'dark'} mode - 模式
- * @returns {object} MUI 主题对象
- */
-export const getTheme = (schemeId, mode) => {
-  const modeIndex = mode === 'dark' ? 1 : 0;
-  const key = `${schemeId}-${mode}`;
-
-  if (!themeCache[key]) {
-    const palette = SCHEME_PALETTES[schemeId]?.[modeIndex];
-    if (!palette) {
-      console.warn(`Unknown theme: schemeId=${schemeId}, mode=${mode}`);
-      return null;
-    }
-
-    themeCache[key] = createTheme({
-      palette,
-      typography: COMMON_TYPOGRAPHY,
-      components: mode === 'dark' ? COMMON_COMPONENTS_DARK : COMMON_COMPONENTS_LIGHT,
-    });
-  }
-
-  return themeCache[key];
-};
-
-// ─────────────────────────────────────────────────────────────
 // 配色元数据（供 HelpDialog 渲染选择器）
 // ─────────────────────────────────────────────────────────────
 
@@ -321,8 +283,3 @@ for (let i = 0; i < SCHEME_PALETTES.length; i++) {
     { __lazy: true, schemeId: i, mode: 'dark' },
   ];
 }
-
-// 代理 THEMES 的访问，实现真正的懒加载
-// 注意：由于 MUI 的 ThemeProvider 会深度读取主题对象，
-// 这里我们需要在 App.js 中使用 getTheme() 而不是直接访问 THEMES。
-// 但为了向后兼容，我们保留 THEMES 导出，并提供一个辅助函数。

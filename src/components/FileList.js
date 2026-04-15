@@ -24,7 +24,7 @@ import {
   Search,
   Clear,
 } from '@mui/icons-material';
-import { useSnackbar } from '../App';
+import { useSnackbar } from '../contexts/SnackbarContext';
 import { tauriAPI } from '../utils/tauriBridge';
 import { useLanguage } from '../utils/i18n';
 

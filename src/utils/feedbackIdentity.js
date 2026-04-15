@@ -5,9 +5,9 @@
 
 import {
   MAX_LEN,
-  USER_IDENTITY_STORAGE_KEY,
   ANONYMOUS_CONTRIBUTOR_ID_PATTERN,
 } from '../config/feedbackConfig';
+import { USER_IDENTITY_STORAGE_KEY } from '../config/storageKeys';
 
 // ─────────────────────────────────────────────────────────────
 // Anonymous ID Generation

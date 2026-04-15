@@ -1,4 +1,7 @@
-export const AI_SETTINGS_STORAGE_KEY = 'aiSettings';
+import { AI_SETTINGS_STORAGE_KEY } from './storageKeys';
+
+// 重新导出以保持向后兼容
+export { AI_SETTINGS_STORAGE_KEY };
 
 // ─────────────────────────────────────────────────────────────────────────────────────
 // 英文提示词
@@ -550,65 +553,3 @@ export const DEFAULT_AI_EXPLAIN_PROMPT_ZH = String.raw`你是一个正则表达�
 
 // 中文语言 ID 集合（用于判断是否使用中文提示词）
 export const CHINESE_LANGS = ['schinese', 'tchinese_hk', 'tchinese_tw'];
-
-/**
- * 根据当前语言返回对应的三份默认提示词。
- * @param {string} [lang] - 来自 i18n 的语言 ID，例如 'schinese'、'english'
- * @returns {{ regexPrompt: string, chatPrompt: string, explainPrompt: string }}
- */
-export const getDefaultPrompts = (lang) => {
-  if (lang && CHINESE_LANGS.includes(lang)) {
-    return {
-      regexPrompt:   DEFAULT_AI_REGEX_PROMPT_ZH,
-      chatPrompt:    DEFAULT_AI_CHAT_PROMPT_ZH,
-      explainPrompt: DEFAULT_AI_EXPLAIN_PROMPT_ZH,
-    };
-  }
-  return {
-    regexPrompt:   DEFAULT_AI_REGEX_PROMPT,
-    chatPrompt:    DEFAULT_AI_CHAT_PROMPT,
-    explainPrompt: DEFAULT_AI_EXPLAIN_PROMPT,
-  };
-};
-
-export const loadAiSettings = (lang) => {
-  const defaults = getDefaultPrompts(lang);
-  const raw = localStorage.getItem(AI_SETTINGS_STORAGE_KEY);
-  if (!raw) {
-    return {
-      baseUrl: '',
-      apiKey: '',
-      regexModelName: '',
-      chatModelName: '',
-      explainModelName: '',
-      regexPrompt:   defaults.regexPrompt,
-      chatPrompt:    defaults.chatPrompt,
-      explainPrompt: defaults.explainPrompt,
-    };
-  }
-
-  try {
-    const parsed = JSON.parse(raw);
-    return {
-      baseUrl: parsed.baseUrl || '',
-      apiKey: parsed.apiKey || '',
-      regexModelName: parsed.regexModelName || '',
-      chatModelName: parsed.chatModelName || '',
-      explainModelName: parsed.explainModelName || '',
-      regexPrompt:   parsed.regexPrompt   || defaults.regexPrompt,
-      chatPrompt:    parsed.chatPrompt    || defaults.chatPrompt,
-      explainPrompt: parsed.explainPrompt || defaults.explainPrompt,
-    };
-  } catch (error) {
-    return {
-      baseUrl: '',
-      apiKey: '',
-      regexModelName: '',
-      chatModelName: '',
-      explainModelName: '',
-      regexPrompt:   defaults.regexPrompt,
-      chatPrompt:    defaults.chatPrompt,
-      explainPrompt: defaults.explainPrompt,
-    };
-  }
-};

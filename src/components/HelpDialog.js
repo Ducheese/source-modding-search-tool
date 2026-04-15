@@ -24,11 +24,11 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { homeDir } from '@tauri-apps/api/path';
 
-import { useSnackbar, useThemeScheme } from '../App';
+import { useSnackbar } from '../contexts/SnackbarContext';
+import { useThemeScheme } from '../contexts/ThemeSchemeContext';
 import { useLanguage } from '../utils/i18n';
-import { COLOR_SCHEMES } from '../utils/themeConfig';
+import { COLOR_SCHEMES } from '../config/colorSchemes';
 import { getMarkdownStyles } from '../utils/markdownStyles';
-import { getDefaultPrompts } from '../utils/aiDefaults';
 import { useAiSettings } from '../hooks/useAiSettings';
 import { useChangelog } from '../hooks/useChangelog';
 import FeedbackForm from './FeedbackForm';

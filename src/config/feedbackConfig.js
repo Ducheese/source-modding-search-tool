@@ -41,7 +41,6 @@ export const MAX_LEN = {
 // ─────────────────────────────────────────────────────────────
 // Identity Storage Keys
 // ─────────────────────────────────────────────────────────────
-export const USER_IDENTITY_STORAGE_KEY = 'userID';
 export const ANONYMOUS_CONTRIBUTOR_ID_PATTERN = /^User#[A-F0-9]{4}$/;
 
 // ─────────────────────────────────────────────────────────────
