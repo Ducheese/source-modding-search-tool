@@ -114,36 +114,39 @@ source-modding-search-tool/
 │   │       └── TranslationKeyAutocomplete.js
 │   ├── hooks/            # 自定义 React Hooks
 │   │   ├── useAiChatSession.js
-│   │   ├── useAiRegex.js
+│   │   ├── useAiRegexExplainer.js
+│   │   ├── useAiRegexGenerator.js
 │   │   ├── useAiSettings.js
 │   │   ├── useChangelog.js
 │   │   ├── useFeedbackIdentity.js
 │   │   ├── useFeedbackSubmit.js
 │   │   ├── useFileScanner.js
-│   │   ├── useRegexExplanation.js
 │   │   ├── useSearchForm.js
 │   │   ├── useSearchHistory.js
 │   │   └── useTranslationKeys.js
 │   ├── contexts/         # React Context
+│   │   ├── LanguageContext.js
 │   │   ├── SnackbarContext.js
 │   │   └── ThemeSchemeContext.js
 │   ├── utils/            # 工具函数
-│   │   ├── aiSettings.js
+│   │   ├── aiSettingsStorage.js
 │   │   ├── chatContextSerializer.js
 │   │   ├── feedbackIdentity.js
 │   │   ├── fileUtils.js
 │   │   ├── i18n.js
 │   │   ├── markdownStyles.js
 │   │   ├── parseThinkChunk.js
-│   │   ├── regexCategories.js
-│   │   ├── searchEngine.js
+│   │   ├── resultExport.js
+│   │   ├── searchService.js
 │   │   ├── tauriBridge.js
 │   │   ├── themeFactory.js
 │   │   └── vdfParser.js
 │   ├── config/           # 配置常量
-│   │   ├── aiDefaults.js
+│   │   ├── aiPromptDefaults.js
 │   │   ├── colorSchemes.js
 │   │   ├── feedbackConfig.js
+│   │   ├── languages.js
+│   │   ├── regexCategories.js
 │   │   ├── storageKeys.js
 │   │   └── supportedFiles.js
 │   ├── App.js
@@ -151,7 +154,8 @@ source-modding-search-tool/
 │   └── index.js
 ├── src-tauri/            # Rust 后端
 │   ├── icons/
-│   │   └── icon.ico
+│   │   ├── icon.ico
+│   │   └── tauri.ico
 │   ├── src/
 │   │   └── main.rs
 │   ├── build.rs
