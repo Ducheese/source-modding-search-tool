@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   Tooltip,
   Typography,
@@ -21,6 +22,7 @@ import { useSnackbar } from '../contexts/SnackbarContext';
 import { getMarkdownStyles } from '../utils/markdownStyles';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAiChatSession } from '../hooks/useAiChatSession';
+import { estimateTokenCount } from '../utils/chatContextSerializer';
 
 // ─── 子组件（用 React.memo 避免已完成消息的重复渲染）────────────────────────
 
@@ -117,9 +119,15 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
     resetSession,
     toggleThink,
     finalizeStreaming,
+    contextTokens,
   } = useAiChatSession({ results, lang, t, showSnackbar });
 
   const [inputValue, setInputValue] = useState('');
+
+  // 输入框 token 数
+  const inputTokens = useMemo(() => {
+    return inputValue.trim() ? estimateTokenCount(inputValue) : 0;
+  }, [inputValue]);
 
   // 打开/关闭对话框时的副作用
   useEffect(() => {
@@ -274,8 +282,15 @@ const AIChatDialog = ({ open, onClose, results, minimized, onMinimizedChange, is
             {messages.map(renderMessage)}
           </Box>
 
+          {/* 输入区分隔线 + Token 计数 */}
+          <Divider sx={{ mx: 2 }}>
+            <Typography variant="caption" color="text.disabled" sx={{ userSelect: 'none' }}>
+              {t('aiChat.contextTok', { n: contextTokens })} | {t('aiChat.inputTokSimple', { n: inputTokens })}
+            </Typography>
+          </Divider>
+
           {/* 输入区 */}
-          <Box sx={{ borderTop: `1px solid ${alpha(theme.palette.divider, 0.2)}`, px: 2, py: 1.5 }}>
+          <Box sx={{ px: 2, py: 1.5 }}>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
               <TextField
                 multiline

@@ -10,9 +10,9 @@ import {
   Snackbar,
 } from '@mui/material';
 import {
-  CloudUpload,
+  FileUpload,
   FolderOpen,
-  Description,
+  InsertDriveFile,
 } from '@mui/icons-material';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useFileScanner } from '../hooks/useFileScanner';
@@ -35,43 +35,29 @@ const FileDropZone = ({ onFilesAdded }) => {
   }, []);
 
   // 使用文件扫描 hook
-  const { selectFiles, selectFolder, isDragOver, setIsDragOver } = useFileScanner({
+  const { selectFiles, selectFolder } = useFileScanner({
     onFilesAdded,
     showErrorAlert,
     t,
   });
 
-  // 文件拖放事件处理
-  const handleDragOver = useCallback((e) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, [setIsDragOver]);
-
-  const handleDragLeave = useCallback((e) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, [setIsDragOver]);
-
   return (
     <Paper
+      // 整个大区块支持点击选择文件，使 pointer 光标名正言顺
+      onClick={selectFiles}
       sx={{
         p: 3,
-        border: `2px dashed ${isDragOver ? theme.palette.primary.main : alpha(theme.palette.divider, 0.5)}`,
-        bgcolor: isDragOver
-          ? alpha(theme.palette.primary.main, 0.05)
-          : alpha(theme.palette.background.paper, 0.5),
+        border: '2px dashed',
+        borderColor: alpha(theme.palette.divider, 0.5),
+        bgcolor: alpha(theme.palette.background.paper, 0.5),
         transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
         cursor: 'pointer',
         '&:hover': {
-          bgcolor: alpha(theme.palette.primary.main, 0.02),
+          bgcolor: alpha(theme.palette.primary.main, 0.05),
           borderColor: theme.palette.primary.main,
         },
       }}
       elevation={0}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      // Tauri 的 file-drop 事件是全局的，这里的 onDrop 主要是阻止浏览器默认行为
-      onDrop={(e) => { e.preventDefault(); setIsDragOver(false); }}
     >
       <Box
         sx={{
@@ -84,10 +70,10 @@ const FileDropZone = ({ onFilesAdded }) => {
           pb: 2,
         }}
       >
-        <CloudUpload
+        <FileUpload
           sx={{
             fontSize: 48,
-            color: isDragOver ? 'primary.main' : 'text.secondary',
+            color: 'text.secondary',
             transition: 'color 0.2s ease-in-out',
           }}
         />
@@ -111,8 +97,12 @@ const FileDropZone = ({ onFilesAdded }) => {
         >
           <Button
             variant="contained"
-            startIcon={<Description />}
-            onClick={selectFiles}
+            startIcon={<InsertDriveFile />}
+            onClick={(e) => {
+              // 阻止事件冒泡，防止触发外层 Paper 的 onClick
+              e.stopPropagation();
+              selectFiles();
+            }}
             size="small"
           >
             {t('dropzone.selectFiles')}
@@ -120,7 +110,11 @@ const FileDropZone = ({ onFilesAdded }) => {
           <Button
             variant="outlined"
             startIcon={<FolderOpen />}
-            onClick={selectFolder}
+            onClick={(e) => {
+              // 阻止事件冒泡
+              e.stopPropagation();
+              selectFolder();
+            }}
             size="small"
           >
             {t('dropzone.selectFolder')}

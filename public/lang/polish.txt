@@ -151,6 +151,8 @@
 		"aiChat.outputTok"	"Wyjście {n} tokenów"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
+		"aiChat.contextTok"	"Kontekst {n} tokenów"
+		"aiChat.inputTokSimple"	"Wejście {n} tokenów"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
 		"help.title"	"Pomoc i informacje o programie"

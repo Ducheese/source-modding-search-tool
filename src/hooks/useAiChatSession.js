@@ -3,7 +3,7 @@ import { listen } from '@tauri-apps/api/event';
 import { tauriAPI } from '../utils/tauriBridge';
 import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettingsStorage';
 import { parseThinkChunk } from '../utils/parseThinkChunk';
-import { serializeResultsForAi } from '../utils/chatContextSerializer';
+import { serializeResultsForAi, estimateTokenCount } from '../utils/chatContextSerializer';
 
 const STREAM_EVENT = 'ai-chat-stream';
 
@@ -50,6 +50,26 @@ export function useAiChatSession({ results, lang, t, showSnackbar }) {
   useEffect(() => {
     contextPromptRef.current = contextPrompt;
   }, [contextPrompt]);
+
+  // 计算上下文 token 数（系统提示词 + 历史消息）
+  const contextTokens = useMemo(() => {
+    const settings = loadAiSettings(lang);
+    // 系统提示词（已替换 {{context}}）
+    const chatPrompt = (settings.chatPrompt || getDefaultPrompts(lang).chatPrompt)
+      .replace('{{context}}', contextPrompt || '');
+    
+    // 系统提示词 token
+    let tokens = estimateTokenCount(chatPrompt);
+    
+    // 历史消息 token
+    messages
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .forEach(m => {
+        tokens += estimateTokenCount(m.content || '');
+      });
+    
+    return tokens;
+  }, [lang, contextPrompt, messages]);
 
   // 节流刷新
   const scheduleThrottledUpdate = useCallback(() => {
@@ -269,5 +289,6 @@ export function useAiChatSession({ results, lang, t, showSnackbar }) {
     toggleThink,
     finalizeStreaming,
     contextPrompt,
+    contextTokens,
   };
 }

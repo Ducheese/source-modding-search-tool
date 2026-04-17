@@ -151,6 +151,8 @@
 		"aiChat.outputTok"	"출력 {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
+		"aiChat.contextTok"	"컨텍스트 {n} tok"
+		"aiChat.inputTokSimple"	"입력 {n} tok"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
 		"help.title"	"정보 및 도움말"

@@ -6,6 +6,19 @@
  * - AI 上下文：给模型吃的，稳定、紧凑、固定语言
  */
 
+import { Tiktoken } from 'js-tiktoken/lite';
+import cl100k_base from 'js-tiktoken/ranks/cl100k_base';
+
+// 缓存 encoder 实例，避免重复创建
+let encoder = null;
+
+function getEncoder() {
+  if (!encoder) {
+    encoder = new Tiktoken(cl100k_base);
+  }
+  return encoder;
+}
+
 /**
  * 将搜索结果序列化为 AI 可理解的上下文格式
  * 固定使用英文标签，不受 UI 语言影响
@@ -79,14 +92,19 @@ function formatContext(context) {
 }
 
 /**
- * 估算上下文的 token 数量（粗略估计）
+ * 精确计算文本的 token 数量
+ * 使用 cl100k_base 编码（GPT-4、GPT-3.5-turbo 等模型通用）
  * @param {string} text - 文本
- * @returns {number} 估算的 token 数
+ * @returns {number} token 数量
  */
 export function estimateTokenCount(text) {
   if (!text) return 0;
-  // 粗略估计：英文约 4 字符 = 1 token，中文约 1.5 字符 = 1 token
-  const chineseChars = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
-  const otherChars = text.length - chineseChars;
-  return Math.ceil(chineseChars / 1.5 + otherChars / 4);
+  try {
+    const enc = getEncoder();
+    // +4 是消息格式开销（每条消息的 role/content 边界）
+    return enc.encode(text).length + 4;
+  } catch {
+    // 异常时回退到粗略估算
+    return Math.ceil(text.length / 4) + 4;
+  }
 }

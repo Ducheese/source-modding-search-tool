@@ -19,8 +19,7 @@ import {
 import {
   Delete,
   ClearAll,
-  Folder,
-  InsertDriveFile,
+  Description,
   Search,
   Clear,
 } from '@mui/icons-material';
@@ -61,11 +60,7 @@ const FileRow = memo(({ data, index, style }) => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
-          {file.isFile ? (
-            <InsertDriveFile sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
-          ) : (
-            <Folder sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
-          )}
+          <Description sx={{ color: theme.palette.text.secondary, fontSize: 20 }} />
         </Box>
 
         <ListItemText

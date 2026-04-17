@@ -151,6 +151,8 @@
 		"aiChat.outputTok"	"Output {n} tok"
 		"aiChat.speed"	"{speed} tok/dtk"
 		"aiChat.duration"	"{duration}dtk"
+		"aiChat.contextTok"	"Konteks {n} tok"
+		"aiChat.inputTokSimple"	"Input {n} tok"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
 		"help.title"	"Tentang & Bantuan"

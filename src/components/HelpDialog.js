@@ -18,7 +18,7 @@ import {
   useTheme,
   alpha,
 } from '@mui/material';
-import { Close, Help, CheckCircle, ExpandMore, ExpandLess, Error, Feedback } from '@mui/icons-material';
+import { Close, Help, CheckCircle, ExpandMore, ExpandLess, NewReleases, Feedback } from '@mui/icons-material';
 import { tauriAPI } from '../utils/tauriBridge';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -312,7 +312,7 @@ const HelpDialog = ({ open, onClose }) => {
               <Tab label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   {t('help.tab.changelog')}
-                  {hasUpdate && <Error sx={{ fontSize: 16, color: 'error.main' }} />}
+                  {hasUpdate && <NewReleases sx={{ fontSize: 16, color: 'error.main' }} />}
                 </Box>
               } sx={{ whiteSpace: 'normal', maxWidth: 180 }}/>
               <Tab label={

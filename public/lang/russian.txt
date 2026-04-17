@@ -151,6 +151,8 @@
 		"aiChat.outputTok"	"Вывод {n} токенов"
 		"aiChat.speed"	"{speed} токен/с"
 		"aiChat.duration"	"{duration}с"
+		"aiChat.contextTok"	"Контекст {n} токенов"
+		"aiChat.inputTokSimple"	"Ввод {n} токенов"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
 		"help.title"	"Справка и информация о программе"

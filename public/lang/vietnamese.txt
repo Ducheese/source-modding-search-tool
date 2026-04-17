@@ -151,6 +151,8 @@
 		"aiChat.outputTok"	"Đầu ra {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
+		"aiChat.contextTok"	"Ngữ cảnh {n} tok"
+		"aiChat.inputTokSimple"	"Đầu vào {n} tok"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
 		"help.title"	"Giới thiệu & Trợ giúp"

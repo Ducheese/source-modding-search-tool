@@ -3,7 +3,7 @@
  * Contains feedback types, field definitions, and length limits
  */
 
-import { Translate, BugReport, Lightbulb } from '@mui/icons-material';
+import { Translate, BugReport, EmojiObjects } from '@mui/icons-material';
 
 // ─────────────────────────────────────────────────────────────
 // Feedback Types Configuration
@@ -24,7 +24,7 @@ export const FEEDBACK_TYPES = [
   {
     id: 'feature',
     label: 'Feature Request',
-    icon: Lightbulb,
+    icon: EmojiObjects,
     description: 'Suggest a new feature.',
   },
 ];

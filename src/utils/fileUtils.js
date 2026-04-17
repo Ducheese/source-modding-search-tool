@@ -30,13 +30,12 @@ export function isSupportedFile(fileName) {
 /**
  * 将路径转换为文件条目对象
  * @param {string} path - 文件路径
- * @returns {{ path: string, name: string, isFile: boolean }}
+ * @returns {{ path: string, name: string }}
  */
 export function toFileEntry(path) {
   return {
     path,
     name: getFileName(path),
-    isFile: true,
   };
 }
 
