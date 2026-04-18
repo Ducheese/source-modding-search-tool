@@ -17,7 +17,7 @@
 		"layout.helpTooltip"	"Tentang & Bantuan"
 
 		// ── FileDropZone ─────────────────────────────────────────────────
-		"dropzone.dragHint"	"Seret file ke sini"
+		"dropzone.dragHint"	"Seret file atau folder ke jendela"
 		"dropzone.supportHint"	"Mendukung file .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
 		"dropzone.selectFiles"	"Pilih file"
 		"dropzone.selectFolder"	"Pilih folder"

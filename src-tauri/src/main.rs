@@ -1,5 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod file_drop;
+
+use file_drop::{handle_validated_file_drop_window_event, new_drag_state};
 use rayon::prelude::*;
 use regex::RegexBuilder; // 纯文本正则引擎，性能与 bytes 版本相当，但保证 UTF-8 边界安全
 use serde::{Deserialize, Serialize};
@@ -1133,7 +1136,19 @@ async fn submit_feedback(feedback: Feedback) -> Result<(), String> {
 }
 
 fn main() {
+    let drag_state = new_drag_state();
+
     tauri::Builder::default()
+        .on_window_event({
+            let drag_state = drag_state.clone();
+            move |event| {
+                handle_validated_file_drop_window_event(
+                    event.window(),
+                    event.event(),
+                    &drag_state,
+                );
+            }
+        })
         // 阻止窗口重复打开
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
 

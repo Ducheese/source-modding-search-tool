@@ -17,7 +17,7 @@
 		"layout.helpTooltip"	"À propos et aide"
 
 		// ── FileDropZone ─────────────────────────────────────────────────
-		"dropzone.dragHint"	"Glissez des fichiers ici"
+		"dropzone.dragHint"	"Glissez des fichiers ou dossiers dans la fenêtre"
 		"dropzone.supportHint"	"Prend en charge les fichiers .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
 		"dropzone.selectFiles"	"Sélectionner des fichiers"
 		"dropzone.selectFolder"	"Sélectionner un dossier"

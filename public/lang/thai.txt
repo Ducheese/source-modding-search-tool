@@ -17,7 +17,7 @@
 		"layout.helpTooltip"	"เกี่ยวกับและวิธีใช้"
 
 		// ── FileDropZone ─────────────────────────────────────────────────
-		"dropzone.dragHint"	"ลากไฟล์มาวางที่นี่"
+		"dropzone.dragHint"	"ลากไฟล์หรือโฟลเดอร์ไปยังหน้าต่าง"
 		"dropzone.supportHint"	"รองรับไฟล์ .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
 		"dropzone.selectFiles"	"เลือกไฟล์"
 		"dropzone.selectFolder"	"เลือกโฟลเดอร์"

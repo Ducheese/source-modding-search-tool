@@ -17,7 +17,7 @@
 		"layout.helpTooltip"	"परिचय और सहायता"
 
 		// ── FileDropZone ─────────────────────────────────────────────────
-		"dropzone.dragHint"	"फ़ाइलें यहाँ खींचकर छोड़ें"
+		"dropzone.dragHint"	"फ़ाइलें या फ़ोल्डर विंडो में खींचें"
 		"dropzone.supportHint"	".sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut फ़ाइलें समर्थित हैं"
 		"dropzone.selectFiles"	"फ़ाइलें चुनें"
 		"dropzone.selectFolder"	"फ़ोल्डर चुनें"

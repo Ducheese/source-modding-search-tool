@@ -17,7 +17,7 @@
 		"layout.helpTooltip"	"Довідка та інформація про програму"
 
 		// ── FileDropZone ─────────────────────────────────────────────────
-		"dropzone.dragHint"	"Перетягніть файли сюди"
+		"dropzone.dragHint"	"Перетягніть файли або папки у вікно"
 		"dropzone.supportHint"	"Підтримуються файли .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
 		"dropzone.selectFiles"	"Обрати файли"
 		"dropzone.selectFolder"	"Обрати папку"

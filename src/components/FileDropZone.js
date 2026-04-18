@@ -16,6 +16,7 @@ import {
 } from '@mui/icons-material';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useFileScanner } from '../hooks/useFileScanner';
+import { useWindowFileDrop } from '../hooks/useWindowFileDrop';
 
 /**
  * 文件拖放区域组件
@@ -34,11 +35,19 @@ const FileDropZone = ({ onFilesAdded }) => {
     setShowAlert(true);
   }, []);
 
-  // 使用文件扫描 hook
-  const { selectFiles, selectFolder } = useFileScanner({
+  const {
+    selectFiles,
+    selectFolder,
+    handleDroppedPaths,
+    isBusy,
+  } = useFileScanner({
     onFilesAdded,
     showErrorAlert,
     t,
+  });
+
+  const { isFileDragActive } = useWindowFileDrop({
+    onDrop: handleDroppedPaths,
   });
 
   return (
@@ -46,9 +55,30 @@ const FileDropZone = ({ onFilesAdded }) => {
       sx={{
         p: 3,
         border: '2px dashed',
-        borderColor: alpha(theme.palette.divider, 0.5),
-        bgcolor: alpha(theme.palette.background.paper, 0.5),
+        borderColor: isFileDragActive
+          ? theme.palette.primary.main
+          : alpha(theme.palette.divider, 0.5),
+        bgcolor: isFileDragActive
+          ? alpha(theme.palette.primary.main, 0.06)
+          : alpha(theme.palette.background.paper, 0.5),
         transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
+
+        // 拖拽时的呼吸光晕动画
+        ...(isFileDragActive && {
+          animation: 'breathingGlow 1.5s infinite ease-in-out',
+          '@keyframes breathingGlow': {
+            '0%': {
+              boxShadow: `0 0 0 0 ${alpha(theme.palette.primary.main, 0.4)}`
+            },
+            '50%': {
+              boxShadow: `0 0 0 15px ${alpha(theme.palette.primary.main, 0)}`
+            },
+            '100%': {
+              boxShadow: `0 0 0 0 ${alpha(theme.palette.primary.main, 0)}`
+            }
+          }
+        }),
+
         '&:hover': {
           bgcolor: alpha(theme.palette.primary.main, 0.05),
           borderColor: theme.palette.primary.main,
@@ -56,7 +86,9 @@ const FileDropZone = ({ onFilesAdded }) => {
       }}
       elevation={0}
     >
+      {/* 主内容区：大面积可点击，触发 selectFiles */}
       <Box
+        onClick={isBusy ? undefined : selectFiles}
         sx={{
           display: 'flex',
           gap: 2,
@@ -65,13 +97,23 @@ const FileDropZone = ({ onFilesAdded }) => {
           textAlign: 'center',
           pt: 1,
           pb: 2,
+          cursor: isBusy ? 'default' : 'pointer',
         }}
       >
         <FileUpload
           sx={{
             fontSize: 48,
-            color: 'text.secondary',
+            color: isFileDragActive ? 'primary.main' : 'text.secondary',
             transition: 'color 0.2s ease-in-out',
+
+            // 拖拽时的图标弹跳动画
+            ...(isFileDragActive && {
+              animation: 'bounceIcon 1s infinite ease-in-out',
+              '@keyframes bounceIcon': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' }
+              }
+            })
           }}
         />
 
@@ -84,6 +126,7 @@ const FileDropZone = ({ onFilesAdded }) => {
           </Typography>
         </Box>
 
+        {/* 显式操作按钮 */}
         <Box
           sx={{
             display: 'flex',
@@ -95,16 +138,19 @@ const FileDropZone = ({ onFilesAdded }) => {
           <Button
             variant="contained"
             startIcon={<InsertDriveFile />}
-            onClick={selectFiles}
+            onClick={(e) => { e.stopPropagation(); selectFiles(); }}
             size="small"
+            disabled={isBusy}
           >
             {t('dropzone.selectFiles')}
           </Button>
+
           <Button
             variant="outlined"
             startIcon={<FolderOpen />}
-            onClick={selectFolder}
+            onClick={(e) => { e.stopPropagation(); selectFolder(); }}
             size="small"
+            disabled={isBusy}
           >
             {t('dropzone.selectFolder')}
           </Button>

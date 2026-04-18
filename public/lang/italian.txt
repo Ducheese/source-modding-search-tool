@@ -17,7 +17,7 @@
 		"layout.helpTooltip"	"Informazioni e guida"
 
 		// ── FileDropZone ─────────────────────────────────────────────────
-		"dropzone.dragHint"	"Trascina i file qui"
+		"dropzone.dragHint"	"Trascina file o cartelle nella finestra"
 		"dropzone.supportHint"	"Supporta file .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
 		"dropzone.selectFiles"	"Seleziona file"
 		"dropzone.selectFolder"	"Seleziona cartella"
