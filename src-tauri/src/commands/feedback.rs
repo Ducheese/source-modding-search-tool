@@ -123,15 +123,21 @@ pub async fn submit_feedback(feedback: Feedback) -> Result<(), String> {
     });
 
     // Reuse HTTP client singleton
-    let client = get_http_client().map_err(|e| e.to_string())?;
+    let client = get_http_client();
 
-    let response = client
+    let response = match client
         .post(&formspree_endpoint)
         .header("Accept", "application/json")
         .json(&form_data)
         .send()
         .await
-        .map_err(|e| format!("Network error while submitting feedback: {}", e))?;
+    {
+        Ok(r) => r,
+        Err(e) => {
+            error!("Network error while submitting feedback: {}", e);
+            return Err(format!("Network error while submitting feedback: {}", e));
+        }
+    };
 
     let status = response.status();
     if !status.is_success() {

@@ -1,6 +1,7 @@
 use crate::utils::{get_http_client, get_stream_http_client};
-use anyhow::{bail, ensure, Context};
+use anyhow::{bail, Context, ensure};
 use futures_util::StreamExt;
+use log::warn;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -135,6 +136,10 @@ pub fn get_reasoning_params(base_url: &str, enable_thinking: bool, thinking_budg
         // 默认使用 OpenRouter 格式（兼容性最好）
         _ => {
             if enable_thinking {
+                warn!(
+                    "未知提供商 host: {}，使用 OpenRouter 格式的推理参数，可能不兼容",
+                    host
+                );
                 serde_json::json!({
                     "reasoning": {
                         "max_tokens": thinking_budget
@@ -244,7 +249,7 @@ async fn generate_ai_regex_internal(request: AiRegexRequest) -> anyhow::Result<A
         "stream": false
     });
 
-    let client = get_http_client()?;
+    let client = get_http_client();
     let response = client
         .post(&endpoint)
         .bearer_auth(request.api_key)
@@ -254,12 +259,15 @@ async fn generate_ai_regex_internal(request: AiRegexRequest) -> anyhow::Result<A
         .context("AI 请求失败")?;
 
     let status = response.status();
-    let body = response.text().await.context("AI 响应读取失败")?;
+    let body: String = response.text().await.unwrap_or_else(|_| "无法读取响应体".to_string());
     if !status.is_success() {
         bail!("AI 请求失败: HTTP {} - {}", status, body);
     }
 
-    let parsed: OpenAiResponse = serde_json::from_str(&body).context("AI 响应解析失败")?;
+    let parsed: OpenAiResponse = serde_json::from_str(&body).unwrap_or_else(|_| {
+        log::warn!("AI 响应解析失败: {}", body);
+        OpenAiResponse { choices: Vec::new() }
+    });
     let content = parsed
         .choices
         .first()
@@ -307,7 +315,7 @@ async fn stream_ai_chat_internal(window: tauri::Window, request: AiChatStreamReq
         }
     }
 
-    let client = get_stream_http_client()?;
+    let client = get_stream_http_client();
     let response = client
         .post(&endpoint)
         .bearer_auth(request.api_key)
@@ -318,12 +326,13 @@ async fn stream_ai_chat_internal(window: tauri::Window, request: AiChatStreamReq
 
     let status = response.status();
     if !status.is_success() {
-        let body = response.text().await.unwrap_or_else(|_| "无法读取响应体".to_string());
+        let body: String = response.text().await.unwrap_or_else(|_| "无法读取响应体".to_string());
         let _ = window.emit("ai-chat-stream", serde_json::json!({
             "requestId": request.request_id,
             "error": format!("AI 请求失败: HTTP {} - {}", status, body),
         }));
-        bail!("AI 请求失败: HTTP {} - {}", status, body);
+        // 不再 bail!，返回 Ok(()) 让前端通过事件流感知错误
+        return Ok(());
     }
 
     let mut usage: Option<serde_json::Value> = None;
@@ -335,7 +344,16 @@ async fn stream_ai_chat_internal(window: tauri::Window, request: AiChatStreamReq
     let mut stream = response.bytes_stream();
     
     while let Some(chunk_result) = stream.next().await {
-        let chunk = chunk_result.context("AI 流式响应读取失败")?;
+        let chunk = match chunk_result {
+            Ok(chunk) => chunk,
+            Err(e) => {
+                let _ = window.emit("ai-chat-stream", serde_json::json!({
+                    "requestId": request.request_id,
+                    "error": format!("AI 流式响应读取失败: {}", e),
+                }));
+                return Ok(());
+            }
+        };
         byte_buf.extend_from_slice(&chunk);
 
         // 从字节缓冲中提取完整 UTF-8 字符，剩余不完整字节留在 byte_buf
@@ -421,9 +439,10 @@ pub async fn stream_ai_chat(window: tauri::Window, request: AiChatStreamRequest)
 
 #[tauri::command]
 pub async fn test_ai_connection(request: AiRegexRequest) -> Result<(), String> {
+    // 连接测试不需要 system_prompt，使用空字符串覆盖
     let payload = AiRegexRequest {
         user_prompt: "请只回复OK".to_string(),
-        system_prompt: request.system_prompt,
+        system_prompt: String::new(),
         api_key: request.api_key,
         base_url: request.base_url,
         model_name: request.model_name,

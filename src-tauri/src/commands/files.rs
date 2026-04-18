@@ -1,5 +1,4 @@
 use crate::utils::{decode_text, is_binary};
-use anyhow::Context;
 use memmap2::Mmap;
 use rayon::prelude::*;
 use serde::Serialize;
@@ -59,9 +58,7 @@ pub async fn get_file_stats(file_paths: Vec<String>) -> Result<Vec<FileStats>, S
             }
 
             // 使用 Mmap，极速！
-            let mmap = unsafe { Mmap::map(&file) }
-                .with_context(|| format!("无法映射文件: {}", path.display()))
-                .ok();
+            let mmap = unsafe { Mmap::map(&file) }.ok();
             
             if let Some(mmap) = mmap {
                 // 检查二进制

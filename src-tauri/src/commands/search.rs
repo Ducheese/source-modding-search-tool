@@ -1,5 +1,4 @@
-use crate::utils::{build_pattern_set, decode_text, is_binary};
-use anyhow::Context;
+use crate::utils::{build_pattern_set, decode_text, is_binary, MAX_MATCHES_PER_FILE};
 use memmap2::Mmap;
 use rayon::prelude::*;
 use regex::RegexBuilder;
@@ -170,9 +169,7 @@ pub async fn search_in_files(
             
             // 使用内存映射（Mmap）提高文件读取性能
             let file = File::open(path).ok()?;
-            let mmap = unsafe { Mmap::map(&file) }
-                .with_context(|| format!("无法映射文件: {}", path.display()))
-                .ok()?;
+            let mmap = unsafe { Mmap::map(&file) }.ok()?;
 
             // 跳过二进制文件
             if is_binary(&mmap) {
@@ -203,7 +200,7 @@ pub async fn search_in_files(
             // 在 &str 上执行正则搜索
             // regex::Regex.find_iter() 返回的 Match 对象包含 UTF-8 安全的字节偏移
             for mat in re.find_iter(content) {
-                if matches.len() >= 500 {       // 限制每个文件最多 500 个匹配
+                if matches.len() >= MAX_MATCHES_PER_FILE {
                     break;
                 }
                 

@@ -15,6 +15,9 @@ use file_drop::{handle_validated_file_drop_window_event, new_drag_state};
 use tauri::Manager;
 
 fn main() {
+    // 初始化日志系统
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
+
     // 创建拖拽状态管理器
     let drag_state = new_drag_state();
 

@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use crate::utils::{ENCODING_DETECT_WINDOW, BINARY_DETECT_WINDOW};
 
 /// 解码文件内容：BOM优先 -> UTF-8严格校验 -> chardetng兜底
 /// 这是整个搜索流程的关键第一步：正确解码文件内容
@@ -33,7 +34,7 @@ pub fn decode_text(bytes: &[u8]) -> (Cow<'_, str>, String) {
     // 3. chardetng 兜底（可处理 UTF-32、GBK、Shift-JIS、EUC-JP 等各种编码）
     // 只扫描文件头部 8KB，保证性能
     let mut detector = chardetng::EncodingDetector::new();
-    let head_len = bytes.len().min(8192); // 限制扫描范围，避免大文件耗时过长
+    let head_len = bytes.len().min(ENCODING_DETECT_WINDOW);
     detector.feed(&bytes[..head_len], true);
     let encoding = detector.guess(None, true);
     let (cow, _, _) = encoding.decode(bytes);
@@ -42,6 +43,6 @@ pub fn decode_text(bytes: &[u8]) -> (Cow<'_, str>, String) {
 
 /// 辅助：快速判断是不是二进制，只读前 8KB
 pub fn is_binary(data: &[u8]) -> bool {
-    let len = data.len().min(8192);
+    let len = data.len().min(BINARY_DETECT_WINDOW);
     content_inspector::inspect(&data[..len]).is_binary()
 }

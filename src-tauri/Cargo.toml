@@ -41,6 +41,7 @@ tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-wo
 once_cell = "1.19"
 # 日志
 log = "0.4"
+env_logger = "0.11"
 
 [features]
 # 默认开启自定义协议
