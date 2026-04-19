@@ -40,7 +40,7 @@
 		"fileList.removeTooltip"	"Удалить этот файл"
 		"fileList.removed"	"Удалён {name}"
 		"fileList.cleared"	"Все файлы очищены"
-		"fileList.lines"	"Количество строк: {lines}"
+		"fileList.lines"	"{lines} строк"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
 		"search.title"	"Настройки поиска"
@@ -149,9 +149,9 @@
 		"aiChat.inputTok"	"Ввод {prompt}{cached} токенов"
 		"aiChat.cachedSuffix"	" (кэшировано {n})"
 		"aiChat.outputTok"	"Вывод {n} токенов"
-		"aiChat.speed"	"{speed} токен/с"
+		"aiChat.speed"	"{speed} ток/с"
 		"aiChat.duration"	"{duration}с"
-		"aiChat.contextTok"	"Контекст {n} токенов"
+		"aiChat.contextTok"	"Ожидаемый контекст {n} токенов"
 		"aiChat.inputTokSimple"	"Ввод {n} токенов"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────

@@ -39,7 +39,7 @@
 		"fileList.noMatchTitle"	"Nenhum ficheiro corresponde ao filtro"
 		"fileList.removeTooltip"	"Remover este ficheiro"
 		"fileList.removed"	"Removido {name}"
-		"fileList.cleared"	"Todos os ficheiros removidos"
+		"fileList.cleared"	"Todos os ficheiros limpos"
 		"fileList.lines"	"Linhas: {lines}"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
@@ -144,14 +144,14 @@
 		"aiChat.aiConfigHint"	"Vá a \"Acerca de e Ajuda\" para configurar o modelo de IA"
 		"aiChat.startFailed"	"Falha ao iniciar o pedido à IA"
 		"aiChat.restore"	"Restaurar chat com IA"
-		"aiChat.thinkingOn"	"Clique para ativar o raciocínio profundo e definir o orçamento de tokens"
+		"aiChat.thinkingOn"	"Clique para ativar o raciocínio profundo e orçamento de raciocínio"
 		"aiChat.thinkingOff"	"Clique para desativar o raciocínio profundo"
 		"aiChat.inputTok"	"Entrada {prompt}{cached} tok"
 		"aiChat.cachedSuffix"	" (em cache {n})"
 		"aiChat.outputTok"	"Saída {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
-		"aiChat.contextTok"	"Contexto {n} tok"
+		"aiChat.contextTok"	"Contexto estimado {n} tok"
 		"aiChat.inputTokSimple"	"Entrada {n} tok"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────

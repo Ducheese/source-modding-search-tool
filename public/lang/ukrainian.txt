@@ -40,7 +40,7 @@
 		"fileList.removeTooltip"	"Видалити цей файл"
 		"fileList.removed"	"Видалено {name}"
 		"fileList.cleared"	"Усі файли очищено"
-		"fileList.lines"	"Кількість рядків: {lines}"
+		"fileList.lines"	"{lines} рядків"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
 		"search.title"	"Налаштування пошуку"
@@ -149,9 +149,9 @@
 		"aiChat.inputTok"	"Введення {prompt}{cached} токенів"
 		"aiChat.cachedSuffix"	" (кешовано {n})"
 		"aiChat.outputTok"	"Виведення {n} токенів"
-		"aiChat.speed"	"{speed} токен/с"
+		"aiChat.speed"	"{speed} ток/с"
 		"aiChat.duration"	"{duration}с"
-		"aiChat.contextTok"	"Контекст {n} токенів"
+		"aiChat.contextTok"	"Очікуваний контекст {n} токенів"
 		"aiChat.inputTokSimple"	"Введення {n} токенів"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────

@@ -151,7 +151,7 @@
 		"aiChat.outputTok"	"เอาต์พุต {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
-		"aiChat.contextTok"	"บริบท {n} tok"
+		"aiChat.contextTok"	"บริบทที่ประมาณการ {n} tok"
 		"aiChat.inputTokSimple"	"อินพุต {n} tok"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────

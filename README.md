@@ -153,11 +153,25 @@ source-modding-search-tool/
 │   ├── index.css
 │   └── index.js
 ├── src-tauri/            # Rust 后端
+│   ├── src/
+│   │   ├── main.rs
+│   │   ├── commands/     # Tauri 命令
+│   │   │   ├── ai.rs
+│   │   │   ├── feedback.rs
+│   │   │   ├── files.rs
+│   │   │   ├── search.rs
+│   │   │   └── mod.rs
+│   │   ├── utils/        # 工具函数
+│   │   │   ├── constants.rs
+│   │   │   ├── encoding.rs
+│   │   │   ├── http.rs
+│   │   │   ├── mod.rs
+│   │   │   └── pattern.rs
+│   │   ├── file_drop.rs
+│   │   └── main.rs
 │   ├── icons/
 │   │   ├── icon.ico
 │   │   └── tauri.ico
-│   ├── src/
-│   │   └── main.rs
 │   ├── build.rs
 │   ├── Cargo.toml
 │   └── tauri.conf.json

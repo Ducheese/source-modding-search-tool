@@ -77,7 +77,7 @@
 
 		// ── Regex category titles ─────────────────────────────────────────
 		"regexCat.anchors"	"Anker"
-		"regexCat.wildcards"	"Platzhalter"
+		"regexCat.wildcards"	"Platzhalterzeichen"
 		"regexCat.quantifiers"	"Quantifizierer"
 		"regexCat.charsets"	"Beispiele für Zeichensätze"
 		"regexCat.escape"	"Zeichen, die maskiert werden müssen"
@@ -97,7 +97,7 @@
 		"regexSnippet.optional"	"0 oder 1 (?)"
 		"regexSnippet.zeroOrMore"	"0 oder mehr (*)"
 		"regexSnippet.oneOrMore"	"1 oder mehr (+)"
-		"regexSnippet.lazy"	"Träge (*?)"
+		"regexSnippet.lazy"	"Nicht-gierig (*?)"
 		"regexSnippet.count"	"Genaue Anzahl {}"
 		"regexSnippet.hexColor"	"Hexadezimaler Farbcode"
 		"regexSnippet.chineseCharCount"	"Anzahl chinesischer Zeichen"
@@ -151,7 +151,7 @@
 		"aiChat.outputTok"	"Ausgabe {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
-		"aiChat.contextTok"	"Kontext {n} tok"
+		"aiChat.contextTok"	"Geschätzter Kontext {n} tok"
 		"aiChat.inputTokSimple"	"Eingabe {n} tok"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────

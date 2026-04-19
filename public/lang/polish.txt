@@ -40,7 +40,7 @@
 		"fileList.removeTooltip"	"Usuń ten plik"
 		"fileList.removed"	"Usunięto {name}"
 		"fileList.cleared"	"Wszystkie pliki wyczyszczone"
-		"fileList.lines"	"Liczba wierszy: {lines}"
+		"fileList.lines"	"{lines} wierszy"
 
 		// ── SearchPanel ───────────────────────────────────────────────────
 		"search.title"	"Ustawienia wyszukiwania"
@@ -144,14 +144,14 @@
 		"aiChat.aiConfigHint"	"Przejdź do „Pomoc i informacje o programie”, aby skonfigurować model AI"
 		"aiChat.startFailed"	"Nie udało się uruchomić żądania AI"
 		"aiChat.restore"	"Przywróć czat AI"
-		"aiChat.thinkingOn"	"Kliknij, aby włączyć głębokie rozumowanie i ustawić limit tokenów"
+		"aiChat.thinkingOn"	"Kliknij, aby włączyć głębokie rozumowanie i budżet myślenia"
 		"aiChat.thinkingOff"	"Kliknij, aby wyłączyć głębokie rozumowanie"
 		"aiChat.inputTok"	"Wejście {prompt}{cached} tokenów"
 		"aiChat.cachedSuffix"	" (z pamięci podręcznej {n})"
 		"aiChat.outputTok"	"Wyjście {n} tokenów"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
-		"aiChat.contextTok"	"Kontekst {n} tokenów"
+		"aiChat.contextTok"	"Szacowany kontekst {n} tokenów"
 		"aiChat.inputTokSimple"	"Wejście {n} tokenów"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────

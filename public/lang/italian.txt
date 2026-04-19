@@ -151,7 +151,7 @@
 		"aiChat.outputTok"	"Output {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
-		"aiChat.contextTok"	"Contesto {n} tok"
+		"aiChat.contextTok"	"Contesto stimato {n} tok"
 		"aiChat.inputTokSimple"	"Input {n} tok"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
@@ -239,7 +239,7 @@
 		"export.title"	"Esportazione dei risultati di ricerca"
 		"export.query"	"Query"
 		"export.options"	"Opzioni"
-		"export.time"	"Esportato alle"
+		"export.time"	"Esportato il"
 		"export.stats"	"Statistiche"
 		"export.totalFiles"	"File totali"
 		"export.matchedFiles"	"File corrispondenti"

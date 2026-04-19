@@ -151,7 +151,7 @@
 		"aiChat.outputTok"	"Output {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
-		"aiChat.contextTok"	"Context {n} tok"
+		"aiChat.contextTok"	"Estimated Context {n} tok"
 		"aiChat.inputTokSimple"	"Input {n} tok"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────

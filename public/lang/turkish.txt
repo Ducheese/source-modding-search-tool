@@ -19,8 +19,8 @@
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Dosyaları veya klasörleri pencereye sürükleyin"
 		"dropzone.supportHint"	".sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut dosyalarını destekler"
-		"dropzone.selectFiles"	"Dosyaları Seç"
-		"dropzone.selectFolder"	"Klasör Seç"
+		"dropzone.selectFiles"	"Dosya seç"
+		"dropzone.selectFolder"	"Klasör seç"
 		"dropzone.errorTitle"	"Aşağıdaki dosyalar desteklenmeyen format nedeniyle reddedildi:"
 		"dropzone.errorFolderTitle"	"Seçilen klasördeki aşağıdaki dosyalar reddedildi:"
 		"dropzone.errorSupportedTypes"	"Desteklenen dosya türleri:"
@@ -28,10 +28,10 @@
 
 		// ── FileList ─────────────────────────────────────────────────────
 		"fileList.title"	"Dosya listesi ({count})"
-		"fileList.clear"	"Tümünü Temizle"
+		"fileList.clear"	"Tümünü temizle"
 		"fileList.totalSize"	"Toplam boyut: {size}"
 		"fileList.totalLines"	"Toplam satır: {lines}"
-		"fileList.searchChip"	"Dosyaları Ara"
+		"fileList.searchChip"	"Dosyaları ara"
 		"fileList.searchPlaceholder"	"Dosya adını girin..."
 		"fileList.filtered"	"{count} dosya filtrelendi"
 		"fileList.emptyTitle"	"Henüz burada bir şey yok"
@@ -112,9 +112,9 @@
 		"results.emptyHint"	"Aramaya başlamak için bir şeyler yazın."
 		"results.noMatchTitle"	"Sonuç bulunamadı"
 		"results.noMatchHint"	"{count} dosyada hiçbir şey bulunamadı."
-		"results.title"	"Arama Sonuçları"
+		"results.title"	"Arama sonuçları"
 		"results.sendToAi"	"AI'ye gönder"
-		"results.export"	"Dışa Aktar"
+		"results.export"	"Dışa aktar"
 		"results.totalFiles"	"Toplam dosya: {count}"
 		"results.matchedFiles"	"Eşleşen dosya: {count}"
 		"results.totalMatches"	"Eşleşen satır: {count}"
@@ -151,7 +151,7 @@
 		"aiChat.outputTok"	"Çıktı {n} tok"
 		"aiChat.speed"	"{speed} tok/s"
 		"aiChat.duration"	"{duration}s"
-		"aiChat.contextTok"	"Bağlam {n} tok"
+		"aiChat.contextTok"	"Tahmini bağlam {n} tok"
 		"aiChat.inputTokSimple"	"Girdi {n} tok"
 
 		// ── HelpDialog — title & tabs ─────────────────────────────────────
@@ -211,7 +211,7 @@
 
 		// ── HelpDialog — changelog tab ──────────────────────────────────────
 		"help.changelog.rateLimit"	"GitHub API hız sınırına ulaşıldı. Lütfen daha sonra tekrar deneyin veya şu adresi ziyaret edin:"
-		"help.changelog.rateLimitLink"	"Sürümler (Releases) Sayfası"
+		"help.changelog.rateLimitLink"	"Sürümler Sayfası"
 		"help.changelog.error"	"Yüklenemedi. Lütfen ağ bağlantınızı kontrol edin."
 		"help.changelog.retry"	"Yeniden Dene"
 		"help.changelog.noBody"	"(Açıklama yok)"
