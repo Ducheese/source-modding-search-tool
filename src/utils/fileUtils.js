@@ -3,10 +3,7 @@
  * 用于 FileDropZone 和 FileList 组件
  */
 
-import { SUPPORTED_EXTENSIONS } from '../config/supportedFiles';
-
-// 带点前缀的扩展名列表（用于匹配）
-const SUPPORTED_EXTENSIONS_WITH_DOT = SUPPORTED_EXTENSIONS.map(ext => `.${ext}`);
+import { getSupportedExtensionsWithDot } from '../config/supportedFiles';
 
 /**
  * 从完整路径中提取文件名
@@ -23,8 +20,9 @@ export function getFileName(path) {
  * @returns {boolean}
  */
 export function isSupportedFile(fileName) {
+  const supportedExtensions = getSupportedExtensionsWithDot();
   const ext = '.' + fileName.split('.').pop().toLowerCase();
-  return SUPPORTED_EXTENSIONS_WITH_DOT.includes(ext);
+  return supportedExtensions.includes(ext);
 }
 
 /**
@@ -65,7 +63,7 @@ export function filterValidFiles(paths) {
  * @returns {string[]}
  */
 export function getSupportedExtensions() {
-  return [...SUPPORTED_EXTENSIONS_WITH_DOT];
+  return getSupportedExtensionsWithDot();
 }
 
 // ─────────────────────────────────────────────────────────────

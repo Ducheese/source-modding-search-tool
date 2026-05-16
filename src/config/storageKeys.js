@@ -17,3 +17,6 @@ export const SEARCH_HISTORY_STORAGE_KEY = 'searchHistory';
 
 // 用户语言偏好
 export const LANGUAGE_STORAGE_KEY = 'languagePreference';
+
+// 支持的文件后缀列表
+export const SUPPORTED_EXTENSIONS_STORAGE_KEY = 'supportedExtensions';

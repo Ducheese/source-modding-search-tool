@@ -9,9 +9,6 @@ import { filterValidFiles, getSupportedExtensions } from '../utils/fileUtils';
 /** 拖拽扫描的并发上限 */
 const DROP_SCAN_CONCURRENCY = 2;
 
-/** 支持的文件扩展名文本（用于错误提示） */
-const SUPPORTED_EXTENSIONS_TEXT = getSupportedExtensions().join(', ');
-
 // ============================================================================
 // 纯工具函数（不依赖 React 状态）
 // ============================================================================
@@ -83,10 +80,12 @@ function formatInvalidList(invalid, limit = 5) {
 function buildUnsupportedFilesMessage(t, titleKey, invalid) {
   if (!invalid?.length) return '';
 
+  const supportedExtensionsText = getSupportedExtensions().join(', ');
+
   return (
     `${t(titleKey)}\n` +
     `${formatInvalidList(invalid)}\n\n` +
-    `${t('dropzone.errorSupportedTypes')} ${SUPPORTED_EXTENSIONS_TEXT}`
+    `${t('dropzone.errorSupportedTypes')} ${supportedExtensionsText}`
   );
 }
 

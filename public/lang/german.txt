@@ -18,7 +18,7 @@
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Dateien oder Ordner in das Fenster ziehen"
-		"dropzone.supportHint"	"Unterstützt .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
+		"dropzone.supportHint"	"Unterstützt {extensions}"
 		"dropzone.selectFiles"	"Dateien auswählen"
 		"dropzone.selectFolder"	"Ordner auswählen"
 		"dropzone.errorTitle"	"Folgende Dateien wurden wegen nicht unterstützter Formate abgelehnt:"
@@ -164,7 +164,7 @@
 		"help.tab.changelog"	"Änderungsprotokoll"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
-		"help.intro"	"Dieses Tool wurde entwickelt, um ein leichtes, hochleistungsfähiges <b>Dateiübergreifendes Textsuch-Tool</b> für Entwickler von Valve Source 1-Engine-Mods (CS:S, CS:GO, L4D2, GMod usw.) bereitzustellen. Unterstützte Dateitypen: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
+		"help.intro"	"Dieses Tool wurde entwickelt, um ein leichtes, hochleistungsfähiges <b>Dateiübergreifendes Textsuch-Tool</b> für Entwickler von Valve Source 1-Engine-Mods (CS:S, CS:GO, L4D2, GMod usw.) bereitzustellen. Unterstützte Dateitypen: {extensions}"
 		"help.usage"	"Ziehe Dateien in den gestrichelten Bereich (oben links) und prüfe sie in der Dateiliste darunter. Gib dann die Suchkriterien ein (oben rechts), um Ergebnisse im Panel unten rechts anzuzeigen, zu exportieren oder zu analysieren."
 		"help.storage"	"Die Konfiguration (einschließlich API Key) wird im Klartext unter {path} gespeichert. Dieser Pfad enthält zudem den WebView2-Runtime-Cache. Das manuelle Löschen dieses Verzeichnisses setzt das Tool vollständig zurück und kann Kompatibilitätsprobleme nach Updates beheben."
 

@@ -18,7 +18,7 @@
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Przeciągnij pliki lub foldery do okna"
-		"dropzone.supportHint"	"Obsługuje pliki .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
+		"dropzone.supportHint"	"Obsługuje pliki {extensions}"
 		"dropzone.selectFiles"	"Wybierz pliki"
 		"dropzone.selectFolder"	"Wybierz folder"
 		"dropzone.errorTitle"	"Następujące pliki zostały odrzucone z powodu nieobsługiwanego formatu:"
@@ -164,7 +164,7 @@
 		"help.tab.changelog"	"Historia zmian"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
-		"help.intro"	"To narzędzie zostało zaprojektowane w celu zapewnienia lekkiego, wysokowydajnego <b>przeszukiwania tekstu w wielu plikach</b> dla twórców modów silnika Valve Source 1 (CS:S, CS:GO, L4D2, GMod itp.). Obsługiwane typy plików: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
+		"help.intro"	"To narzędzie zostało zaprojektowane w celu zapewnienia lekkiego, wysokowydajnego <b>przeszukiwania tekstu w wielu plikach</b> dla twórców modów silnika Valve Source 1 (CS:S, CS:GO, L4D2, GMod itp.). Obsługiwane typy plików: {extensions}"
 		"help.usage"	"Przeciągnij pliki do obszaru z przerywaną ramką (lewy górny róg) i sprawdź je na liście plików poniżej. Następnie wprowadź kryteria wyszukiwania (prawy górny róg), aby wyświetlić, wyeksportować lub przeanalizować wyniki w panelu po prawej stronie."
 		"help.storage"	"Konfiguracja (w tym klucz API) jest przechowywana w niezaszyfrowanej postaci pod ścieżką {path}. Ta ścieżka zawiera również pamięć podręczną środowiska WebView2. Ręczne usunięcie tego katalogu całkowicie odinstalowuje narzędzie i może rozwiązać problemy po aktualizacjach."
 

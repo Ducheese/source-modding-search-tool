@@ -18,7 +18,7 @@
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Seret file atau folder ke jendela"
-		"dropzone.supportHint"	"Mendukung file .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
+		"dropzone.supportHint"	"Mendukung file {extensions}"
 		"dropzone.selectFiles"	"Pilih file"
 		"dropzone.selectFolder"	"Pilih folder"
 		"dropzone.errorTitle"	"File berikut ditolak karena format tidak didukung:"
@@ -164,7 +164,7 @@
 		"help.tab.changelog"	"Catatan perubahan"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
-		"help.intro"	"Alat ini dirancang untuk menyediakan alat <b>pencarian teks lintas file</b> yang ringan dan berkinerja tinggi untuk pengembang mod Valve Source 1 (CS:S, CS:GO, L4D2, GMod, dll.). Jenis file yang didukung: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
+		"help.intro"	"Alat ini dirancang untuk menyediakan alat <b>pencarian teks lintas file</b> yang ringan dan berkinerja tinggi untuk pengembang mod Valve Source 1 (CS:S, CS:GO, L4D2, GMod, dll.). Jenis file yang didukung: {extensions}"
 		"help.usage"	"Seret file ke kotak bertitik (kiri atas) dan tinjau di daftar file di bawah. Kemudian masukkan kriteria pencarian Anda (kanan atas) untuk melihat, mengekspor, atau menganalisis hasilnya di panel kanan bawah."
 		"help.storage"	"Konfigurasi (termasuk API Key) disimpan tanpa enkripsi di {path}. Jalur ini juga berisi cache runtime WebView2. Menghapusnya secara manual sepenuhnya menghapus instalasi alat ini dan dapat menyelesaikan bug aneh setelah pembaruan yang bermasalah."
 

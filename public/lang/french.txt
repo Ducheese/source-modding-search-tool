@@ -18,7 +18,7 @@
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Glissez des fichiers ou dossiers dans la fenêtre"
-		"dropzone.supportHint"	"Prend en charge les fichiers .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
+		"dropzone.supportHint"	"Prend en charge les fichiers {extensions}"
 		"dropzone.selectFiles"	"Sélectionner des fichiers"
 		"dropzone.selectFolder"	"Sélectionner un dossier"
 		"dropzone.errorTitle"	"Les fichiers suivants ont été rejetés, car leur format n'est pas pris en charge :"
@@ -164,7 +164,7 @@
 		"help.tab.changelog"	"Journal des modifications"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
-		"help.intro"	"Cet outil offre une solution de recherche textuelle multi-fichiers légère et performante, optimisée pour les développeurs de mods du moteur Valve Source 1 (CS:S, CS:GO, L4D2, GMod, etc.). Types de fichiers pris en charge : .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
+		"help.intro"	"Cet outil offre une solution de recherche textuelle multi-fichiers légère et performante, optimisée pour les développeurs de mods du moteur Valve Source 1 (CS:S, CS:GO, L4D2, GMod, etc.). Types de fichiers pris en charge : {extensions}"
 		"help.usage"	"Déposez les fichiers dans la zone en pointillés (en haut à gauche) et examinez-les dans la liste ci-dessous. Saisissez ensuite vos critères de recherche (en haut à droite) pour afficher, exporter ou analyser les résultats dans le panneau en bas à droite."
 		"help.storage"	"La configuration (y compris l'API Key) est stockée non chiffrée dans {path}. Ce chemin contient également le cache du runtime WebView2. Le supprimer manuellement désinstalle complètement l'outil et peut résoudre des bugs étranges après des mises à jour cassantes."
 

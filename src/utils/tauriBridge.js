@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { open } from '@tauri-apps/api/dialog';
 import { open as openShell } from '@tauri-apps/api/shell';
-import { SUPPORTED_EXTENSIONS } from '../config/supportedFiles';
+import { loadSupportedExtensions } from '../config/supportedFiles';
 
 // ─────────────────────────────────────────────────────────────
 // 统一错误处理层
@@ -46,12 +46,15 @@ const invokeWithError = async (cmd, args = {}, options = {}) => {
 // 模拟原有的 electronAPI 接口，但调用 Rust 后端
 export const tauriAPI = {
   selectFiles: async () => {
+    const supportedExtensions = loadSupportedExtensions();
     const selected = await open({
       multiple: true,
-      filters: [{
-        name: 'Source Files',
-        extensions: SUPPORTED_EXTENSIONS
-      }]
+      ...(supportedExtensions.length > 0 && {
+        filters: [{
+          name: 'Source Files',
+          extensions: supportedExtensions,
+        }],
+      }),
     });
     return selected === null ? [] : (Array.isArray(selected) ? selected : [selected]);
   },

@@ -15,8 +15,10 @@ import {
   InsertDriveFile,
 } from '@mui/icons-material';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useSupportedExtensions } from '../contexts/SupportedExtensionsContext';
 import { useFileScanner } from '../hooks/useFileScanner';
 import { useWindowFileDrop } from '../hooks/useWindowFileDrop';
+import { formatSupportedExtensions } from '../config/supportedFiles';
 
 /**
  * 文件拖放区域组件
@@ -25,6 +27,7 @@ import { useWindowFileDrop } from '../hooks/useWindowFileDrop';
 const FileDropZone = ({ onFilesAdded }) => {
   const theme = useTheme();
   const { t } = useLanguage();
+  const { extensions } = useSupportedExtensions();
 
   // 错误提示状态（用于显示多行错误详情）
   const [alertMessage, setAlertMessage] = useState('');
@@ -122,7 +125,7 @@ const FileDropZone = ({ onFilesAdded }) => {
             {t('dropzone.dragHint')}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {t('dropzone.supportHint')}
+            {t('dropzone.supportHint', { extensions: formatSupportedExtensions(extensions, { separator: 'comma' }) })}
           </Typography>
         </Box>
 

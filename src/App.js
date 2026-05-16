@@ -13,6 +13,7 @@ import LangSwitcher from './components/LangSwitcher';
 // Context
 import { SnackbarProvider, useSnackbar } from './contexts/SnackbarContext';
 import { ThemeSchemeProvider, useThemeScheme } from './contexts/ThemeSchemeContext';
+import { SupportedExtensionsProvider } from './contexts/SupportedExtensionsContext';
 
 // Utils
 import { getTheme } from './utils/themeFactory';
@@ -104,9 +105,11 @@ function AppWithTheme() {
 function App() {
   return (
     <LanguageProvider>
-      <ThemeSchemeProvider>
-        <AppWithTheme />
-      </ThemeSchemeProvider>
+      <SupportedExtensionsProvider>
+        <ThemeSchemeProvider>
+          <AppWithTheme />
+        </ThemeSchemeProvider>
+      </SupportedExtensionsProvider>
     </LanguageProvider>
   );
 }

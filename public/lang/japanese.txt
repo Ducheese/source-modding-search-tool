@@ -18,7 +18,7 @@
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"ファイルやフォルダをウィンドウ内にドラッグ"
-		"dropzone.supportHint"	".sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut ファイルに対応"
+		"dropzone.supportHint"	"{extensions} ファイルに対応"
 		"dropzone.selectFiles"	"ファイルを選択"
 		"dropzone.selectFolder"	"フォルダを選択"
 		"dropzone.errorTitle"	"以下のファイルは対応していない形式のため拒否されました："
@@ -164,7 +164,7 @@
 		"help.tab.changelog"	"更新履歴"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
-		"help.intro"	"このツールはValve Source 1エンジン（CS:S, CS:GO, L4D2, GMod等）のModデベロッパー向けに、軽量で高性能な<b>クロスファイルテキスト検索</b>ツールを提供することを目的としています。対応ファイル形式：.sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
+		"help.intro"	"このツールはValve Source 1エンジン（CS:S, CS:GO, L4D2, GMod等）のModデベロッパー向けに、軽量で高性能な<b>クロスファイルテキスト検索</b>ツールを提供することを目的としています。対応ファイル形式：{extensions}"
 		"help.usage"	"ファイルを点線のボックス（左上）にドロップし、下のファイル一覧で確認してください。次に検索条件（右上）を入力し、右下のパネルで結果を表示・エクスポート、またはAIで分析してください。"
 		"help.storage"	"設定（APIキーを含む）は{path}に平文で保存されます。このパスにはWebView2ランタイムキャッシュも含まれます。手動で削除するとツールが完全にアンインストールされ、更新後の不具合も解消できます。"
 

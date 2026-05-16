@@ -18,7 +18,7 @@
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"拖曳檔案或資料夾到視窗內"
-		"dropzone.supportHint"	"支援 .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut 檔案"
+		"dropzone.supportHint"	"支援 {extensions} 檔案"
 		"dropzone.selectFiles"	"選擇檔案"
 		"dropzone.selectFolder"	"選擇資料夾"
 		"dropzone.errorTitle"	"以下檔案因格式不受支援而拒絕匯入："
@@ -164,7 +164,7 @@
 		"help.tab.changelog"	"更新記錄"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
-		"help.intro"	"本工具旨在為 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 開發者提供一個輕量、高效能的<b>跨檔案文字搜尋</b>工具，因此支援提交和搜尋的文字檔案格式只包括：.sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut。"
+		"help.intro"	"本工具旨在為 Valve Source 1 引擎（CS:S, CS:GO, L4D2, GMod等）的 Mod 開發者提供一個輕量、高效能的<b>跨檔案文字搜尋</b>工具，因此支援提交和搜尋的文字檔案格式只包括：{extensions}。"
 		"help.usage"	"使用方法：在左上角「虛線框區域」完成檔案提交，在左下角「檔案清單區域」進行檢查和初篩，在右上角「搜尋設定區域」輸入要搜尋的文字、正規表示式或路徑篩選萬用字元，在右下角「搜尋結果區域」查看或匯出結果，或把結果傳送給 AI 進行分析和討論。"
 		"help.storage"	"本工具的設定資訊（含 API Key）會以明文儲存於 {path} 路徑下，該路徑同時包含 WebView2 執行階段快取。手動清除該路徑可確保本工具的完全移除，也可透過此方式解決新版本破壞性更新所導致的各種奇怪 Bug。"
 

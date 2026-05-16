@@ -18,7 +18,7 @@
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Trascina file o cartelle nella finestra"
-		"dropzone.supportHint"	"Supporta file .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
+		"dropzone.supportHint"	"Supporta file {extensions}"
 		"dropzone.selectFiles"	"Seleziona file"
 		"dropzone.selectFolder"	"Seleziona cartella"
 		"dropzone.errorTitle"	"I seguenti file sono stati rifiutati per formati non supportati:"
@@ -164,7 +164,7 @@
 		"help.tab.changelog"	"Registro modifiche"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
-		"help.intro"	"Questo strumento è progettato per fornire una <b>ricerca di testo tra file</b> leggera e ad alte prestazioni per sviluppatori di mod del motore Valve Source 1 (CS:S, CS:GO, L4D2, GMod, ecc.). Tipi di file supportati: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
+		"help.intro"	"Questo strumento è progettato per fornire una <b>ricerca di testo tra file</b> leggera e ad alte prestazioni per sviluppatori di mod del motore Valve Source 1 (CS:S, CS:GO, L4D2, GMod, ecc.). Tipi di file supportati: {extensions}"
 		"help.usage"	"Trascina i file nel riquadro tratteggiato (in alto a sinistra) e controllali nell'elenco file sottostante. Quindi inserisci i criteri di ricerca (in alto a destra) per visualizzare, esportare o analizzare i risultati nel pannello in basso a destra."
 		"help.storage"	"La configurazione (inclusa l'API Key) è memorizzata non cifrata in {path}. Questo percorso contiene anche la cache del runtime WebView2. Eliminarlo manualmente disinstalla completamente lo strumento e può risolvere bug strani dopo aggiornamenti con modifiche incompatibili."
 

@@ -18,7 +18,7 @@
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Kéo tệp hoặc thư mục vào cửa sổ"
-		"dropzone.supportHint"	"Hỗ trợ tệp .sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut"
+		"dropzone.supportHint"	"Hỗ trợ tệp {extensions}"
 		"dropzone.selectFiles"	"Chọn Tệp"
 		"dropzone.selectFolder"	"Chọn Thư mục"
 		"dropzone.errorTitle"	"Các tệp sau đã bị từ chối do định dạng không được hỗ trợ:"
@@ -164,7 +164,7 @@
 		"help.tab.changelog"	"Nhật ký thay đổi"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
-		"help.intro"	"Công cụ này được thiết kế để cung cấp một công cụ <b>tìm kiếm văn bản đa tệp</b> nhẹ và hiệu năng cao cho các nhà phát triển mod của động cơ Valve Source 1 (CS:S, CS:GO, L4D2, GMod, v.v.). Các loại tệp được hỗ trợ: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
+		"help.intro"	"Công cụ này được thiết kế để cung cấp một công cụ <b>tìm kiếm văn bản đa tệp</b> nhẹ và hiệu năng cao cho các nhà phát triển mod của động cơ Valve Source 1 (CS:S, CS:GO, L4D2, GMod, v.v.). Các loại tệp được hỗ trợ: {extensions}"
 		"help.usage"	"Kéo tệp vào khung nét đứt (góc trên bên trái) và xem lại chúng trong danh sách tệp bên dưới. Sau đó, nhập điều kiện tìm kiếm (góc trên bên phải) để xem, xuất hoặc phân tích kết quả trong bảng ở góc dưới bên phải."
 		"help.storage"	"Cấu hình (bao gồm API Key) được lưu trữ không mã hóa tại {path}. Đường dẫn này cũng chứa bộ nhớ cache runtime WebView2. Xóa thủ công sẽ gỡ cài đặt hoàn toàn công cụ và có thể giải quyết các lỗi kỳ lạ sau các bản cập nhật lỗi."
 

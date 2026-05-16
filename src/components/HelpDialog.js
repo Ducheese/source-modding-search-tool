@@ -28,11 +28,14 @@ import { homeDir } from '@tauri-apps/api/path';
 import { useSnackbar } from '../contexts/SnackbarContext';
 import { useThemeScheme } from '../contexts/ThemeSchemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useSupportedExtensions } from '../contexts/SupportedExtensionsContext';
+import { formatSupportedExtensions } from '../config/supportedFiles';
 import { COLOR_SCHEMES } from '../config/colorSchemes';
 import { getMarkdownStyles } from '../utils/markdownStyles';
 import { useAiSettings } from '../hooks/useAiSettings';
 import { useChangelog } from '../hooks/useChangelog';
 import FeedbackForm from './FeedbackForm';
+import SupportedExtensionsEditor from './SupportedExtensionsEditor';
 
 // ─────────────────────────────────────────────────────────────
 // TabPanel
@@ -203,6 +206,7 @@ const HelpDialog = ({ open, onClose }) => {
 
   const showSnackbar = useSnackbar();
   const { t, lang } = useLanguage();
+  const { extensions } = useSupportedExtensions();
 
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -268,7 +272,10 @@ const HelpDialog = ({ open, onClose }) => {
             alt={t('help.appIconAlt')}
             sx={{ width: 72, height: 72, borderRadius: 2, flexShrink: 0, mt: 0.5 }}
           />
-          <Typography dangerouslySetInnerHTML={{ __html: t('help.intro') }} />
+          <Typography component="div">
+            <Box component="span" dangerouslySetInnerHTML={{ __html: t('help.intro', { extensions: formatSupportedExtensions(extensions) }) }} />
+            <SupportedExtensionsEditor />
+          </Typography>
         </Box>
 
         <Box sx={{ mb: 3, px: 1 }}>

@@ -18,7 +18,7 @@
 
 		// ── FileDropZone ─────────────────────────────────────────────────
 		"dropzone.dragHint"	"Dosyaları veya klasörleri pencereye sürükleyin"
-		"dropzone.supportHint"	".sp, .cfg, .ini, .txt, .vmt, .qc, .inc, .lua, .log, .vdf, .scr, .res, .nut dosyalarını destekler"
+		"dropzone.supportHint"	"{extensions} dosyalarını destekler"
 		"dropzone.selectFiles"	"Dosya seç"
 		"dropzone.selectFolder"	"Klasör seç"
 		"dropzone.errorTitle"	"Aşağıdaki dosyalar desteklenmeyen format nedeniyle reddedildi:"
@@ -164,7 +164,7 @@
 		"help.tab.changelog"	"Değişiklik Günlüğü"
 
 		// ── HelpDialog — intro & usage & storage ───────────────────────────
-		"help.intro"	"Bu araç, Valve Source 1 motoru (CS:S, CS:GO, L4D2, GMod vb.) mod geliştiricileri için hafif ve yüksek performanslı bir <b>dosyalar arası metin arama</b> aracı sağlamak üzere tasarlanmıştır. Desteklenen dosya türleri: .sp .cfg .ini .txt .vmt .qc .inc .lua .log .vdf .scr .res .nut"
+		"help.intro"	"Bu araç, Valve Source 1 motoru (CS:S, CS:GO, L4D2, GMod vb.) mod geliştiricileri için hafif ve yüksek performanslı bir <b>dosyalar arası metin arama</b> aracı sağlamak üzere tasarlanmıştır. Desteklenen dosya türleri: {extensions}"
 		"help.usage"	"Dosyaları kesik çizgili kutuya (sol üst) sürükleyin ve aşağıdaki dosya listesinde inceleyin. Ardından, sonuçları sağ alt panelde görüntülemek, dışa aktarmak veya analiz etmek için arama kriterlerinizi (sağ üst) girin."
 		"help.storage"	"Yapılandırma (API Anahtarı dahil) şifrelenmeden {path} dizininde saklanır. Bu yol aynı zamanda WebView2 çalışma zamanı önbelleğini de içerir. Bunu manuel olarak silmek aracı tamamen kaldırır ve sorunlu güncellemelerden sonraki garip hataları çözebilir."
 
