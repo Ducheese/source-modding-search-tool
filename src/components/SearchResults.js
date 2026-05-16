@@ -189,15 +189,15 @@ const SearchResults = ({ results, isSearching, isAtBottom }) => {
         <Box sx={{ p: 2, borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
 
           {/* 第一行：标题与全局操作 */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1, mb: 1.5 }}>
             <Typography variant="h6" fontWeight="700" sx={{ lineHeight: 1.2 }}>
               {t('results.title')}
             </Typography>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button size="small" variant="contained" startIcon={<SmartToy />} onClick={handleOpenChat}>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+              <Button size="small" variant="contained" startIcon={<SmartToy />} onClick={handleOpenChat} sx={{ flexShrink: 0 }}>
                 {t('results.sendToAi')}
               </Button>
-              <Button size="small" variant="outlined" startIcon={<Download />} onClick={handleExportClick}>
+              <Button size="small" variant="outlined" startIcon={<Download />} onClick={handleExportClick} sx={{ flexShrink: 0 }}>
                 {t('results.export')}
               </Button>
               <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleExportClose}>

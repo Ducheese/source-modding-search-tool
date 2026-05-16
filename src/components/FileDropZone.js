@@ -141,6 +141,7 @@ const FileDropZone = ({ onFilesAdded }) => {
             onClick={(e) => { e.stopPropagation(); selectFiles(); }}
             size="small"
             disabled={isBusy}
+            sx={{ flexShrink: 0 }}
           >
             {t('dropzone.selectFiles')}
           </Button>
@@ -151,6 +152,7 @@ const FileDropZone = ({ onFilesAdded }) => {
             onClick={(e) => { e.stopPropagation(); selectFolder(); }}
             size="small"
             disabled={isBusy}
+            sx={{ flexShrink: 0 }}
           >
             {t('dropzone.selectFolder')}
           </Button>

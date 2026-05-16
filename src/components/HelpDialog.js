@@ -14,6 +14,7 @@ import {
   CircularProgress,
   Alert,
   Collapse,
+  Fade,
   Chip,
   useTheme,
   alpha,
@@ -37,10 +38,23 @@ import FeedbackForm from './FeedbackForm';
 // TabPanel
 // ─────────────────────────────────────────────────────────────
 const TabPanel = (props) => {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, disableFade = false, ...other } = props;
+  const isActive = value === index;
   return (
-    <div hidden={value !== index} {...other}>
-      {value === index && <Box sx={{ py: 2, px: 1 }}><Typography component="div">{children}</Typography></Box>}
+    <div hidden={!isActive} {...other}>
+      {disableFade ? (
+        isActive && (
+          <Box sx={{ py: 2, px: 1 }}>
+            <Typography component="div">{children}</Typography>
+          </Box>
+        )
+      ) : (
+        <Fade in={isActive} timeout={260} mountOnEnter unmountOnExit>
+          <Box sx={{ py: 2, px: 1 }}>
+            <Typography component="div">{children}</Typography>
+          </Box>
+        </Fade>
+      )}
     </div>
   );
 };
@@ -526,8 +540,8 @@ const HelpDialog = ({ open, onClose }) => {
             )}
           </TabPanel>
 
-          {/* Tab 5 — 翻译反馈 */}
-          <TabPanel value={tabValue} index={5}>
+          {/* Tab 5 — 翻译反馈 (Feedback 继续用它自己内部现有的表单渐变，disableFade 避免双重叠加动画) */}
+          <TabPanel value={tabValue} index={5} disableFade>
             <FeedbackForm />
           </TabPanel>
 

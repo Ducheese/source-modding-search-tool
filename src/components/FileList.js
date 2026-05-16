@@ -225,7 +225,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* 标题和统计 */}
       <Box sx={{ p: 2, borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="h6" fontWeight="700">
               {t('fileList.title', { count: files.length })}
@@ -243,7 +243,7 @@ const FileList = ({ files, onFileRemoved, onClearFiles }) => {
                 setFileStats({});
                 showSnackbar(t('fileList.cleared'), 'warning');
               }}
-              sx={{ minWidth: 'auto', px: 1 }}
+              sx={{ minWidth: 'auto', px: 1, flexShrink: 0 }}
             >
               {t('fileList.clear')}
             </Button>

@@ -9,13 +9,13 @@ export const COMMON_TYPOGRAPHY = {
 
 // 通用的 components 配置（浅色模式）
 export const COMMON_COMPONENTS_LIGHT = {
-  MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
+  MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8, whiteSpace: 'nowrap' } } },
   MuiPaper:  { styleOverrides: { root: { borderRadius: 12 } } },
 };
 
 // 通用的 components 配置（深色模式）
 export const COMMON_COMPONENTS_DARK = {
-  MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8 } } },
+  MuiButton: { styleOverrides: { root: { textTransform: 'none', borderRadius: 8, whiteSpace: 'nowrap' } } },
   MuiPaper:  { styleOverrides: { root: { borderRadius: 12, backgroundColor: '#1E1E1E' } } },
 };
 
