@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { tauriAPI } from '../utils/tauriBridge';
 import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettingsStorage';
+import { SUPPORTED_LANGS } from '../config/languages';
 
 /**
  * AI 解释正则表达式 Hook
@@ -10,6 +11,11 @@ import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettingsStorage';
  * @returns {{ explain: function, isExplaining: boolean, explanation: string, abort: function, clear: function }}
  */
 export function useAiRegexExplainer({ t, lang }) {
+  // 获取语言显示名称
+  const getLanguageLabel = (lang) => {
+    return SUPPORTED_LANGS.find(l => l.id === lang)?.label ?? lang;
+  };
+
   const [explanation, setExplanation] = useState('');
   const [isExplaining, setIsExplaining] = useState(false);
   const abortedRef = useRef(false);
@@ -30,7 +36,8 @@ export function useAiRegexExplainer({ t, lang }) {
     try {
       const response = await tauriAPI.generateAiRegex({
         user_prompt: regexStr,
-        system_prompt: settings.explainPrompt || getDefaultPrompts(lang).explainPrompt,
+        system_prompt: (settings.explainPrompt || getDefaultPrompts(lang).explainPrompt)
+          .replace('{{language}}', getLanguageLabel(lang)),
         api_key: settings.apiKey,
         base_url: settings.baseUrl,
         model_name: settings.explainModelName || settings.regexModelName,

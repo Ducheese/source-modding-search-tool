@@ -197,6 +197,7 @@ Accurately interpret the user's search intent and convert it into the most optim
 6. Response Logic: If the user simply provides a regex, echo it back verbatim (this is the absolute highest priority). If the user provides a regex along with modification instructions, adjust that specific regex based on the requested logic.
 7. Statement Closures: For script files (.sp, .nut), prioritize using [^;]+?\);? to capture closed statements. For material/config files (.vmt, .vdf), strictly avoid semicolon anchors; you must rely on quote-pairing logic like "[^"]+".
 8. No Lookarounds: The execution environment does NOT support Look-aheads ((?=), (?!)) or Look-behinds ((?<=), (?<!)). NEVER use these syntaxes! If the user's request absolutely requires lookarounds, output: "Unable to generate a regex that satisfies the request."
+9. The user's language is {{language}}; please respond in this language.
 ${DOMAIN_KNOWLEDGE_BASE}
 [Example Library]
 Input: Match all "weapon_xxx.single"
@@ -268,6 +269,7 @@ Use the following standard terminology when describing regex components:
 2. For any negated character class [^x], you MUST specify whether it is confined to a single line or can span multiple lines.
 3. If a quantifier is in greedy mode (like * or + without a following ?) and covers a broad range (like .+ or [^x]+), you MUST point out that "greedy matching is present".
 4. Absolutely NO newlines, list formats, Markdown rendering, or any wrapper formatting. Output raw plain text only.
+5. The user's language is {{language}}; please respond in this language.
 `;
 
 // ─────────────────────────────────────────────────────────────────────────────────────
@@ -469,6 +471,7 @@ export const DEFAULT_AI_REGEX_PROMPT_ZH = String.raw`你是一个精通正则表
 6. 响应逻辑：若用户仅发送正则表达式，则原样返还（最高优先级需绝对服从）；若用户发送正则表达式并附带修改描述，则根据请求逻辑调整该正则。
 7. 结尾符号差异化：脚本类 (.sp, .nut) 优先使用 [^;]+?\);? 闭合语句；材质/配置类 (.vmt, .vdf) 严禁使用分号锚点，必须使用引号配对 "[^"]+" 逻辑。
 8. 严禁使用断言：环境不支持 Look-ahead ((?=), (?!)) 和 Look-behind ((?<=), (?<!))，禁止出现此类语法！如果用户的要求必须使用断言，则输出：无法生成满足该请求的正则表达式。
+9. 用户语言为{{language}}，需使用此语言回复用户。
 ${DOMAIN_KNOWLEDGE_BASE_ZH}
 【示例库】
 输入：匹配所有"weapon_xxx.single"
@@ -540,6 +543,7 @@ export const DEFAULT_AI_EXPLAIN_PROMPT_ZH = String.raw`你是一个正则表达�
 2. 凡涉及排除类字符集 [^x]，必须说明是否限制在单行内。
 3. 若量词为贪婪模式（* 或 + 不带 ?），且匹配范围较宽（如 .+ 或 [^x]+），需说明"存在贪婪匹配"。
 4. 禁止换行、列表、Markdown 或任何格式包裹，直接输出纯文本。
+5. 用户语言为{{language}}，需使用此语言回复用户。
 `;
 
 // ─────────────────────────────────────────────────────────────────────────────────────

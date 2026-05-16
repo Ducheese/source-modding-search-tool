@@ -4,6 +4,7 @@ import { tauriAPI } from '../utils/tauriBridge';
 import { getDefaultPrompts, loadAiSettings } from '../utils/aiSettingsStorage';
 import { parseThinkChunk } from '../utils/parseThinkChunk';
 import { serializeResultsForAi, estimateTokenCount } from '../utils/chatContextSerializer';
+import { SUPPORTED_LANGS } from '../config/languages';
 
 const STREAM_EVENT = 'ai-chat-stream';
 
@@ -27,6 +28,11 @@ const formatTimestamp = (date) => {
  * @returns {{ messages, isStreaming, sendMessage, resetSession, toggleThink, contextPrompt }}
  */
 export function useAiChatSession({ results, lang, t, showSnackbar }) {
+  // 获取语言显示名称
+  const getLanguageLabel = (lang) => {
+    return SUPPORTED_LANGS.find(l => l.id === lang)?.label ?? lang;
+  };
+
   // 状态
   const [messages, setMessages] = useState([]);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -54,9 +60,10 @@ export function useAiChatSession({ results, lang, t, showSnackbar }) {
   // 计算上下文 token 数（系统提示词 + 历史消息）
   const contextTokens = useMemo(() => {
     const settings = loadAiSettings(lang);
-    // 系统提示词（已替换 {{context}}）
+    // 系统提示词（已替换 {{context}} 和 {{language}}）
     const chatPrompt = (settings.chatPrompt || getDefaultPrompts(lang).chatPrompt)
-      .replace('{{context}}', contextPrompt || '');
+      .replace('{{context}}', contextPrompt || '')
+      .replace('{{language}}', getLanguageLabel(lang));
     
     // 系统提示词 token
     let tokens = estimateTokenCount(chatPrompt);
@@ -221,7 +228,8 @@ export function useAiChatSession({ results, lang, t, showSnackbar }) {
 
     // 构建消息历史
     const chatPrompt = (settings.chatPrompt || getDefaultPrompts(lang).chatPrompt)
-      .replace('{{context}}', contextPromptRef.current);
+      .replace('{{context}}', contextPromptRef.current)
+      .replace('{{language}}', getLanguageLabel(lang));
 
     const chatMessages = [
       { role: 'system', content: chatPrompt },
