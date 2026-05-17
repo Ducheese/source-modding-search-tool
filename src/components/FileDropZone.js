@@ -89,9 +89,9 @@ const FileDropZone = ({ onFilesAdded }) => {
       }}
       elevation={0}
     >
-      {/* 主内容区：大面积可点击，触发 selectFiles */}
+      {/* 主内容区：大面积可点击，触发 selectFolder */}
       <Box
-        onClick={isBusy ? undefined : selectFiles}
+        onClick={isBusy ? undefined : selectFolder}
         sx={{
           display: 'flex',
           gap: 2,
