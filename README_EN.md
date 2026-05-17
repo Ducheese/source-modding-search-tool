@@ -13,7 +13,8 @@ A lightweight, high-performance local text search tool for Valve Source 1 engine
 2. Gemini 3 Flash/Pro without agent (Main contributions: tech stack migration and frontend/backend performance optimization; advanced options panel as a bonus; also participated in i18n translation review later)
 3. OMO Hephaestus + GPT 5.2 Codex (Revived the "spaghetti" code, implemented more context toggles, implemented AI model integration prototype)
 4. Claude Sonnet 4.6 without agent (Optimized AI model integration, reviewed "spaghetti" code, color scheme tab, changelog tab, deep thinking control, more context control, chat window minimization, i18n prototype)
-5. GPT 5.4 / Claude Sonnet 4.6 without agent proposed plans, iFlow CLI + GLM-5 executed plans (i18n translation review, feedback tab, defensive programming fixes, expand/collapse all button, backend decoding/encoding bug fixes)
+5. GPT 5.4 / Claude Sonnet 4.6 without agent proposed plans, iFlow CLI + GLM-5 (or Roo Code + GLM model) executed plans (i18n translation review, feedback tab, defensive programming fixes, expand/collapse all button, backend decoding/encoding bug fixes, frontend/backend bloat code splitting)
+6. Codex + GPT 5.4 (Custom supported file extensions)
 
 ## Development Environment Setup
 
@@ -106,6 +107,7 @@ source-modding-search-tool/
 │   │   ├── ResultLine.js
 │   │   ├── SearchPanel.js
 │   │   ├── SearchResults.js
+│   │   ├── SupportedExtensionsEditor.js
 │   │   ├── VirtualizedResults.js
 │   │   └── feedback/     # Feedback form sub-components
 │   │       ├── ContributorIdentityField.js
@@ -123,10 +125,12 @@ source-modding-search-tool/
 │   │   ├── useFileScanner.js
 │   │   ├── useSearchForm.js
 │   │   ├── useSearchHistory.js
-│   │   └── useTranslationKeys.js
+│   │   ├── useTranslationKeys.js
+│   │   └── useWindowFileDrop.js
 │   ├── contexts/         # React Context
 │   │   ├── LanguageContext.js
 │   │   ├── SnackbarContext.js
+│   │   ├── SupportedExtensionsContext.js
 │   │   └── ThemeSchemeContext.js
 │   ├── utils/            # Utility functions
 │   │   ├── aiSettingsStorage.js

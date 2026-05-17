@@ -13,7 +13,8 @@
 2. Gemini 3 Flash/Pro 无agent（主贡献是技术栈更换和前后端性能优化，高级选项面板是锦上添花，后期也参与多语言翻译审查）
 3. OMO Hephaestus + GPT 5.2 Codex（重拾“屎山”代码，实现更多上下文开关，实现大模型接入雏形）
 4. Claude Sonnet 4.6 无agent（大模型接入功能优化，“屎山”代码审查，色彩方案标签页，更新日志标签页，深度思考控件，更多上下文控件，聊天窗最小化，多语言雏形）
-5. GPT 5.4 / Claude Sonnet 4.6 无agent 负责提出修改方案，iFlow CLI + GLM-5 负责执行方案（多语言翻译审查，反馈标签页，防御性编程修复，一键展开收纳按钮，修复后端解码编码漏洞）
+5. GPT 5.4 / Claude Sonnet 4.6 无agent 负责提出修改方案，iFlow CLI + GLM-5（或Roo Code + GLM模型）负责执行方案（多语言翻译审查，反馈标签页，防御性编程修复，一键展开收纳按钮，修复后端解码编码漏洞，前后端臃肿代码拆分）
+6. Codex + GPT 5.4（自定义支持的文件后缀）
 
 ## 开发环境设置
 
@@ -106,6 +107,7 @@ source-modding-search-tool/
 │   │   ├── ResultLine.js
 │   │   ├── SearchPanel.js
 │   │   ├── SearchResults.js
+│   │   ├── SupportedExtensionsEditor.js
 │   │   ├── VirtualizedResults.js
 │   │   └── feedback/     # 反馈表单子组件
 │   │       ├── ContributorIdentityField.js
@@ -123,10 +125,12 @@ source-modding-search-tool/
 │   │   ├── useFileScanner.js
 │   │   ├── useSearchForm.js
 │   │   ├── useSearchHistory.js
-│   │   └── useTranslationKeys.js
+│   │   ├── useTranslationKeys.js
+│   │   └── useWindowFileDrop.js
 │   ├── contexts/         # React Context
 │   │   ├── LanguageContext.js
 │   │   ├── SnackbarContext.js
+│   │   ├── SupportedExtensionsContext.js
 │   │   └── ThemeSchemeContext.js
 │   ├── utils/            # 工具函数
 │   │   ├── aiSettingsStorage.js

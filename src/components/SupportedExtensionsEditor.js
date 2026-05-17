@@ -11,7 +11,7 @@ import {
 import {
   KeyboardReturn,
   Replay,
-  Tune,
+  Settings,
 } from '@mui/icons-material';
 import { DEFAULT_SUPPORTED_EXTENSIONS, normalizeSupportedExtension } from '../config/supportedFiles';
 import { useSupportedExtensions } from '../contexts/SupportedExtensionsContext';
@@ -62,7 +62,7 @@ const SupportedExtensionsEditor = () => {
             },
           }}
         >
-          <Tune sx={{ fontSize: 14 }} />
+          <Settings sx={{ fontSize: 14 }} />
         </IconButton>
       </Box>
 
@@ -79,10 +79,10 @@ const SupportedExtensionsEditor = () => {
             mt: 1,
             width: 320,
             p: 1.5,
-            borderRadius: 2.5,
-            bgcolor: alpha(theme.palette.background.paper, 0.985),
-            border: `1px solid ${alpha(theme.palette.divider, 0.55)}`,
-            backdropFilter: 'blur(8px)',
+            borderRadius: 2,
+            // bgcolor: alpha(theme.palette.background.paper, 0.985),
+            // border: `1px solid ${alpha(theme.palette.divider, 0.55)}`,
+            // backdropFilter: 'blur(8px)',
           },
         }}
       >
