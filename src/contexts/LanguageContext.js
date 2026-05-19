@@ -56,10 +56,7 @@ export const LanguageProvider = ({ children }) => {
     return initial;
   });
   // loadedLang: 表示目标语言包已加载完成，用于精确判断语言切换时机
-  const [loadedLang, setLoadedLang] = useState(() => {
-    const initial = detectBrowserLanguage();
-    return initial === 'english' ? 'english' : null; // 英语不需要加载，直接就绪
-  });
+  const [loadedLang, setLoadedLang] = useState(null); // 等 fallback 加载完才渲染
   const [langTokens, setLangTokens] = useState({});
   const [fallbackTokens, setFallbackTokens] = useState({});
   const langRef = useRef(lang);
@@ -77,6 +74,9 @@ export const LanguageProvider = ({ children }) => {
       .then(text => {
         const parsed = parseVdf(text);
         setFallbackTokens(parsed?.Tokens ?? {});
+        if (langRef.current === 'english') {
+          setLoadedLang('english');
+        }
       })
       .catch(err => {
         if (err.name === 'AbortError') return;
@@ -91,10 +91,10 @@ export const LanguageProvider = ({ children }) => {
     langRef.current = lang;
     safeSetDocumentLang(lang);
 
-    // 【短路判断】如果当前是英语，直接清空 langTokens（t函数会自动走到 fallback）
+    // 【短路判断】如果当前是英语，清空 langTokens 即可
+    // loadedLang 由 fallback fetch 完成后设置，避免 token 未就绪时渲染
     if (lang === 'english') {
       setLangTokens({});
-      setLoadedLang('english');
       return;
     }
 
