@@ -168,7 +168,7 @@ const ReleaseEntry = ({ tag, name, body, date, markdownStyles, defaultExpanded =
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {date && (
-            <Typography variant="caption" color="text.secondary">{date}</Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>{date}</Typography>
           )}
           <Typography variant="body2" fontWeight={700}>{name}</Typography>
           {name !== tag && (
